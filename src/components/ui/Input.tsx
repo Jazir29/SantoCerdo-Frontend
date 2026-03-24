@@ -8,7 +8,6 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   variant?: 'default' | 'view' | 'ghost';
   size?: 'default' | 'sm';
-  responsiveSm?: boolean; // sm en móvil, default en desktop
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -19,7 +18,6 @@ export const Input: React.FC<InputProps> = ({
   className = '',
   variant = 'default',
   size = 'default',
-  responsiveSm = false,
   ...props
 }) => {
   const isView = variant === 'view';
@@ -29,7 +27,7 @@ export const Input: React.FC<InputProps> = ({
     <div className="space-y-1 w-full">
       {label && (
         <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
-          isSm ? 'text-[9px]' : responsiveSm ? 'text-[9px] md:text-[10px]' : 'text-[11px]'
+          isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
         }`}>
           {label}
         </label>
@@ -37,9 +35,9 @@ export const Input: React.FC<InputProps> = ({
       <div className="relative group">
         {Icon && (
           <Icon
-            size={isSm ? 13 : responsiveSm ? 13 : 18}
+            size={isSm ? 13 : 18}
             className={`absolute top-1/2 -translate-y-1/2 transition-colors ${
-              isSm ? 'left-3' : responsiveSm ? 'left-3 md:left-4' : 'left-4'
+              isSm ? 'left-3' : 'left-4'
             } ${
               error ? 'text-red-400' : isView ? 'text-zinc-400' : 'text-zinc-400 group-focus-within:text-amber-500'
             }`}
@@ -48,11 +46,8 @@ export const Input: React.FC<InputProps> = ({
         <input
           className={`
             w-full transition-all duration-200 rounded-xl focus:outline-none
-            ${isSm ? 'text-xs py-2' : responsiveSm ? 'text-xs md:text-sm py-2 md:py-3' : 'text-sm py-2.5 md:py-3'}
-            ${Icon
-              ? isSm ? 'pl-8' : responsiveSm ? 'pl-8 md:pl-11' : 'pl-11'
-              : isSm ? 'pl-3' : responsiveSm ? 'pl-3 md:pl-4' : 'pl-4'
-            }
+            ${isSm ? 'text-xs py-2' : 'text-sm py-2.5 md:py-3'}
+              ${Icon ? isSm ? 'pl-8' : 'pl-11' : isSm ? 'pl-3' : 'pl-4'}
             ${suffix ? 'pr-12' : isSm ? 'pr-3' : 'pr-4'}
             ${isView
               ? 'bg-white border border-zinc-200 font-bold text-zinc-900 cursor-default'

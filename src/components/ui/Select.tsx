@@ -21,7 +21,6 @@ interface SelectProps {
   disabled?: boolean;
   variant?: 'default' | 'ghost' | 'view';
   size?: 'default' | 'sm';
-  responsiveSm?: boolean;
 }
 
 
@@ -37,7 +36,6 @@ export const Select: React.FC<SelectProps> = ({
   disabled = false,
   variant = 'default',
   size = 'default',
-  responsiveSm = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,7 +72,7 @@ export const Select: React.FC<SelectProps> = ({
     <div className={`w-full space-y-1 ${className}`} ref={containerRef}>
       {label && (
         <label className={`font-black text-zinc-400 uppercase tracking-[0.15em] ml-1 ${
-          isSm ? 'text-[9px]' : responsiveSm ? 'text-[9px] md:text-[10px]' : 'text-[10px]'
+          isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
         }`}>
           {label}
         </label>
@@ -87,7 +85,7 @@ export const Select: React.FC<SelectProps> = ({
           onClick={() => !disabled && !isView && setIsOpen(!isOpen)}
           className={`
             w-full flex items-center justify-between rounded-xl transition-all text-left
-            ${isSm ? 'py-2 px-3 text-xs' : responsiveSm ? 'py-2 md:py-2.5 md:py-3 px-3 md:px-4 text-xs md:text-sm' : 'py-2.5 md:py-3 px-4 text-sm'}
+            ${isSm ? 'py-2 px-3 text-xs' : 'py-2.5 md:py-3 px-4 text-sm'}
             font-bold outline-none
             ${isView 
               ? 'bg-white border border-zinc-200 font-bold text-zinc-900 cursor-default' 
@@ -103,7 +101,7 @@ export const Select: React.FC<SelectProps> = ({
           <div className="flex items-center gap-2 md:gap-3 overflow-hidden">
             {Icon && (
               <Icon
-                size={isSm ? 13 : responsiveSm ? 13 : 18}
+                size={isSm ? 13 : 18}
                 className={`shrink-0 text-zinc-400`}
               />
             )}
@@ -113,7 +111,7 @@ export const Select: React.FC<SelectProps> = ({
           </div>
           {!isView && (
             <ChevronDown 
-              size={isSm || responsiveSm ? 14 : 18}
+              size={isSm ? 14 : 18}
               className={`text-zinc-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-amber-500' : ''}`} 
             />
           )}

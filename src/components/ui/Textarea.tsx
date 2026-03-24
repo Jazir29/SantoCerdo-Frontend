@@ -4,6 +4,7 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
   label?: string;
   error?: string;
   variant?: 'default' | 'view';
+  size?: 'default' | 'sm';
 }
 
 export const Textarea: React.FC<TextareaProps> = ({
@@ -11,25 +12,28 @@ export const Textarea: React.FC<TextareaProps> = ({
   error,
   className = '',
   variant = 'default',
+  size = 'default',
   ...props
 }) => {
   const isView = variant === 'view';
+  const isSm = size === 'sm';
 
   return (
-    <div className="space-y-1.5 w-full">
+    <div className="space-y-1 w-full">
       {label && (
-        <label className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+        <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
+          isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
+        }`}>
           {label}
         </label>
       )}
       <textarea
         className={`
-          w-full transition-all duration-200
-          rounded-xl text-sm
-          focus:outline-none
+          w-full transition-all duration-200 rounded-xl focus:outline-none
+          ${isSm ? 'text-xs px-3 py-2' : 'text-sm px-4 py-3'}
           ${isView 
-            ? 'bg-white border border-zinc-200 px-4 py-3 font-bold text-zinc-900 cursor-default min-h-0 resize-none' 
-            : `bg-zinc-50 border px-4 py-3 min-h-[100px] focus:ring-4 ${
+            ? 'bg-white border border-zinc-200 font-bold text-zinc-900 cursor-default min-h-0 resize-none' 
+            : `bg-zinc-50 border min-h-[80px] md:min-h-[100px] focus:ring-4 ${
                 error 
                   ? 'border-red-200 focus:border-red-500 focus:ring-red-500/10 text-red-900' 
                   : 'border-zinc-200 focus:border-amber-500 focus:ring-amber-500/10 text-zinc-900'

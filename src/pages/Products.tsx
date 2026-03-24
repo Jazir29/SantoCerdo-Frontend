@@ -301,7 +301,7 @@ export default function Products() {
           onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
           placeholder="Ingresar nombre del producto"
           variant={isViewing ? 'view' : 'default'}
-          responsiveSm
+          size="sm"
         />
         <Textarea 
           label="Descripción"
@@ -309,6 +309,7 @@ export default function Products() {
           onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
           placeholder="Ingresar descripción"
           variant={isViewing ? 'view' : 'default'}
+          size="sm"
         />
         
         <div className="grid grid-cols-2 gap-4">
@@ -321,7 +322,7 @@ export default function Products() {
             min="0"
             step="0.01"
             variant={isViewing ? 'view' : 'default'}
-            responsiveSm
+            size="sm"
           />
           <Input 
             label="Costo (S/)"
@@ -332,7 +333,7 @@ export default function Products() {
             min="0"
             step="0.01"
             variant={isViewing ? 'view' : 'default'}
-            responsiveSm
+            size="sm"
           />
         </div>
         
@@ -344,7 +345,7 @@ export default function Products() {
           placeholder="0"
           min="0"
           variant={isViewing ? 'view' : 'default'}
-          responsiveSm
+          size="sm"
         />
       </div>
       </Modal>

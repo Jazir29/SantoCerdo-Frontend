@@ -464,7 +464,6 @@ export default function Orders() {
                     className="w-full"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    size="sm"
                   />
                 </div>
                 <div className="w-48">
@@ -479,15 +478,14 @@ export default function Orders() {
                       { value: 'completed', label: 'Completado' },
                       { value: 'cancelled', label: 'Cancelada' }
                     ]}
-                    size="sm"
                   />
                 </div>
                 <div className="flex gap-2">
                   <div className="w-44">
-                    <DatePicker label="Desde" value={filterStartDate} onChange={setFilterStartDate} size="sm" />
+                    <DatePicker label="Desde" value={filterStartDate} onChange={setFilterStartDate}/>
                   </div>
                   <div className="w-44">
-                    <DatePicker label="Hasta" value={filterEndDate} onChange={setFilterEndDate} size="sm" />
+                    <DatePicker label="Hasta" value={filterEndDate} onChange={setFilterEndDate}/>
                   </div>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => { setSearchTerm(''); setFilterStatus('all'); setFilterStartDate(''); setFilterEndDate(''); }}
@@ -739,7 +737,7 @@ export default function Orders() {
           <div>
             <Select
               label="Cliente"
-              responsiveSm
+              size="sm"
               value={selectedCustomerId}
               onChange={(val) => {
                 setSelectedCustomerId(Number(val));
@@ -761,7 +759,7 @@ export default function Orders() {
               <div className="mt-4">
                 <Select
                   label="Dirección de Entrega"
-                  responsiveSm
+                  size="sm"
                   value={isAddingNewAddress ? 'new' : selectedAddress}
                   onChange={(val) => {
                     if (val === 'new') {
@@ -868,7 +866,7 @@ export default function Orders() {
               <div className="w-full md:flex-1 md:min-w-0">
                 <Select
                   value={item.product_id || ''}
-                  responsiveSm
+                  size="sm"
                   onChange={(val) => updateOrderItem(index, 'product_id', Number(val))}
                   options={[
                     { value: '', label: 'Selecciona un producto...' },
@@ -888,7 +886,7 @@ export default function Orders() {
                     type="number"
                     min="1"
                     label="Cant."
-                    responsiveSm
+                    size="sm"
                     value={item.quantity || ''}
                     onChange={(e) => updateOrderItem(index, 'quantity', Number(e.target.value))}
                   />
@@ -899,7 +897,7 @@ export default function Orders() {
                     min="0"
                     step="0.01"
                     label="Precio"
-                    responsiveSm
+                    size="sm"
                     value={item.price || ''}
                     readOnly
                     icon={DollarSign}
@@ -929,7 +927,7 @@ export default function Orders() {
           <div className="pt-4 border-t border-zinc-100">
             <Select
               label="Promoción / Descuento (Opcional)"
-              responsiveSm
+              size="sm"
               value={selectedPromotionId}
               onChange={(val) => {
                 const id = val === '' ? '' : Number(val);
@@ -1073,25 +1071,26 @@ export default function Orders() {
                 {/* Columna izquierda */}
                 <div className="space-y-3">
                   <div>
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1 ml-1">Cliente</p>
-                    <Input variant="view" icon={User} responsiveSm
+                    <Input
+                      label="Cliente"
+                      variant="view" icon={User} size="sm"
                       value={orderDetails.type === 'empresa' ? orderDetails.trade_name || orderDetails.customer_name : `${orderDetails.customer_name} ${orderDetails.last_name || ''}`}
                     />
-
                   </div>
                   <div className="grid grid-cols-2 gap-2 md:gap-3">
                     <div>
-                      <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1 ml-1">Teléfono</p>
-                      <Input variant="view" icon={Phone} responsiveSm  value={orderDetails.phone || 'No registrado'} />
+                      <Input label="Teléfono" variant="view" icon={Phone} size="sm" value={orderDetails.phone || 'No registrado'} />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1 ml-1">Correo</p>
-                      <Input variant="view" icon={Mail}  responsiveSm value={orderDetails.email || 'No registrado'} />
+                      <Input label="Correo" variant="view" icon={Mail} size="sm" value={orderDetails.email || 'No registrado'} />
                     </div>
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1 ml-1">Dirección de Entrega</p>
-                    <Input variant="view" icon={MapPin} responsiveSm  value={orderDetails.delivery_address || 'Sin dirección'} />
+                    <Input
+                      label="Dirección de Entrega"
+                      variant="view" icon={MapPin} size="sm"
+                      value={orderDetails.delivery_address || 'Sin dirección'}
+                    />
                     {orderDetails.delivery_reference && (
                       <p className="text-xs text-zinc-500 mt-1 ml-8 italic">Ref: {orderDetails.delivery_reference}</p>
                     )}
@@ -1101,8 +1100,7 @@ export default function Orders() {
                 {/* Columna derecha */}
                 <div className="space-y-3">
                   <div>
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1 ml-1">Fecha de Creación</p>
-                    <Input variant="view" icon={Clock} responsiveSm 
+                    <Input label= "Fecha de Creacion" variant="view" icon={Clock} size="sm" 
                       value={`${new Date(orderDetails.created_at).toLocaleDateString()} ${new Date(orderDetails.created_at).toLocaleTimeString()}`}
                     />
                   </div>
