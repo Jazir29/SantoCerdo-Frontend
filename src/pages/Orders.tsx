@@ -845,8 +845,10 @@ export default function Orders() {
 
           {/* Order Items */}
           <div>
-            <div className="flex justify-between items-center mb-4">
-              <label className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Productos</label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-[9px] md:text-[10px] font-black text-zinc-400 uppercase tracking-[0.15em] ml-1">
+                Productos
+              </label>
               <Button 
                 variant="ghost"
                 size="sm"

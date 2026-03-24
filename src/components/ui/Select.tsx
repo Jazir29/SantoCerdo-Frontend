@@ -119,7 +119,54 @@ export const Select: React.FC<SelectProps> = ({
           )}
         </button>
 
-        {/* AnimatePresence y dropdown sin cambios */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 4, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+              className="absolute z-50 w-full bg-white border border-zinc-200 rounded-2xl shadow-2xl shadow-zinc-200/50 overflow-hidden py-2"
+            >
+              <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                {safeOptions.length === 0 ? (
+                  <div className="px-4 py-3 text-xs text-zinc-400 italic text-center">
+                    No hay opciones disponibles
+                  </div>
+                ) : (
+                  safeOptions.map((option) => {
+                    const isSelected = option.value === value;
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        disabled={option.disabled}
+                        onClick={() => handleSelect(option.value)}
+                        className={`
+                          w-full flex items-center justify-between px-4 py-3 text-sm transition-colors text-left
+                          ${isSelected 
+                            ? 'bg-amber-50 text-amber-700 font-bold' 
+                            : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium'}
+                          ${option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                        `}
+                      >
+                        <div className="flex flex-col">
+                          <span>{option.label}</span>
+                          {option.subLabel && (
+                            <span className={`text-[10px] font-medium ${isSelected ? 'text-amber-600/70' : 'text-zinc-400'}`}>
+                              {option.subLabel}
+                            </span>
+                          )}
+                        </div>
+                        {isSelected && <Check size={16} className="text-amber-500" />}
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {error && <p className="text-[10px] text-red-500 ml-1 font-bold uppercase tracking-wider">{error}</p>}

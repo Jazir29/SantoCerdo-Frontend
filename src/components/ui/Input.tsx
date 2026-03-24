@@ -29,7 +29,7 @@ export const Input: React.FC<InputProps> = ({
     <div className="space-y-1 w-full">
       {label && (
         <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
-          isSm ? 'text-[9px]' : responsiveSm ? 'text-[9px] md:text-[11px]' : 'text-[11px]'
+          isSm ? 'text-[9px]' : responsiveSm ? 'text-[9px] md:text-[10px]' : 'text-[11px]'
         }`}>
           {label}
         </label>

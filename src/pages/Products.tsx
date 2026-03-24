@@ -295,54 +295,58 @@ export default function Products() {
         }
       >
         <div className="space-y-6">
+        <Input 
+          label="Nombre del Producto"
+          value={editForm.name || ''}
+          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+          placeholder="Ingresar nombre del producto"
+          variant={isViewing ? 'view' : 'default'}
+          responsiveSm
+        />
+        <Textarea 
+          label="Descripción"
+          value={editForm.description || ''}
+          onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+          placeholder="Ingresar descripción"
+          variant={isViewing ? 'view' : 'default'}
+        />
+        
+        <div className="grid grid-cols-2 gap-4">
           <Input 
-            label="Nombre del Producto"
-            value={editForm.name || ''}
-            onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-            placeholder="Ingresar nombre del producto"
-            variant={isViewing ? 'view' : 'default'}
-          />
-          <Textarea 
-            label="Descripción"
-            value={editForm.description || ''}
-            onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-            placeholder="Ingresar descripción"
-            variant={isViewing ? 'view' : 'default'}
-          />
-          
-          <div className="grid grid-cols-2 gap-4">
-            <Input 
-              label="Precio de Venta (S/)"
-              type="number"
-              value={editForm.price !== undefined ? editForm.price : 0}
-              onChange={(e) => setEditForm({ ...editForm, price: Number(e.target.value) })}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-              variant={isViewing ? 'view' : 'default'}
-            />
-            <Input 
-              label="Costo (S/)"
-              type="number"
-              value={editForm.cost !== undefined ? editForm.cost : 0}
-              onChange={(e) => setEditForm({ ...editForm, cost: Number(e.target.value) })}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-              variant={isViewing ? 'view' : 'default'}
-            />
-          </div>
-          
-          <Input 
-            label="Stock (und)"
+            label="Precio de Venta (S/)"
             type="number"
-            value={editForm.stock !== undefined ? editForm.stock : 0}
-            onChange={(e) => setEditForm({ ...editForm, stock: Number(e.target.value) })}
-            placeholder="0"
+            value={editForm.price !== undefined ? editForm.price : 0}
+            onChange={(e) => setEditForm({ ...editForm, price: Number(e.target.value) })}
+            placeholder="0.00"
             min="0"
+            step="0.01"
             variant={isViewing ? 'view' : 'default'}
+            responsiveSm
+          />
+          <Input 
+            label="Costo (S/)"
+            type="number"
+            value={editForm.cost !== undefined ? editForm.cost : 0}
+            onChange={(e) => setEditForm({ ...editForm, cost: Number(e.target.value) })}
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            variant={isViewing ? 'view' : 'default'}
+            responsiveSm
           />
         </div>
+        
+        <Input 
+          label="Stock (und)"
+          type="number"
+          value={editForm.stock !== undefined ? editForm.stock : 0}
+          onChange={(e) => setEditForm({ ...editForm, stock: Number(e.target.value) })}
+          placeholder="0"
+          min="0"
+          variant={isViewing ? 'view' : 'default'}
+          responsiveSm
+        />
+      </div>
       </Modal>
 
       {/* Delete Confirmation Modal */}
