@@ -1,0 +1,5 @@
+{
+  "name": "Santo Cerdo ERP",
+  "description": "Sistema de gestión para la empresa productora de manteca Santo Cerdo. Incluye dashboard, gestión de órdenes, productos, clientes y calculadora de precios.",
+  "requestFramePermissions": []
+}
