@@ -333,95 +333,101 @@ export default function Promotions() {
         title={isViewing ? 'Detalles de la Promoción' : (isEditing ? 'Editar Promoción' : 'Nueva Promoción')}
         footer={
           <>
-            <Button variant="secondary" onClick={() => {
+            <Button variant="secondary" size="sm" onClick={() => {
               setIsModalOpen(false);
               setIsViewing(false);
             }}>
               {isViewing ? 'Cerrar' : 'Cancelar'}
             </Button>
             {!isViewing && (
-              <Button onClick={handleSave} loading={isSaving} icon={Save}>
+              <Button size="sm" onClick={handleSave}  loading={isSaving} icon={Save}>
                 {isEditing ? 'Guardar Cambios' : 'Crear Promoción'}
               </Button>
             )}
           </>
         }
       >
-        <form onSubmit={handleSave} className="space-y-6">
-          <Input
-            label="Nombre de la Promoción"
-            required
-            value={currentPromo.name}
-            onChange={(e) => setCurrentPromo({ ...currentPromo, name: e.target.value })}
-            placeholder="Ej: Descuento de Verano"
-            variant={isViewing ? 'view' : 'default'}
+        <form onSubmit={handleSave} className="space-y-4">
+  <Input
+    label="Nombre de la Promoción"
+    required
+    size="sm"
+    value={currentPromo.name}
+    onChange={(e) => setCurrentPromo({ ...currentPromo, name: e.target.value })}
+    placeholder="Ej: Descuento de Verano"
+    variant={isViewing ? 'view' : 'default'}
+  />
+
+  <div className="grid grid-cols-2 gap-3">
+    <Input
+      label="Código de Cupón"
+      required
+      size="sm"
+      value={currentPromo.code}
+      onChange={(e) => setCurrentPromo({ ...currentPromo, code: e.target.value.toUpperCase() })}
+      placeholder="VERANO2024"
+      className="font-mono font-bold uppercase tracking-wider"
+      variant={isViewing ? 'view' : 'default'}
+    />
+    <Select
+      label="Tipo de Descuento"
+      size="sm"
+      value={currentPromo.type}
+      onChange={(val) => setCurrentPromo({ ...currentPromo, type: val as any })}
+      options={[
+        { value: 'percentage', label: 'Porcentaje (%)' },
+        { value: 'fixed', label: 'Monto Fijo (S/)' }
+      ]}
+      variant={isViewing ? 'view' : 'default'}
+    />
+  </div>
+
+  <div className="grid grid-cols-2 gap-3">
+    <Input
+      label="Valor del Descuento"
+      required
+      size="sm"
+      type="number"
+      step="0.01"
+      icon={currentPromo.type === 'percentage' ? Percent : DollarSign}
+      value={currentPromo.value}
+      onChange={(e) => setCurrentPromo({ ...currentPromo, value: parseFloat(e.target.value) })}
+      variant={isViewing ? 'view' : 'default'}
+    />
+    <div className="space-y-1">
+      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Estado</label>
+      <div className="flex items-center gap-3 h-[34px]">
+        <label className={`flex items-center gap-2.5 ${isViewing ? 'cursor-default' : 'cursor-pointer'} group`}>
+          <input
+            type="checkbox"
+            checked={currentPromo.active === 1}
+            onChange={(e) => !isViewing && setCurrentPromo({ ...currentPromo, active: e.target.checked ? 1 : 0 })}
+            className="w-4 h-4 rounded-md border-zinc-300 text-amber-500 focus:ring-amber-500/20 transition-all"
+            disabled={isViewing}
           />
+          <span className="text-xs font-bold text-zinc-700 group-hover:text-zinc-900 transition-colors">Activo</span>
+        </label>
+      </div>
+    </div>
+  </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <Input
-              label="Código de Cupón"
-              required
-              value={currentPromo.code}
-              onChange={(e) => setCurrentPromo({ ...currentPromo, code: e.target.value.toUpperCase() })}
-              placeholder="VERANO2024"
-              className="font-mono font-bold uppercase tracking-wider"
-              variant={isViewing ? 'view' : 'default'}
-            />
-            <Select
-              label="Tipo de Descuento"
-              value={currentPromo.type}
-              onChange={(val) => setCurrentPromo({ ...currentPromo, type: val as any })}
-              options={[
-                { value: 'percentage', label: 'Porcentaje (%)' },
-                { value: 'fixed', label: 'Monto Fijo (S/)' }
-              ]}
-              variant={isViewing ? 'view' : 'default'}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <Input
-              label="Valor del Descuento"
-              required
-              type="number"
-              step="0.01"
-              icon={currentPromo.type === 'percentage' ? Percent : DollarSign}
-              value={currentPromo.value}
-              onChange={(e) => setCurrentPromo({ ...currentPromo, value: parseFloat(e.target.value) })}
-              variant={isViewing ? 'view' : 'default'}
-            />
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Estado</label>
-              <div className="flex items-center gap-4 h-[46px]">
-                <label className={`flex items-center gap-3 ${isViewing ? 'cursor-default' : 'cursor-pointer'} group`}>
-                  <input
-                    type="checkbox"
-                    checked={currentPromo.active === 1}
-                    onChange={(e) => !isViewing && setCurrentPromo({ ...currentPromo, active: e.target.checked ? 1 : 0 })}
-                    className="w-5 h-5 rounded-lg border-zinc-300 text-amber-500 focus:ring-amber-500/20 transition-all"
-                    disabled={isViewing}
-                  />
-                  <span className="text-sm font-bold text-zinc-700 group-hover:text-zinc-900 transition-colors">Activo</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <DatePicker
-              label="Fecha Inicio"
-              value={currentPromo.start_date?.split('T')[0] || ''}
-              onChange={(val) => setCurrentPromo({ ...currentPromo, start_date: val })}
-              variant={isViewing ? 'view' : 'default'}
-            />
-            <DatePicker
-              label="Fecha Fin"
-              value={currentPromo.end_date?.split('T')[0] || ''}
-              onChange={(val) => setCurrentPromo({ ...currentPromo, end_date: val })}
-              variant={isViewing ? 'view' : 'default'}
-            />
-          </div>
-        </form>
+  <div className="grid grid-cols-2 gap-3">
+    <DatePicker
+      label="Fecha Inicio"
+      size="sm"
+      value={currentPromo.start_date?.split('T')[0] || ''}
+      onChange={(val) => setCurrentPromo({ ...currentPromo, start_date: val })}
+      variant={isViewing ? 'view' : 'default'}
+    />
+    <DatePicker
+      label="Fecha Fin"
+      size="sm"
+      value={currentPromo.end_date?.split('T')[0] || ''}
+      onChange={(val) => setCurrentPromo({ ...currentPromo, end_date: val })}
+      variant={isViewing ? 'view' : 'default'}
+    />
+  </div>
+</form>
       </Modal>
     </div>
   );

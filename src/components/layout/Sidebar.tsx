@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShoppingCart, Package, Users, Calculator, LogOut, Tag, X } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Package, Users, Calculator, LogOut, Tag, X ,ClipboardList } from 'lucide-react';
 import { User } from '../../types';
 
 interface SidebarProps {
@@ -12,12 +12,13 @@ export function Sidebar({ user, onLogout, onClose }: SidebarProps) {
   const location = useLocation();
   
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/orders', label: 'Órdenes', icon: ShoppingCart },
-    { path: '/products', label: 'Productos', icon: Package },
-    { path: '/customers', label: 'Clientes', icon: Users },
-    { path: '/promotions', label: 'Promociones', icon: Tag },
-    { path: '/pricing', label: 'Calculadora de Precios', icon: Calculator },
+    { path: '/',           label: 'Dashboard',              icon: LayoutDashboard },
+    { path: '/orders',     label: 'Órdenes',                icon: ShoppingCart },
+    { path: '/products',   label: 'Productos',              icon: Package },
+    { path: '/customers',  label: 'Clientes',               icon: Users },
+    { path: '/promotions', label: 'Promociones',            icon: Tag },
+    { path: '/pricing',    label: 'Calculadora de Precios', icon: Calculator },
+    { path: '/production', label: 'Registro de Producción', icon: ClipboardList },
   ];
 
   return (

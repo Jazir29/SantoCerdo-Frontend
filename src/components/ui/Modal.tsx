@@ -6,6 +6,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: React.ReactNode;
+  subtitle?: React.ReactNode;  // ← acepta ReactNode, no solo string
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -15,6 +16,7 @@ export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
+  subtitle,                    // ← añadir
   children,
   footer,
   size = 'md'
@@ -46,8 +48,13 @@ export const Modal: React.FC<ModalProps> = ({
             className={`relative bg-white w-full ${sizes[size]} rounded-3xl md:rounded-[2.5rem] shadow-2xl border border-zinc-200 overflow-hidden flex flex-col max-h-[90vh]`}
           >
             {/* Header */}
-            <div className="p-5 md:p-8 border-b border-zinc-100 flex justify-between items-center shrink-0">
-              <h2 className="text-xl md:text-2xl font-bold text-zinc-900 tracking-tight">{title}</h2>
+            <div className="px-5 pt-[15px] pb-[15px] md:p-8 border-b border-zinc-100 flex justify-between items-start shrink-0">
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold text-zinc-900 tracking-tight">{title}</h2>
+                {subtitle && (
+                  <div className="mt-1.5 scale-90 origin-left">{subtitle}</div>
+                )}
+              </div>
               <button
                 onClick={onClose}
                 className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
@@ -63,7 +70,7 @@ export const Modal: React.FC<ModalProps> = ({
 
             {/* Footer */}
             {footer && (
-              <div className="p-5 md:p-8 border-t border-zinc-100 bg-zinc-50/50 shrink-0 flex justify-end gap-3">
+              <div className="px-5 pt-[15px] pb-[15px] md:p-8 border-t border-zinc-100 bg-zinc-50/50 shrink-0 flex justify-end gap-3">
                 {footer}
               </div>
             )}

@@ -627,7 +627,7 @@ export default function Orders() {
                         size="sm"
                         onClick={() => updateStatus(order.id, 'shipped')}
                         icon={Truck}
-                        className="h-9 w-9 p-0 text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100"
+                        className="h-9 w-9 !p-0 text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100"
                         title="Marcar como enviado"
                       />
                     )}
@@ -637,7 +637,7 @@ export default function Orders() {
                         size="sm"
                         onClick={() => updateStatus(order.id, 'completed')}
                         icon={CheckCircle}
-                        className="h-9 w-9 p-0 text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100"
+                        className="h-9 w-9 !p-0 text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100"
                         title="Marcar como completado"
                       />
                     )}
@@ -646,7 +646,7 @@ export default function Orders() {
                       size="sm"
                       onClick={() => viewOrderDetails(order.id)}
                       icon={Eye}
-                      className="h-9 w-9 p-0 text-zinc-400 hover:text-blue-600 hover:bg-blue-50"
+                      className="h-9 w-9 !p-0 text-zinc-400 hover:text-blue-600 hover:bg-blue-50"
                       title="Ver detalle"
                     />
                     {order.status !== 'cancelled' && (
@@ -655,7 +655,7 @@ export default function Orders() {
                         size="sm"
                         onClick={() => confirmDeleteOrder(order.id)}
                         icon={Trash2}
-                        className="h-9 w-9 p-0 text-zinc-400 hover:text-red-600 hover:bg-red-50"
+                        className="h-9 w-9 !p-0 text-zinc-400 hover:text-red-600 hover:bg-red-50"
                         title="Cancelar orden"
                       />
                     )}
@@ -718,10 +718,12 @@ export default function Orders() {
             <Button
               variant="ghost"
               onClick={closeNewOrderModal}
+              size="sm"
             >
               Cancelar
             </Button>
             <Button
+              size="sm"
               onClick={handleSaveOrder}
               disabled={isSaving || !selectedCustomerId || orderItems.length === 0 || orderItems.some(i => !i.product_id || i.quantity <= 0)}
               loading={isSaving}
@@ -844,7 +846,7 @@ export default function Orders() {
           {/* Order Items */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="text-[9px] md:text-[10px] font-black text-zinc-400 uppercase tracking-[0.15em] ml-1">
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
                 Productos
               </label>
               <Button 

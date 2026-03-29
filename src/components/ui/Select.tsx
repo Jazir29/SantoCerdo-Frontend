@@ -19,7 +19,7 @@ interface SelectProps {
   icon?: LucideIcon;
   className?: string;
   disabled?: boolean;
-  variant?: 'default' | 'ghost' | 'view';
+  variant?: 'default' | 'ghost' | 'view' | 'badge';
   size?: 'default' | 'sm';
 }
 
@@ -64,14 +64,15 @@ export const Select: React.FC<SelectProps> = ({
     setIsOpen(false);
   };
 
-  const isGhost = variant === 'ghost';
-  const isView = variant === 'view';
-  const isSm = size === 'sm';
+const isGhost = variant === 'ghost';
+const isView = variant === 'view';
+const isBadge = variant === 'badge';
+const isSm = size === 'sm';
 
  return (
     <div className={`w-full space-y-1 ${className}`} ref={containerRef}>
       {label && (
-        <label className={`font-black text-zinc-400 uppercase tracking-[0.15em] ml-1 ${
+        <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
           isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
         }`}>
           {label}
@@ -80,42 +81,50 @@ export const Select: React.FC<SelectProps> = ({
       
       <div className="relative">
         <button
-          type="button"
-          disabled={disabled || isView}
-          onClick={() => !disabled && !isView && setIsOpen(!isOpen)}
-          className={`
-            w-full flex items-center justify-between rounded-xl transition-all text-left
-            ${isSm ? 'py-2 px-3 text-xs' : 'py-2.5 md:py-3 px-4 text-sm'}
-            font-bold outline-none
-            ${isView 
-              ? 'bg-white border border-zinc-200 font-bold text-zinc-900 cursor-default' 
-              : `${isGhost ? 'bg-transparent border-none' : 'bg-zinc-50 border border-zinc-200'}`
-            }
-            ${isOpen && !isGhost && !isView ? 'ring-4 ring-amber-500/10 border-amber-500 bg-white' : ''}
-            ${isOpen && isGhost ? 'text-amber-500' : ''}
-            ${!isOpen && !isGhost && !isView ? 'hover:bg-zinc-100/50' : ''}
-            ${disabled ? 'opacity-50 cursor-not-allowed' : isView ? '' : 'cursor-pointer'}
-            ${error ? 'border-red-500 ring-red-500/10' : ''}
-          `}
-        >
-          <div className="flex items-center gap-2 md:gap-3 overflow-hidden">
-            {Icon && (
-              <Icon
-                size={isSm ? 13 : 18}
-                className={`shrink-0 text-zinc-400`}
-              />
-            )}
-            <span className={`truncate ${!selectedOption && !isView ? 'text-zinc-400 font-medium' : ''}`}>
-              {selectedOption ? selectedOption.label : isView ? 'N/A' : placeholder}
-            </span>
-          </div>
-          {!isView && (
-            <ChevronDown 
-              size={isSm ? 14 : 18}
-              className={`text-zinc-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-amber-500' : ''}`} 
-            />
-          )}
-        </button>
+  type="button"
+  disabled={disabled || isView}
+  onClick={() => !disabled && !isView && setIsOpen(!isOpen)}
+  className={`
+    w-full flex items-center justify-between rounded-xl transition-all text-left
+    ${isBadge
+      ? 'bg-amber-50 border border-amber-200 text-amber-600 rounded-full px-3 py-1.5 text-xs font-bold w-auto inline-flex hover:bg-amber-100'
+      : isSm
+        ? 'py-2 px-3 text-xs md:py-2.5 md:px-4 md:text-sm'
+        : 'py-2.5 md:py-3 px-4 text-sm'
+    }
+    font-bold outline-none
+    ${isView
+      ? 'bg-white border border-zinc-200 font-bold text-zinc-900 cursor-default'
+      : isBadge
+        ? ''
+        : `${isGhost ? 'bg-transparent border-none' : 'bg-zinc-50 border border-zinc-200'}`
+    }
+    ${isOpen && !isGhost && !isView && !isBadge ? 'ring-4 ring-amber-500/10 border-amber-500 bg-white' : ''}
+    ${isOpen && isGhost ? 'text-amber-500' : ''}
+    ${isOpen && isBadge ? 'bg-amber-100 border-amber-300' : ''}
+    ${!isOpen && !isGhost && !isView && !isBadge ? 'hover:bg-zinc-100/50' : ''}
+    ${disabled ? 'opacity-50 cursor-not-allowed' : isView ? '' : 'cursor-pointer'}
+    ${error && !isBadge ? 'border-red-500 ring-red-500/10' : ''}
+  `}
+>
+  <div className="flex items-center gap-2 md:gap-3 overflow-hidden">
+    {Icon && (
+      <Icon size={isSm || isBadge ? 13 : 18} className="shrink-0 text-zinc-400" />
+    )}
+    <span className={`truncate ${!selectedOption && !isView ? (isBadge ? 'text-amber-500' : 'text-zinc-400 font-medium') : ''}`}>
+      {selectedOption ? selectedOption.label : isView ? 'N/A' : placeholder}
+    </span>
+  </div>
+  {!isView && (
+    <ChevronDown
+      size={isBadge ? 13 : isSm ? 14 : 18}
+      className={`transition-transform duration-300 shrink-0 ml-1
+        ${isBadge ? 'text-amber-500' : 'text-zinc-400'}
+        ${isOpen ? 'rotate-180' : ''}
+      `}
+    />
+  )}
+</button>
 
         <AnimatePresence>
           {isOpen && (
@@ -136,28 +145,29 @@ export const Select: React.FC<SelectProps> = ({
                     const isSelected = option.value === value;
                     return (
                       <button
-                        key={option.value}
-                        type="button"
-                        disabled={option.disabled}
-                        onClick={() => handleSelect(option.value)}
-                        className={`
-                          w-full flex items-center justify-between px-4 py-3 text-sm transition-colors text-left
-                          ${isSelected 
-                            ? 'bg-amber-50 text-amber-700 font-bold' 
-                            : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium'}
-                          ${option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                        `}
-                      >
-                        <div className="flex flex-col">
-                          <span>{option.label}</span>
-                          {option.subLabel && (
-                            <span className={`text-[10px] font-medium ${isSelected ? 'text-amber-600/70' : 'text-zinc-400'}`}>
-                              {option.subLabel}
-                            </span>
-                          )}
-                        </div>
-                        {isSelected && <Check size={16} className="text-amber-500" />}
-                      </button>
+  key={option.value}
+  type="button"
+  disabled={option.disabled}
+  onClick={() => handleSelect(option.value)}
+  className={`
+
+  w-full flex items-center justify-between px-4 py-3 md:px-4 md:py-3 text-xs md:text-sm transition-colors text-left
+    ${isSelected 
+      ? 'bg-amber-50 text-amber-700 font-bold' 
+      : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium'}
+    ${option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+  `}
+>
+  <div className="flex flex-col">
+    <span>{option.label}</span>
+    {option.subLabel && (
+      <span className={`text-[9px] md:text-[10px] font-medium ${isSelected ? 'text-amber-600/70' : 'text-zinc-400'}`}>
+        {option.subLabel}
+      </span>
+    )}
+  </div>
+  {isSelected && <Check size={12} className="text-amber-500 md:w-4 md:h-4" />}
+</button>
                     );
                   })
                 )}

@@ -142,16 +142,19 @@ export default function Customers() {
     setIsSaving(true);
     try {
       if (isCreating) {
-        await api.createCustomer(editForm);
-      } else {
-        await api.updateCustomer(selectedCustomer.id, editForm);
-      }
-      await fetchCustomers(true);
-      if (isCreating) {
+        const newCustomer = await api.createCustomer(editForm);
+
+        if (newAddressForm.address) {  // ← sin "isAddingAddress &&"
+          await api.addCustomerAddress(newCustomer.id, newAddressForm);
+        }
+
+        await fetchCustomers(true);
         closeModal();
       } else {
+        await api.updateCustomer(selectedCustomer.id, editForm);
         setSelectedCustomer({ ...selectedCustomer, ...editForm } as Customer);
         setIsEditing(false);
+        await fetchCustomers(true);
       }
     } catch (e) { console.error(e); }
     finally { setIsSaving(false); }
@@ -179,6 +182,13 @@ export default function Customers() {
 
   const handleCreateAddress = async () => {
     if (!selectedCustomer) return;
+
+    // Si el cliente aún no tiene ID real, la dirección se guardará en handleSave
+    if (selectedCustomer.id === 0) {
+      setIsAddingAddress(false);
+      return;
+    }
+
     setIsSavingAddress(true);
     try {
       await api.addCustomerAddress(selectedCustomer.id, newAddressForm);
@@ -220,10 +230,10 @@ export default function Customers() {
       <div className={colSpan === 2 ? 'col-span-2' : ''}>
         {options ? (
           <Select label={label} value={value} onChange={(val) => setForm({ ...form, [field]: val })}
-            options={options} placeholder={placeholder} variant={isEditMode ? 'default' : 'view'} />
+            options={options} placeholder={placeholder} variant={isEditMode ? 'default' : 'view'} size="sm" />
         ) : (
           <Input label={label} value={value} onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-            placeholder={placeholder || label} variant={isEditMode ? 'default' : 'view'} />
+            placeholder={placeholder || label} variant={isEditMode ? 'default' : 'view'} size="sm" />
         )}
       </div>
     );
@@ -440,21 +450,39 @@ export default function Customers() {
         isOpen={!!selectedCustomer}
         onClose={closeModal}
         title={isCreating ? 'Nuevo Cliente' : isEditing ? 'Editar Cliente' : 'Detalles del Cliente'}
+        subtitle={
+  isCreating ? (
+    <Select
+      value={editForm.type || 'natural'}
+      onChange={(val) => setEditForm({ ...editForm, type: val as 'natural' | 'empresa' })}
+      options={[
+        { value: 'natural', label: 'Persona Natural' },
+        { value: 'empresa', label: 'Empresa' },
+      ]}
+      variant="badge"
+      className="w-auto"
+    />
+  ) : (
+    <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold border bg-amber-50 text-amber-600 border-amber-200">
+      {(editForm.type || selectedCustomer?.type) === 'empresa' ? 'Empresa' : 'Persona Natural'}
+    </span>
+  )
+}
         footer={
           isEditing ? (
             <>
-              <Button variant="ghost" onClick={() => isCreating ? closeModal() : (setIsEditing(false), setEditForm(selectedCustomer!))}>
+              <Button variant="ghost" size="sm" onClick={() => isCreating ? closeModal() : (setIsEditing(false), setEditForm(selectedCustomer!))}>
                 Cancelar
               </Button>
-              <Button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2">
+              <Button size="sm" onClick={handleSave} disabled={isSaving} className="flex items-center gap-2">
                 <Save size={18} />
                 {isSaving ? 'Guardando...' : (isCreating ? 'Crear Cliente' : 'Guardar Cambios')}
               </Button>
             </>
           ) : (
             <>
-              <Button variant="ghost" onClick={closeModal}>Cerrar</Button>
-              <Button onClick={() => setIsEditing(true)} className="flex items-center gap-2">
+              <Button size="sm" variant="ghost" onClick={closeModal}>Cerrar</Button>
+              <Button size="sm" onClick={() => setIsEditing(true)} className="flex items-center gap-2">
                 <Edit2 size={18} /> Editar Cliente
               </Button>
             </>
@@ -462,32 +490,13 @@ export default function Customers() {
         }
       >
         {selectedCustomer && (
-          <div className="space-y-8">
-            {/* Tipo */}
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
-                {(editForm.type || selectedCustomer.type) === 'empresa' ? <Building2 size={32} /> : <User size={32} />}
-              </div>
-              <div>
-                {isCreating ? (
-                  <Select value={editForm.type || 'natural'}
-                    onChange={(val) => setEditForm({ ...editForm, type: val as 'natural' | 'empresa' })}
-                    options={[{ value: 'natural', label: 'Persona Natural' }, { value: 'empresa', label: 'Empresa' }]}
-                    className="w-[200px]" />
-                ) : (
-                  <p className="text-sm font-bold text-amber-600 uppercase tracking-widest">
-                    {selectedCustomer.type === 'empresa' ? 'Empresa' : 'Persona Natural'}
-                  </p>
-                )}
-              </div>
-            </div>
-
+          <div className="space-y-4 md:space-y-8">
             {/* Identificación */}
             <div>
-              <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                <div className="w-1 h-4 bg-amber-500 rounded-full" /> Identificación
+              <h3 className="text-[10px] md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
+                <div className="w-1 h-3 md:h-4 bg-amber-500 rounded-full" /> Identificación
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-2 md:gap-4">
                 {renderField((editForm.type || selectedCustomer.type) === 'empresa' ? 'RUC' : 'DNI', 'document_id')}
                 {(editForm.type || selectedCustomer.type) === 'empresa' ? (
                   <>{renderField('Razón Social', 'name')}{renderField('Nombre Comercial', 'trade_name', 2)}</>
@@ -499,10 +508,10 @@ export default function Customers() {
 
             {/* Contacto */}
             <div>
-              <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                <div className="w-1 h-4 bg-amber-500 rounded-full" /> Contacto
+              <h3 className="text-[10px] md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
+                <div className="w-1 h-3 md:h-4 bg-amber-500 rounded-full" /> Contacto
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-2 md:gap-4">
                 {renderField('Número de Contacto', 'phone')}
                 {renderField('Correo Electrónico', 'email')}
               </div>
@@ -511,8 +520,8 @@ export default function Customers() {
             {/* Direcciones — solo desde customer_addresses */}
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-2">
-                  <div className="w-1 h-4 bg-amber-500 rounded-full" /> Direcciones
+                <h3 className="text-[10px] md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
+                  <div className="w-1 h-3 md:h-4 bg-amber-500 rounded-full" /> Direcciones
                 </h3>
                 {isEditing && (
                   <Button variant="ghost" size="sm" onClick={() => setIsAddingAddress(true)}
@@ -530,8 +539,16 @@ export default function Customers() {
                       <div className="flex justify-between items-center">
                         <p className="text-sm font-bold text-zinc-900">Agregar Nueva Dirección</p>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => { setIsAddingAddress(false); setNewAddressForm({}); }}>Cancelar</Button>
-                          <Button size="sm" onClick={handleCreateAddress} disabled={isSavingAddress}>
+                          <Button variant="ghost" size="sm" onClick={() => { setIsAddingAddress(false); if (!isCreating) setNewAddressForm({}); }}>
+                            Cancelar
+                          </Button>
+                          <Button size="sm" onClick={() => {
+                            if (isCreating) {
+                              setIsAddingAddress(false);
+                            } else {
+                              handleCreateAddress();
+                            }
+                          }} disabled={isSavingAddress}>
                             {isSavingAddress ? 'Guardando...' : 'Guardar'}
                           </Button>
                         </div>
@@ -556,7 +573,7 @@ export default function Customers() {
                 )}
 
                 {customerAddresses.map((addr, index) => (
-                  <div key={addr.id} className="p-4 rounded-2xl border bg-zinc-50 border-zinc-100">
+                  <div key={addr.id} className="p-3 md:p-4 rounded-2xl border bg-zinc-50 border-zinc-100">
                     {editingAddressId === addr.id ? (
                       <div className="space-y-4">
                         <div className="flex justify-between items-center mb-2">
@@ -579,10 +596,11 @@ export default function Customers() {
                       </div>
                     ) : (
                       <div className="flex items-start gap-3">
-                        <MapPin size={20} className="text-amber-500 mt-0.5 shrink-0" />
+                        <MapPin size={14} className="md:hidden text-amber-500 mt-0.5 shrink-0" />
+                        <MapPin size={20} className="hidden md:block text-amber-500 mt-0.5 shrink-0" />
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="text-sm font-bold text-zinc-900">
+                            <p className="text-xs md:text-sm font-bold text-zinc-900">
                               {addr.name || `Dirección ${index + 1}`}
                             </p>
                             <button
@@ -593,11 +611,11 @@ export default function Customers() {
                               <Star size={16} fill={addr.is_favorite ? 'currentColor' : 'none'} />
                             </button>
                           </div>
-                          <p className="text-sm text-zinc-700 font-medium">{addr.address}</p>
-                          <p className="text-xs text-zinc-500 mt-1">
+                          <p className="text-xs md:text-sm text-zinc-700 font-medium">{addr.address}</p>
+                          <p className="text-[10px] md:text-xs text-zinc-500 mt-1">
                             {[addr.department, addr.province, addr.district].filter(Boolean).join(' - ')}
                           </p>
-                          {addr.reference && <p className="text-xs text-zinc-500 mt-1">Ref: {addr.reference}</p>}
+                          {addr.reference && <p className="text-[10px] md:text-xs text-zinc-500 mt-1">Ref: {addr.reference}</p>}
                         </div>
                         {isEditing && (
                           <div className="flex gap-1">
@@ -611,6 +629,23 @@ export default function Customers() {
                     )}
                   </div>
                 ))}
+                {isCreating && !isAddingAddress && newAddressForm.address && (
+                  <div className="p-3 rounded-2xl border bg-zinc-50 border-zinc-100 flex items-start gap-3">
+                    <MapPin size={16} className="text-amber-500 mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-zinc-900">{newAddressForm.name || 'Dirección'}</p>
+                      <p className="text-xs text-zinc-600">{newAddressForm.address}</p>
+                      <p className="text-[10px] text-zinc-400 mt-0.5">
+                        {[newAddressForm.department, newAddressForm.province, newAddressForm.district].filter(Boolean).join(' - ')}
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="icon"
+                      onClick={() => setIsAddingAddress(true)}
+                      className="text-zinc-400 hover:text-amber-600">
+                      <Edit2 size={14} />
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

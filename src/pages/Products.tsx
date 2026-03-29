@@ -170,7 +170,15 @@ export default function Products() {
           }`}>{product.stock} und</span>
         </div>
 
-        <h3 className="font-bold text-zinc-900 text-sm leading-tight mb-3">{product.name}</h3>
+        <h3 className="font-bold text-zinc-900 text-sm leading-tight mb-2">{product.name}</h3>
+
+        {/* Badge gramos */}
+        {product.weight_grams && (
+          <span className="inline-flex items-center px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-bold rounded-full mb-2">
+            {product.weight_grams}g por unidad
+          </span>
+        )}
+
 
         <div className="flex gap-1.5 mb-3">
           <div className="flex-1 bg-amber-50 p-1.5 rounded-lg">
@@ -211,6 +219,12 @@ export default function Products() {
 
   <h3 className="text-xl font-bold text-zinc-900 mb-1">{product.name}</h3>
   <p className="text-zinc-500 text-sm mb-4 line-clamp-2">{product.description}</p>
+  {/* Badge gramos */}
+  {product.weight_grams && (
+    <span className="inline-flex items-center px-2.5 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full mb-4">
+      {product.weight_grams}g por unidad
+    </span>
+  )}
 
   <div className="grid grid-cols-2 gap-4 mb-4">
     <div className="bg-zinc-50 p-3 rounded-xl">
@@ -278,16 +292,16 @@ export default function Products() {
         title={isViewing ? 'Detalles del Producto' : (selectedProduct ? 'Editar Producto' : 'Nuevo Producto')}
         footer={
           <>
-            <Button variant="secondary" onClick={closeModal}>
+            <Button size="sm" variant="secondary" onClick={closeModal}>
               {isViewing ? 'Cerrar' : 'Cancelar'}
             </Button>
             {isViewing && (
-              <Button onClick={() => setIsViewing(false)} icon={Edit2}>
+              <Button size="sm" onClick={() => setIsViewing(false)} icon={Edit2}>
                 Editar Producto
               </Button>
             )}
             {!isViewing && (
-              <Button onClick={handleSave} loading={isSaving} icon={Save}>
+              <Button size="sm" onClick={handleSave} loading={isSaving} icon={Save}> 
                 {isSaving ? 'Guardando...' : 'Guardar Producto'}
               </Button>
             )}
@@ -337,16 +351,29 @@ export default function Products() {
           />
         </div>
         
-        <Input 
-          label="Stock (und)"
-          type="number"
-          value={editForm.stock !== undefined ? editForm.stock : 0}
-          onChange={(e) => setEditForm({ ...editForm, stock: Number(e.target.value) })}
-          placeholder="0"
-          min="0"
-          variant={isViewing ? 'view' : 'default'}
-          size="sm"
-        />
+        {/* Reemplaza el Input de Stock solitario por esto: */}
+<div className="grid grid-cols-2 gap-4">
+  <Input
+    label="Stock (und)"
+    type="number"
+    value={editForm.stock !== undefined ? editForm.stock : 0}
+    onChange={(e) => setEditForm({ ...editForm, stock: Number(e.target.value) })}
+    placeholder="0"
+    min="0"
+    variant={isViewing ? 'view' : 'default'}
+    size="sm"
+  />
+  <Input
+    label="Gramos por Producto (g)"
+    type="number"
+    value={editForm.weight_grams !== undefined ? editForm.weight_grams : ''}
+    onChange={(e) => setEditForm({ ...editForm, weight_grams: Number(e.target.value) })}
+    placeholder="0"
+    min="0"
+    variant={isViewing ? 'view' : 'default'}
+    size="sm"
+  />
+</div>
       </div>
       </Modal>
 

@@ -9,6 +9,7 @@ export interface Product {
   id: number;
   name: string;
   description: string;
+  weight_grams?: number;
   price: number;
   cost: number;
   stock: number;
@@ -108,4 +109,24 @@ export interface DashboardStats {
   revenueVsCost: { date: string; revenue: number; cost: number }[];
   topCustomers: { name: string; value: number }[];
   salesByDistrict: { name: string; value: number }[];
+}
+
+export interface ProductionBatch {
+  id: number;
+  product_id: number;
+  product_name: string;
+  batch_yield_grams: number;
+  unit_weight_grams: number;
+  units_produced: number;
+  total_ingredients_cost: number;
+  total_operations_cost: number;
+  total_batch_cost: number;
+  cost_per_unit: number;
+  price_per_unit: number;
+  margin_percent: number;
+  notes?: string;
+  created_at: string;
+  created_by_name?: string;
+  ingredients_detail: { id: number; name: string; amount: number }[];
+  operations_detail:  { id: number; name: string; amount: number }[];
 }

@@ -37,7 +37,7 @@ export const Input: React.FC<InputProps> = ({
           <Icon
             size={isSm ? 13 : 18}
             className={`absolute top-1/2 -translate-y-1/2 transition-colors ${
-              isSm ? 'left-3' : 'left-4'
+              isSm ? 'left-3 md:left-4' : 'left-4'
             } ${
               error ? 'text-red-400' : isView ? 'text-zinc-400' : 'text-zinc-400 group-focus-within:text-amber-500'
             }`}
@@ -46,9 +46,9 @@ export const Input: React.FC<InputProps> = ({
         <input
           className={`
             w-full transition-all duration-200 rounded-xl focus:outline-none
-            ${isSm ? 'text-xs py-2' : 'text-sm py-2.5 md:py-3'}
-              ${Icon ? isSm ? 'pl-8' : 'pl-11' : isSm ? 'pl-3' : 'pl-4'}
-            ${suffix ? 'pr-12' : isSm ? 'pr-3' : 'pr-4'}
+            ${isSm ? 'text-xs py-2 md:text-sm md:py-2.5' : 'text-sm py-2.5 md:py-3'}
+            ${Icon ? isSm ? 'pl-8 md:pl-11' : 'pl-11' : isSm ? 'pl-3 md:pl-4' : 'pl-4'}
+            ${suffix ? 'pr-12' : isSm ? 'pr-3 md:pr-4' : 'pr-4'}
             ${isView
               ? 'bg-white border border-zinc-200 font-bold text-zinc-900 cursor-default'
               : `bg-zinc-50 border focus:ring-4 ${

@@ -5,6 +5,7 @@ import {
   Promotion,
   DashboardStats,
   CustomerAddress,
+  ProductionBatch
 } from '../types';
 
 // Apunta al nuevo backend en puerto 4000
@@ -267,4 +268,30 @@ export const api = {
     code: string
   ): Promise<{ valid: boolean; promotion?: Promotion; message?: string }> =>
     apiFetch(`${API_BASE}/promotions/validate/${code}`),
+
+  // ── Production Batches ───────────────────────────────────────
+  createProductWithBatch: async (data: any): Promise<Product> =>
+    apiFetch(`${API_BASE}/products/batches/new-product`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  createBatch: async (productId: number, data: any): Promise<any> =>
+    apiFetch(`${API_BASE}/products/${productId}/batches`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  getProductBatches: async (productId: number): Promise<any[]> =>
+    apiFetch(`${API_BASE}/products/${productId}/batches`),
+
+  // ── Production Registry ──────────────────────────────────────
+  getProductionBatches: async (
+    page = 1,
+    limit = 10,
+    search = ''
+  ): Promise<{ data: ProductionBatch[]; total: number; totalPages: number; page: number }> =>
+    apiFetch(
+      `${API_BASE}/batches?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
+    ),
 };

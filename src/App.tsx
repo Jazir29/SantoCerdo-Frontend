@@ -14,6 +14,7 @@ import Customers from './pages/Customers';
 import Pricing from './pages/Pricing';
 import Promotions from './pages/Promotions';
 import Login from './pages/Login';
+import ProductionRegistry from './pages/ProductionRegistry';
 import { Sidebar } from './components/layout/Sidebar';
 import { User } from './types';
 
@@ -100,6 +101,7 @@ export default function App() {
                 <Route path="/customers" element={<Customers />} />
                 <Route path="/promotions" element={<Promotions />} />
                 <Route path="/pricing" element={<Pricing />} />
+                <Route path="/production" element={<ProductionRegistry />} />
               </Routes>
             </div>
           </main>

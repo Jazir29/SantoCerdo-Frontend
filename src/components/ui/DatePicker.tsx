@@ -31,6 +31,7 @@ interface DatePickerProps {
   className?: string;
   disabled?: boolean;
   variant?: 'default' | 'view' | 'ghost';
+  size?: 'default' | 'sm';   // ← añadir
 }
 
 export const DatePicker: React.FC<DatePickerProps> = ({
@@ -42,6 +43,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   className = '',
   disabled = false,
   variant = 'default',
+  size = 'default',   // ← añadir
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'days' | 'months' | 'years'>('days');
@@ -50,6 +52,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
   const isView = variant === 'view';
   const isGhost = variant === 'ghost';
+  const isSm = size === 'sm';   // ← añadir
 
   // Reset view mode when opening
   useEffect(() => {
@@ -258,18 +261,20 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   return (
     <div className={`w-full space-y-1.5 ${className}`} ref={containerRef}>
       {label && (
-        <label className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+        <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
+          isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
+        }`}>
           {label}
         </label>
       )}
       
       <div className="relative">
         <div className="relative group">
-          <CalendarIcon 
-            size={isGhost ? 14 : 18} 
+          <CalendarIcon
+            size={isGhost ? 14 : isSm ? 14 : 18}
             className={`absolute ${isGhost ? 'left-1' : 'left-4'} top-1/2 -translate-y-1/2 transition-colors ${
               error ? 'text-red-400' : isView ? 'text-zinc-400' : 'text-zinc-400 group-focus-within:text-amber-500'
-            }`} 
+            }`}
           />
           <input
             type="text"
@@ -279,9 +284,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             placeholder={placeholder}
             value={selectedDate ? format(selectedDate, 'dd/MM/yyyy') : ''}
             className={`
-              w-full py-3 ${isGhost ? 'pl-6' : 'pl-11'} pr-10 rounded-xl text-sm font-bold transition-all
-              ${isView 
-                ? 'bg-white border border-zinc-200 cursor-default text-zinc-900' 
+              w-full ${isSm ? 'py-2 md:py-2.5 text-xs md:text-sm' : 'py-3 text-sm'}
+              ${isGhost ? 'pl-6' : isSm ? 'pl-8 md:pl-11' : 'pl-11'} pr-10 rounded-xl font-bold transition-all
+              ${isView
+                ? 'bg-white border border-zinc-200 cursor-default text-zinc-900'
                 : isGhost
                 ? `bg-transparent border-none shadow-none px-2 py-1 h-auto cursor-pointer text-zinc-900 ${
                     isOpen ? 'text-amber-600' : 'hover:text-amber-500'
