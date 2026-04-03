@@ -252,11 +252,12 @@ export default function Orders() {
     const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     if (!appliedPromotion) return subtotal;
 
+    const value = Number(appliedPromotion.value || 0);
     let discount = 0;
     if (appliedPromotion.type === 'percentage') {
-      discount = subtotal * (appliedPromotion.value / 100);
+      discount = subtotal * (value / 100);
     } else {
-      discount = appliedPromotion.value;
+      discount = value;
     }
     return Math.max(0, subtotal - discount);
   };
@@ -932,14 +933,20 @@ export default function Orders() {
               size="sm"
               value={selectedPromotionId}
               onChange={(val) => {
-                const id = val === '' ? '' : Number(val);
-                setSelectedPromotionId(id);
-                if (id === '') {
+                if (!val || val === '') {
+                  setSelectedPromotionId('');
                   setAppliedPromotion(null);
-                } else {
-                  const promo = promotions.find(p => p.id === id);
-                  setAppliedPromotion(promo);
+                  return;
                 }
+                const id = Number(val);
+                if (isNaN(id) || id === 0) {
+                  setSelectedPromotionId('');
+                  setAppliedPromotion(null);
+                  return;
+                }
+                setSelectedPromotionId(id);
+                const promo = promotions.find(p => Number(p.id) === id);
+                setAppliedPromotion(promo || null);
               }}
               options={[
                 { value: '', label: 'Sin promoción' },
@@ -953,7 +960,7 @@ export default function Orders() {
             {appliedPromotion && (
               <p className="mt-2 text-xs text-emerald-600 font-bold flex items-center gap-1">
                 <CheckCircle size={12} /> 
-                {appliedPromotion.name} aplicado: {appliedPromotion.type === 'percentage' ? `${appliedPromotion.value}%` : `S/ ${(appliedPromotion.value || 0).toFixed(2)}`} de descuento
+                {appliedPromotion.name} aplicado: {appliedPromotion.type === 'percentage' ? `${appliedPromotion.value}%` : `S/ ${Number(appliedPromotion.value || 0).toFixed(2)}`} de descuento
               </p>
             )}
           </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Calculator, DollarSign, Percent, TrendingUp, Save, Plus, Trash2,FileText,
+  Calculator, DollarSign, Percent, TrendingUp, Save, Plus, Trash2, FileText,
   Scale, CheckCircle2, Package, ArrowLeft, History, ChevronDown, ChevronUp, Clock
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
@@ -31,27 +31,35 @@ export default function Pricing() {
   ]);
   const [batchYield, setBatchYield] = useState<number>(1000); // gramos
   const [unitWeightGrams, setUnitWeightGrams] = useState<number>(500);
-  const [margin, setMargin]               = useState<number>(30);
-  const [notes, setNotes]                 = useState<string>('');
+  const [margin, setMargin] = useState<number>(30);
+  const [notes, setNotes] = useState<string>('');
 
   // ── Save ────────────────────────────────────────────────────
-  const [isSaving, setIsSaving]           = useState(false);
-  const [saveSuccess, setSaveSuccess]     = useState(false);
-  const [productName, setProductName]     = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [productName, setProductName] = useState('');
   const [selectedProductId, setSelectedProductId] = useState<string>('new');
 
   // ── Products & Batches ──────────────────────────────────────
-  const [products, setProducts]           = useState<Product[]>([]);
-  const [batches, setBatches]             = useState<ProductionBatch[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [batches, setBatches] = useState<ProductionBatch[]>([]);
   const [loadingBatches, setLoadingBatches] = useState(false);
   const [expandedBatchId, setExpandedBatchId] = useState<number | null>(null);
-  const [showHistory, setShowHistory]     = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Modal confirmacion producto
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newProductDescription, setNewProductDescription] = useState('');
   const [editablePrice, setEditablePrice] = useState<number>(0);
   const [initialRealMargin, setInitialRealMargin] = useState<number>(0);
+
+  // Agrega estos 4 estados nuevos
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [updateMode, setUpdateMode] = useState<'stock_only' | 'stock_and_price'>('stock_only');
+  const [isUpdatePriceModalOpen, setIsUpdatePriceModalOpen] = useState(false);
+  const [updateEditablePrice, setUpdateEditablePrice] = useState<number>(0);
+  const [updatePriceMode, setUpdatePriceMode] = useState<'keep' | 'new'>('keep');
+  
 
   // ── Load products ───────────────────────────────────────────
   useEffect(() => {
@@ -100,20 +108,20 @@ export default function Pricing() {
     setOperations(operations.map(o => o.id === id ? { ...o, [field]: value } : o));
 
   // ── Calculations ────────────────────────────────────────────
-const totalIngredients  = ingredients.reduce((s, i) => s + (Number(i.amount) || 0), 0);
-const totalOperations   = operations.reduce((s, o) => s + (Number(o.amount) || 0), 0);
-const totalBatchCost    = totalIngredients + totalOperations;
-const batchYieldKg      = batchYield / 1000;  
-const costPerKg         = batchYieldKg > 0 ? totalBatchCost / batchYieldKg : 0;
-const suggestedPricePerKg = margin < 100 ? costPerKg / (1 - margin / 100) : 0;
-const profitPerKg       = suggestedPricePerKg - costPerKg;
-const calculatedUnits   = unitWeightGrams > 0 ? batchYield / unitWeightGrams : 0;
-const costPerUnit       = calculatedUnits > 0 ? totalBatchCost / calculatedUnits : 0;
-const suggestedPricePerUnit = margin < 100 ? costPerUnit / (1 - margin / 100) : 0;
-const profitPerUnit     = suggestedPricePerUnit - costPerUnit;
-const ingPct  = suggestedPricePerKg > 0 ? ((totalIngredients / batchYieldKg) / suggestedPricePerKg) * 100 : 0;
-const opPct   = suggestedPricePerKg > 0 ? ((totalOperations / batchYieldKg) / suggestedPricePerKg) * 100 : 0;
-const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 100 : 0;
+  const totalIngredients = ingredients.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+  const totalOperations = operations.reduce((s, o) => s + (Number(o.amount) || 0), 0);
+  const totalBatchCost = totalIngredients + totalOperations;
+  const batchYieldKg = batchYield / 1000;
+  const costPerKg = batchYieldKg > 0 ? totalBatchCost / batchYieldKg : 0;
+  const suggestedPricePerKg = margin < 100 ? costPerKg / (1 - margin / 100) : 0;
+  const profitPerKg = suggestedPricePerKg - costPerKg;
+  const calculatedUnits = unitWeightGrams > 0 ? batchYield / unitWeightGrams : 0;
+  const costPerUnit = calculatedUnits > 0 ? totalBatchCost / calculatedUnits : 0;
+  const suggestedPricePerUnit = margin < 100 ? costPerUnit / (1 - margin / 100) : 0;
+  const profitPerUnit = suggestedPricePerUnit - costPerUnit;
+  const ingPct = suggestedPricePerKg > 0 ? ((totalIngredients / batchYieldKg) / suggestedPricePerKg) * 100 : 0;
+  const opPct = suggestedPricePerKg > 0 ? ((totalOperations / batchYieldKg) / suggestedPricePerKg) * 100 : 0;
+  const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 100 : 0;
 
 
   // ── Matching products by weight_grams ───────────────────────
@@ -122,18 +130,18 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
   // ── Batch payload builder ───────────────────────────────────
   const buildBatchPayload = () => ({
     batch_yield_grams: batchYield,  // ya está en gramos, sin conversión
-    unit_weight_grams:        unitWeightGrams,
-    units_produced:           Math.floor(calculatedUnits),
-    total_ingredients_cost:   Number(totalIngredients.toFixed(2)),
-    total_operations_cost:    Number(totalOperations.toFixed(2)),
-    total_batch_cost:         Number(totalBatchCost.toFixed(2)),
-    cost_per_unit:            Number(costPerUnit.toFixed(2)),
-    price_per_unit:           Number(suggestedPricePerUnit.toFixed(2)),
-    margin_percent:           margin,
-    ingredients_detail:       ingredients,
-    operations_detail:        operations,
-    notes:                    notes || null,
-    stock_delta:              Math.floor(calculatedUnits),
+    unit_weight_grams: unitWeightGrams,
+    units_produced: Math.floor(calculatedUnits),
+    total_ingredients_cost: Number(totalIngredients.toFixed(2)),
+    total_operations_cost: Number(totalOperations.toFixed(2)),
+    total_batch_cost: Number(totalBatchCost.toFixed(2)),
+    cost_per_unit: Number(costPerUnit.toFixed(2)),
+    price_per_unit: Number(suggestedPricePerUnit.toFixed(2)),
+    margin_percent: margin,
+    ingredients_detail: ingredients,
+    operations_detail: operations,
+    notes: notes || null,
+    stock_delta: Math.floor(calculatedUnits),
   });
 
   // ── Save ────────────────────────────────────────────────────
@@ -149,25 +157,13 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
       return;
     }
 
-    setIsSaving(true);
-    try {
-      await api.createBatch(Number(selectedProductId), buildBatchPayload());
-
-      setSaveSuccess(true);
-      setNotes('');
-      setTimeout(() => setSaveSuccess(false), 3000);
-
-      const updated = await api.getAllProducts();
-      setProducts(updated);
-
-      const updatedBatches = await api.getProductBatches(Number(selectedProductId));
-      setBatches(updatedBatches);
-      setShowHistory(true);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSaving(false);
-    }
+    // ← Va directo al modal de precio, sin pasar por el de opciones
+    setUpdatePriceMode('keep');
+    setUpdateEditablePrice(Number(suggestedPricePerUnit.toFixed(2)));
+    const initialReal = suggestedPricePerUnit > 0
+      ? ((suggestedPricePerUnit - costPerUnit) / suggestedPricePerUnit) * 100 : 0;
+    setInitialRealMargin(initialReal);
+    setIsUpdatePriceModalOpen(true);
   };
 
   const safe = (n: number) => isFinite(n) && n !== null ? n : 0;
@@ -203,6 +199,78 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
       setProducts(updated);
     } catch (err) {
       console.error('Error completo:', err); // ← y esto
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleUpdateConfirm = async () => {
+    if (updateMode === 'stock_only') {
+      setIsSaving(true);
+      try {
+        // ← Toma el precio actual del producto, no el calculado
+        const currentProduct = products.find(p => p.id.toString() === selectedProductId);
+        const payload = {
+          ...buildBatchPayload(),
+          price_per_unit: currentProduct ? Number(currentProduct.price) : Number(suggestedPricePerUnit.toFixed(2)),
+          margin_percent: currentProduct && currentProduct.cost > 0
+            ? Number((((Number(currentProduct.price) - costPerUnit) / Number(currentProduct.price)) * 100).toFixed(2))
+            : margin,
+        };
+        await api.createBatch(Number(selectedProductId), payload);
+        setSaveSuccess(true);
+        setNotes('');
+        setIsUpdateModalOpen(false);
+        setTimeout(() => setSaveSuccess(false), 3000);
+        const updated = await api.getAllProducts();
+        setProducts(updated);
+        const updatedBatches = await api.getProductBatches(Number(selectedProductId));
+        setBatches(updatedBatches);
+        setShowHistory(true);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSaving(false);
+      }
+    } else {
+      const initialReal = updateEditablePrice > 0
+        ? ((updateEditablePrice - costPerUnit) / updateEditablePrice) * 100 : 0;
+      setInitialRealMargin(initialReal);
+      setIsUpdateModalOpen(false);
+      setIsUpdatePriceModalOpen(true);
+    }
+  };
+
+  const confirmUpdateWithPrice = async () => {
+    setIsSaving(true);
+    try {
+      const currentProduct = products.find(p => p.id.toString() === selectedProductId);
+      const finalPrice = updatePriceMode === 'keep'
+        ? Number(currentProduct?.price ?? suggestedPricePerUnit)
+        : updateEditablePrice;
+
+      if (finalPrice <= 0) return;
+
+      const actualMargin = finalPrice > 0
+        ? ((finalPrice - costPerUnit) / finalPrice) * 100 : 0;
+
+      const payload = {
+        ...buildBatchPayload(),
+        price_per_unit: Number(finalPrice.toFixed(2)),
+        margin_percent: Number(actualMargin.toFixed(2)),
+      };
+
+      await api.createBatch(Number(selectedProductId), payload);
+      setSaveSuccess(true);
+      setNotes('');
+      setIsUpdatePriceModalOpen(false);
+      setTimeout(() => setSaveSuccess(false), 3000);
+      const updated = await api.getAllProducts();
+      setProducts(updated);
+      const updatedBatches = await api.getProductBatches(Number(selectedProductId));
+      setBatches(updatedBatches);
+      setShowHistory(true);
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsSaving(false);
     }
@@ -243,19 +311,19 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
               </div>
               <div className="space-y-3">
                 {ingredients.map((item) => (
-                <div key={item.id} className="flex gap-2 items-end p-2 md:p-0 bg-zinc-50 md:bg-transparent rounded-xl md:rounded-none">
-                  <div className="flex-1 min-w-0">
-                    <Input value={item.name} onChange={(e) => updateIngredient(item.id, 'name', e.target.value)}
-                      placeholder="Ej. Grasa de cerdo" label="Insumo" size="sm" />
+                  <div key={item.id} className="flex gap-2 items-end p-2 md:p-0 bg-zinc-50 md:bg-transparent rounded-xl md:rounded-none">
+                    <div className="flex-1 min-w-0">
+                      <Input value={item.name} onChange={(e) => updateIngredient(item.id, 'name', e.target.value)}
+                        placeholder="Ej. Grasa de cerdo" label="Insumo" size="sm" />
+                    </div>
+                    <div className="w-20 md:w-32 shrink-0">
+                      <Input type="number" value={item.amount || ''} onChange={(e) => updateIngredient(item.id, 'amount', Number(e.target.value))}
+                        placeholder="0.00" icon={DollarSign} label="Costo" size="sm" />
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => removeIngredient(item.id)}
+                      icon={Trash2} className="text-zinc-400 hover:text-red-500 hover:bg-red-50 mb-0.5 shrink-0" />
                   </div>
-                  <div className="w-20 md:w-32 shrink-0">
-                    <Input type="number" value={item.amount || ''} onChange={(e) => updateIngredient(item.id, 'amount', Number(e.target.value))}
-                      placeholder="0.00" icon={DollarSign} label="Costo" size="sm" />
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={() => removeIngredient(item.id)}
-                    icon={Trash2} className="text-zinc-400 hover:text-red-500 hover:bg-red-50 mb-0.5 shrink-0" />
-                </div>
-              ))}
+                ))}
               </div>
               <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-zinc-100 flex justify-between text-sm">
                 <span className="font-medium text-zinc-500 text-xs md:text-sm">Subtotal Materia Prima:</span>
@@ -459,11 +527,10 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
                       {matchingProducts.map(p => (
                         <label
                           key={p.id}
-                          className={`flex items-start gap-2 md:gap-3 p-2 md:p-3 rounded-xl border cursor-pointer transition-all ${
-                            selectedProductId === p.id.toString()
-                              ? 'border-amber-300 bg-amber-50'
-                              : 'border-zinc-100 bg-zinc-50 hover:border-zinc-200'
-                          }`}
+                          className={`flex items-start gap-2 md:gap-3 p-2 md:p-3 rounded-xl border cursor-pointer transition-all ${selectedProductId === p.id.toString()
+                            ? 'border-amber-300 bg-amber-50'
+                            : 'border-zinc-100 bg-zinc-50 hover:border-zinc-200'
+                            }`}
                         >
                           <input
                             type="radio" name="saveMode"
@@ -481,11 +548,10 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
                       ))}
 
                       <label
-                        className={`flex items-start gap-2 md:gap-3 p-2 md:p-3 rounded-xl border cursor-pointer transition-all ${
-                          selectedProductId === 'new'
-                            ? 'border-amber-300 bg-amber-50'
-                            : 'border-zinc-100 bg-zinc-50 hover:border-zinc-200'
-                        }`}
+                        className={`flex items-start gap-2 md:gap-3 p-2 md:p-3 rounded-xl border cursor-pointer transition-all ${selectedProductId === 'new'
+                          ? 'border-amber-300 bg-amber-50'
+                          : 'border-zinc-100 bg-zinc-50 hover:border-zinc-200'
+                          }`}
                       >
                         <input
                           type="radio" name="saveMode"
@@ -512,36 +578,6 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
                   </div>
                 )}
 
-                {/* Nombre — solo si es nuevo */}
-                {selectedProductId === 'new' && (
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
-                      Nombre del Producto
-                    </label>
-                    <input
-                      type="text"
-                      value={productName}
-                      onChange={(e) => setProductName(e.target.value)}
-                      placeholder="Ej. Manteca Premium 1kg"
-                      className="w-full px-3 md:px-4 py-2 md:py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs md:text-sm text-zinc-900 outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all"
-                    />
-                  </div>
-                )}
-
-                {/* Notas */}
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
-                    Notas del lote (opcional)
-                  </label>
-                  <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Ej. Lote de temporada, proveedor distinto..."
-                    rows={2}
-                    className="w-full px-3 md:px-4 py-2 md:py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs md:text-sm text-zinc-900 resize-none outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all"
-                  />
-                </div>
-
                 <Button
                   onClick={handleSave}
                   disabled={suggestedPricePerUnit <= 0 || isSaving}
@@ -553,8 +589,8 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
                   {saveSuccess
                     ? '¡Lote registrado!'
                     : selectedProductId === 'new'
-                    ? 'Crear Producto'
-                    : 'Actualizar Producto'}
+                      ? 'Crear Producto'
+                      : 'Actualizar Producto'}
                 </Button>
               </CardContent>
             </Card>
@@ -687,113 +723,407 @@ const profPct = suggestedPricePerKg > 0 ? (profitPerKg / suggestedPricePerKg) * 
         </div>
       </div>
       <Modal
-  isOpen={isCreateModalOpen}
-  onClose={() => setIsCreateModalOpen(false)}
-  title="Detalles del Nuevo Producto"
-  size="md"
-  footer={
-    <div className="flex gap-3">
-      <Button variant="ghost" size="sm" onClick={() => setIsCreateModalOpen(false)}>
-        Cancelar
-      </Button>
-      <Button
-        size="sm"
-        onClick={confirmCreateProduct}
-        loading={isSaving}
-        disabled={!productName || editablePrice <= 0}
-        icon={Save}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        title="Detalles del Nuevo Producto"
+        size="md"
+        footer={
+          <div className="flex gap-3">
+            <Button variant="ghost" size="sm" onClick={() => setIsCreateModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              size="sm"
+              onClick={confirmCreateProduct}
+              loading={isSaving}
+              disabled={!productName || editablePrice <= 0}
+              icon={Save}
+            >
+              Confirmar y Crear
+            </Button>
+          </div>
+        }
       >
-        Confirmar y Crear
-      </Button>
-    </div>
-  }
->
-  <div className="space-y-4">
-    {/* Métricas del lote */}
-    <div className="grid grid-cols-3 gap-3">
-      <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-        <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Rendimiento Lote</p>
-        <p className="text-base font-bold text-zinc-900">{batchYield}g</p>
-      </div>
-      <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-        <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Peso Unitario</p>
-        <p className="text-base font-bold text-zinc-900">{unitWeightGrams}g</p>
-      </div>
-      <div className="p-3 bg-amber-50 rounded-2xl border border-amber-100">
-        <p className="text-amber-600 text-[10px] uppercase font-bold tracking-wider mb-1">Stock a Registrar</p>
-        <p className="text-base font-bold text-amber-700">{Math.floor(calculatedUnits)} und</p>
-      </div>
-    </div>
+        <div className="space-y-4">
+          {/* Métricas del lote */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
+              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Rendimiento Lote</p>
+              <p className="text-base font-bold text-zinc-900">{batchYield}g</p>
+            </div>
+            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
+              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Peso Unitario</p>
+              <p className="text-base font-bold text-zinc-900">{unitWeightGrams}g</p>
+            </div>
+            <div className="p-3 bg-amber-50 rounded-2xl border border-amber-100">
+              <p className="text-amber-600 text-[10px] uppercase font-bold tracking-wider mb-1">Stock a Registrar</p>
+              <p className="text-base font-bold text-amber-700">{Math.floor(calculatedUnits)} und</p>
+            </div>
+          </div>
 
-    {/* Métricas de precio */}
-    <div className="grid grid-cols-3 gap-3">
-      <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-        <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Costo Unitario</p>
-        <p className="text-base font-bold text-zinc-900">S/ {safe(costPerUnit).toFixed(2)}</p>
-      </div>
-      <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-        <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Sugerido ({margin}%)</p>
-        <p className="text-base font-bold text-zinc-600">S/ {safe(suggestedPricePerUnit).toFixed(2)}</p>
-      </div>
-      <div className={`p-3 rounded-2xl border ${
-        (editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
-          ? 'bg-emerald-50 border-emerald-100'
-          : 'bg-amber-50 border-amber-100'
-      }`}>
-        <p className={`text-[10px] uppercase font-bold tracking-wider mb-1 ${
-          (editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
-            ? 'text-emerald-600' : 'text-amber-600'
-        }`}>Margen Real</p>
-        <p className={`text-base font-bold ${
-          (editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
-            ? 'text-emerald-700' : 'text-amber-700'
-        }`}>
-          {(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0).toFixed(1)}%
-        </p>
-        <p className="text-[10px] text-zinc-400">Inicial: {initialRealMargin.toFixed(1)}%</p>
-      </div>
-    </div>
+          {/* Métricas de precio */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
+              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Costo Unitario</p>
+              <p className="text-base font-bold text-zinc-900">S/ {safe(costPerUnit).toFixed(2)}</p>
+            </div>
+            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
+              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Sugerido ({margin}%)</p>
+              <p className="text-base font-bold text-zinc-600">S/ {safe(suggestedPricePerUnit).toFixed(2)}</p>
+            </div>
+            <div className={`p-3 rounded-2xl border ${(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
+              ? 'bg-emerald-50 border-emerald-100'
+              : 'bg-amber-50 border-amber-100'
+              }`}>
+              <p className={`text-[10px] uppercase font-bold tracking-wider mb-1 ${(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
+                ? 'text-emerald-600' : 'text-amber-600'
+                }`}>Margen Real</p>
+              <p className={`text-base font-bold ${(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
+                ? 'text-emerald-700' : 'text-amber-700'
+                }`}>
+                {(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0).toFixed(1)}%
+              </p>
+              <p className="text-[10px] text-zinc-400">Inicial: {initialRealMargin.toFixed(1)}%</p>
+            </div>
+          </div>
 
-    {/* Formulario */}
-    <Input
-      label="Nombre del Producto"
-      value={productName}
-      onChange={(e) => setProductName(e.target.value)}
-      placeholder="Ej. Manteca Premium 500g"
-      icon={Package}
-      size="sm"
-    />
-    <Input
-      label="Precio de Venta Final"
-      type="number"
-      value={editablePrice || ''}
-      onChange={(e) => setEditablePrice(Number(e.target.value))}
-      placeholder="0.00"
-      icon={DollarSign}
-      size="sm"
-    />
-    <Input
-      label="Descripción (Opcional)"
-      value={newProductDescription}
-      onChange={(e) => setNewProductDescription(e.target.value)}
-      placeholder="Ej. Manteca de cerdo artesanal 100% pura"
-      icon={FileText}
-      size="sm"
-    />
-    <div className="space-y-1">
-      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
-        Notas del lote (opcional)
-      </label>
-      <textarea
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        placeholder="Ej. Lote de temporada, proveedor distinto..."
-        rows={2}
-        className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 resize-none outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all"
-      />
-    </div>
-  </div>
-</Modal>
+          {/* Formulario */}
+          <Input
+            label="Nombre del Producto"
+            value={productName}
+            onChange={(e) => setProductName(e.target.value)}
+            placeholder="Ej. Manteca Premium 500g"
+            icon={Package}
+            size="sm"
+          />
+          <Input
+            label="Precio de Venta Final"
+            type="number"
+            value={editablePrice || ''}
+            onChange={(e) => setEditablePrice(Number(e.target.value))}
+            placeholder="0.00"
+            icon={DollarSign}
+            size="sm"
+          />
+          <Input
+            label="Descripción (Opcional)"
+            value={newProductDescription}
+            onChange={(e) => setNewProductDescription(e.target.value)}
+            placeholder="Ej. Manteca de cerdo artesanal 100% pura"
+            icon={FileText}
+            size="sm"
+          />
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+              Notas del lote (opcional)
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Ej. Lote de temporada, proveedor distinto..."
+              rows={2}
+              className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 resize-none outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all"
+            />
+          </div>
+        </div>
+      </Modal>
+      {/* ── MODAL: OPCIONES DE ACTUALIZACIÓN ── */}
+      <Modal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        title="Actualizar Producto"
+        size="sm"
+        footer={
+          <div className="flex gap-3">
+            <Button variant="ghost" size="sm" onClick={() => setIsUpdateModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleUpdateConfirm}
+              loading={isSaving}
+              icon={updateMode === 'stock_only' ? Package : TrendingUp}
+            >
+              {updateMode === 'stock_only' ? 'Solo actualizar stock' : 'Continuar con precio'}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          {/* Info del lote */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
+              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Unidades a sumar</p>
+              <p className="text-base font-bold text-zinc-900">{Math.floor(calculatedUnits)} und</p>
+            </div>
+            <div className="p-3 bg-amber-50 rounded-2xl border border-amber-100">
+              <p className="text-amber-600 text-[10px] uppercase font-bold tracking-wider mb-1">Precio actual</p>
+              <p className="text-base font-bold text-amber-700">
+                S/ {(() => {
+                  const prod = products.find(p => p.id.toString() === selectedProductId);
+                  return prod ? Number(prod.price).toFixed(2) : '—';
+                })()}
+              </p>
+            </div>
+          </div>
+
+          <p className="text-xs text-zinc-500">¿Qué deseas actualizar con este lote?</p>
+
+          {/* Opciones */}
+          <div className="space-y-2">
+            <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${updateMode === 'stock_only'
+              ? 'border-amber-300 bg-amber-50'
+              : 'border-zinc-100 bg-zinc-50 hover:border-zinc-200'
+              }`}>
+              <input
+                type="radio" name="updateMode"
+                checked={updateMode === 'stock_only'}
+                onChange={() => setUpdateMode('stock_only')}
+                className="mt-0.5 text-amber-500 focus:ring-amber-500 shrink-0"
+              />
+              <div>
+                <p className="text-sm font-bold text-zinc-900">Solo actualizar stock</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">
+                  Se suma <span className="font-bold text-zinc-600">{Math.floor(calculatedUnits)} und</span> al stock actual. El precio no cambia.
+                </p>
+              </div>
+            </label>
+
+            <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${updateMode === 'stock_and_price'
+              ? 'border-amber-300 bg-amber-50'
+              : 'border-zinc-100 bg-zinc-50 hover:border-zinc-200'
+              }`}>
+              <input
+                type="radio" name="updateMode"
+                checked={updateMode === 'stock_and_price'}
+                onChange={() => setUpdateMode('stock_and_price')}
+                className="mt-0.5 text-amber-500 focus:ring-amber-500 shrink-0"
+              />
+              <div>
+                <p className="text-sm font-bold text-zinc-900">Actualizar stock y precio</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">
+                  Se suma el stock y podrás ajustar el nuevo precio de venta.
+                </p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ── MODAL: AJUSTE DE PRECIO (actualización) ── */}
+      <Modal
+        isOpen={isUpdatePriceModalOpen}
+        onClose={() => setIsUpdatePriceModalOpen(false)}
+        title="Ajustar Precio de Venta"
+        size="md"
+        footer={
+          <div className="flex gap-3">
+            <Button variant="ghost" size="sm" onClick={() => setIsUpdatePriceModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              size="sm"
+              onClick={confirmUpdateWithPrice}
+              loading={isSaving}
+              disabled={updateEditablePrice <= 0}
+              icon={Save}
+            >
+              Confirmar Actualización
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+
+          {/* ── VERSUS: precio actual vs nuevo ── */}
+          {/* ── VERSUS COMPLETO ── */}
+          {(() => {
+            const prod = products.find(p => p.id.toString() === selectedProductId);
+            const prevCost = prod ? Number(prod.cost) : 0;
+            const prevPrice = prod ? Number(prod.price) : 0;
+            const prevMargin = prevPrice > 0 ? ((prevPrice - prevCost) / prevPrice) * 100 : 0;
+
+            const newCost  = costPerUnit;
+            // ← CAMBIA ESTAS DOS LÍNEAS
+            const newPrice = updatePriceMode === 'keep'
+              ? prevPrice
+              : updateEditablePrice;
+            const newMargin = newPrice > 0 ? ((newPrice - newCost) / newPrice) * 100 : 0;
+
+            const priceDiff = newPrice - prevPrice;
+            const pricePct = prevPrice > 0 ? (priceDiff / prevPrice) * 100 : 0;
+            const costDiff = newCost - prevCost;
+            const marginDiff = newMargin - prevMargin;
+
+            const Row = ({
+              label, prev, next, diff, pct,
+              format = (v: number) => `S/ ${v.toFixed(2)}`,
+              highlight = false,
+            }: {
+              label: string; prev: number; next: number; diff: number;
+              pct?: number; format?: (v: number) => string; highlight?: boolean;
+            }) => {
+              const isUp = diff > 0;
+              const isFlat = Math.abs(diff) < 0.005 || next <= 0;
+              return (
+                <div className="grid grid-cols-[1fr_48px_1fr] w-full">
+                  {/* Anterior */}
+                  <div className={`p-3 rounded-xl text-center border ${highlight ? 'bg-zinc-100 border-zinc-200' : 'bg-zinc-50 border-zinc-100'}`}>
+                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-0.5">{label} anterior</p>
+                    <p className="text-sm font-black text-zinc-600">{format(prev)}</p>
+                  </div>
+
+                  {/* Delta */}
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-[9px] font-black text-zinc-300 tracking-widest">VS</span>
+                    {!isFlat && (
+                      <span className={`text-[9px] font-bold leading-tight text-center ${isUp ? 'text-emerald-600' : 'text-red-500'
+                        }`}>
+                        {isUp ? '▲' : '▼'}{pct !== undefined ? `${Math.abs(pct).toFixed(1)}%` : `${Math.abs(diff).toFixed(2)}`}
+                      </span>
+                    )}
+                    {isFlat && <span className="text-[9px] text-zinc-300">—</span>}
+                  </div>
+
+                  {/* Nuevo */}
+                  <div className={`p-3 rounded-xl texft-center border transition-colors ${isFlat ? 'bg-zinc-50 border-zinc-100'
+                    : isUp ? 'bg-emerald-50 border-emerald-100'
+                      : 'bg-red-50 border-red-100'
+                    }`}>
+                    <p className={`text-[9px] font-bold uppercase tracking-wider mb-0.5 ${isFlat ? 'text-zinc-400' : isUp ? 'text-emerald-600' : 'text-red-500'
+                      }`}>{label} nuevo</p>
+                    <p className={`text-sm font-black ${isFlat ? 'text-zinc-400' : isUp ? 'text-emerald-700' : 'text-red-600'
+                      }`}>
+                      {next > 0 ? format(next) : '—'}
+                    </p>
+                  </div>
+                </div>
+              );
+            };
+
+            return (
+              <div className="rounded-2xl overflow-hidden">
+                {/* Header */}
+                <div className="px-4 py-2.5 bg-zinc-50 border-b border-zinc-100 flex items-center gap-2">
+                  <TrendingUp size={13} className="text-zinc-400" />
+                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Comparación de lote</p>
+                </div>
+
+                <div className="pt-3 space-y-3">
+                  <Row
+                    label="Costo"
+                    prev={prevCost}
+                    next={newCost}
+                    diff={costDiff}
+                    pct={prevCost > 0 ? (costDiff / prevCost) * 100 : 0}
+                  />
+                  <Row
+                    label="Precio"
+                    prev={prevPrice}
+                    next={newPrice}
+                    diff={priceDiff}
+                    pct={pricePct}
+                    highlight
+                  />
+                  <Row
+                    label="Margen"
+                    prev={prevMargin}
+                    next={newMargin}
+                    diff={marginDiff}
+                    format={(v) => `${v.toFixed(1)}%`}
+                  />
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Stock info */}
+          <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+            <Package size={14} className="text-blue-500 shrink-0" />
+            <p className="text-xs text-blue-700">
+              Se sumarán <span className="font-bold">{Math.floor(calculatedUnits)} und</span> al stock actual del producto.
+            </p>
+          </div>
+
+          {/* ── OPCIONES DE PRECIO ── */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+              Precio de venta
+            </label>
+
+            {/* Opción: mantener */}
+            <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${updatePriceMode === 'keep'
+                ? 'border-amber-300 bg-amber-50'
+                : 'border-zinc-100 bg-zinc-50 hover:border-zinc-200'
+              }`}>
+              <input
+                type="radio" name="updatePriceMode"
+                checked={updatePriceMode === 'keep'}
+                onChange={() => setUpdatePriceMode('keep')}
+                className="mt-0.5 text-amber-500 focus:ring-amber-500 shrink-0"
+              />
+              <div>
+                <p className="text-sm font-bold text-zinc-900">Mantener precio anterior</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">
+                  El producto seguirá vendiéndose a{' '}
+                  <span className="font-bold text-zinc-600">
+                    S/ {(() => {
+                      const prod = products.find(p => p.id.toString() === selectedProductId);
+                      return prod ? Number(prod.price).toFixed(2) : '—';
+                    })()}
+                  </span>
+                </p>
+              </div>
+            </label>
+
+            {/* Opción: nuevo precio */}
+            <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${updatePriceMode === 'new'
+                ? 'border-amber-300 bg-amber-50'
+                : 'border-zinc-100 bg-zinc-50 hover:border-zinc-200'
+              }`}>
+              <input
+                type="radio" name="updatePriceMode"
+                checked={updatePriceMode === 'new'}
+                onChange={() => setUpdatePriceMode('new')}
+                className="mt-0.5 text-amber-500 focus:ring-amber-500 shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-zinc-900">Ingresar nuevo precio</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Ajusta el precio de venta para este lote.</p>
+              </div>
+            </label>
+
+            {/* Input — solo si eligió nuevo precio */}
+            {updatePriceMode === 'new' && (
+              <div className="mt-1 pl-1">
+                <Input
+                  label="Precio de Venta Final"
+                  type="number"
+                  value={updateEditablePrice || ''}
+                  onChange={(e) => setUpdateEditablePrice(Number(e.target.value))}
+                  placeholder="0.00"
+                  icon={DollarSign}
+                  size="sm"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Notas */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+              Notas del lote (opcional)
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Ej. Lote de temporada, proveedor distinto..."
+              rows={2}
+              className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 resize-none outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all"
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
