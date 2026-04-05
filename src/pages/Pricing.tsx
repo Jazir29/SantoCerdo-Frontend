@@ -665,7 +665,7 @@ export default function Pricing() {
                                 </div>
                                 <div className="bg-zinc-50 rounded-xl p-3">
                                   <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Rendimiento</p>
-                                  <p className="text-base font-bold text-zinc-900">{batch.batch_yield_kg} kg</p>
+                                  <p className="text-base font-bold text-zinc-900">{(batch.batch_yield_grams / 1000).toFixed(2)} kg kg</p>
                                 </div>
                                 <div className="bg-emerald-50 rounded-xl p-3">
                                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Ganancia/und</p>

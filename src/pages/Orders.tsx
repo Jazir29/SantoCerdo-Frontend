@@ -163,7 +163,7 @@ export default function Orders() {
     setIsEditing(false);
     setEditingOrderId(null);
     setSelectedCustomerId('');
-    setOrderItems([{ product_id: 0, quantity: 1, price: 0 }]);
+    setOrderItems([{ id: 0, order_id: 0, product_id: 0, quantity: 1, price: 0 }]);
     setIsModalOpen(true);
   };
 
@@ -193,6 +193,8 @@ export default function Orders() {
       setEditingOrderId(order.id);
       
       setOrderItems((data.items || []).map((item: any) => ({
+        id: 0,
+        order_id: 0,
         product_id: item.product_id,
         quantity: item.quantity,
         price: item.price
@@ -226,7 +228,7 @@ export default function Orders() {
   };
 
   const addOrderItem = () => {
-    setOrderItems([...orderItems, { product_id: 0, quantity: 1, price: 0 }]);
+    setOrderItems([...orderItems, { id: 0, order_id: 0, product_id: 0, quantity: 1, price: 0 }]);
   };
 
   const removeOrderItem = (index: number) => {
@@ -305,7 +307,7 @@ export default function Orders() {
             delivery_department = found.department;
             delivery_province = found.province;
             delivery_district = found.district;
-            delivery_reference = found.reference;
+            delivery_reference = found.reference || '';
           }
         }
       }

@@ -15,6 +15,8 @@ import Pricing from './pages/Pricing';
 import Promotions from './pages/Promotions';
 import Login from './pages/Login';
 import ProductionRegistry from './pages/ProductionRegistry';
+import ProfileSettings from './pages/settings/ProfileSettings';
+import UserManagement  from './pages/settings/UserManagement';
 import { Sidebar } from './components/layout/Sidebar';
 import { User } from './types';
 
@@ -43,6 +45,12 @@ export default function App() {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('user');
+  };
+
+  // Agrega esta función junto a handleLogout
+  const handleUserUpdate = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
   if (!isReady) return null;
@@ -101,7 +109,9 @@ export default function App() {
                 <Route path="/customers" element={<Customers />} />
                 <Route path="/promotions" element={<Promotions />} />
                 <Route path="/pricing" element={<Pricing />} />
-                <Route path="/production" element={<ProductionRegistry />} />
+                <Route path="/production-registry" element={<ProductionRegistry />} />
+                <Route path="/settings/profile" element={<ProfileSettings user={user} onUpdateUser={handleUserUpdate} />} />
+                <Route path="/settings/users"   element={<UserManagement currentUser={user} />} />
               </Routes>
             </div>
           </main>

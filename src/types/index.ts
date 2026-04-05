@@ -1,7 +1,9 @@
 export interface User {
   id: number;
   username: string;
-  name: string;
+  name: string;        // ← se mantiene (nombre completo, para compatibilidad)
+  first_name?: string; // ← nuevo
+  last_name?: string;  // ← nuevo
   role: string;
 }
 

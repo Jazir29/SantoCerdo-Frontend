@@ -1,13 +1,15 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+
   label?: string;
   icon?: LucideIcon;
   suffix?: string;
   error?: string;
   variant?: 'default' | 'view' | 'ghost';
   size?: 'default' | 'sm';
+  rightElement?: React.ReactNode; // ← agrega esto
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -18,6 +20,7 @@ export const Input: React.FC<InputProps> = ({
   className = '',
   variant = 'default',
   size = 'default',
+  rightElement,
   ...props
 }) => {
   const isView = variant === 'view';
@@ -48,7 +51,12 @@ export const Input: React.FC<InputProps> = ({
             w-full transition-all duration-200 rounded-xl focus:outline-none
             ${isSm ? 'text-xs py-2 md:text-sm md:py-2.5' : 'text-sm py-2.5 md:py-3'}
             ${Icon ? isSm ? 'pl-8 md:pl-11' : 'pl-11' : isSm ? 'pl-3 md:pl-4' : 'pl-4'}
-            ${suffix ? 'pr-12' : isSm ? 'pr-3 md:pr-4' : 'pr-4'}
+            ${suffix ? 'pr-12' : rightElement ? 'pr-10' : isSm ? 'pr-3 md:pr-4' : 'pr-4'}
+            {rightElement && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {rightElement}
+              </div>
+            )}
             ${isView
               ? 'bg-white border border-zinc-200 font-bold text-zinc-900 cursor-default'
               : `bg-zinc-50 border focus:ring-4 ${

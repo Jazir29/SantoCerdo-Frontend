@@ -3,7 +3,7 @@ import { LucideIcon } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'success';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg'| 'icon';
   icon?: LucideIcon;
   loading?: boolean;
 }
@@ -32,6 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
     sm: 'px-3 py-1.5 text-xs md:px-4 md:py-2.5 md:text-sm',
     md: 'px-4 py-2.5 text-sm',
     lg: 'px-6 py-3 text-base',
+    icon: 'p-2',  // ← agrega esto
   };
 
   return (

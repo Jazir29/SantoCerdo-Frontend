@@ -5,11 +5,12 @@ import {
   Promotion,
   DashboardStats,
   CustomerAddress,
-  ProductionBatch
+  ProductionBatch,
+  User
 } from '../types';
 
 // Apunta al nuevo backend en puerto 4000
-const API_BASE = 'https://santocerdo-backend.onrender.com/api';
+const API_BASE = 'http://localhost:4000/api';
 
 // ── Token helpers ─────────────────────────────────────────────
 const getToken = (): string | null => localStorage.getItem('token');
@@ -294,4 +295,48 @@ export const api = {
     apiFetch(
       `${API_BASE}/batches?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
     ),
+
+  // ── Users / Profile ─────────────────────────────────────────
+updateProfile: async (data: {
+  id: number;
+  username: string;
+  first_name?: string;
+  last_name?: string;
+  currentPassword?: string;
+  newPassword?: string;
+}): Promise<{ success: boolean; user: User; message?: string }> =>
+  apiFetch(`${API_BASE}/users/${data.id}/profile`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+
+getUsers: async (): Promise<User[]> =>
+  apiFetch(`${API_BASE}/users`),
+
+createUser: async (data: {
+  username: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+}): Promise<{ success: boolean; user: User }> =>
+  apiFetch(`${API_BASE}/users`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+
+updateUser: async (id: number, data: {
+  username: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+  password?: string;
+}): Promise<{ success: boolean; user: User }> =>
+  apiFetch(`${API_BASE}/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+
+deleteUser: async (id: number): Promise<{ success: boolean }> =>
+  apiFetch(`${API_BASE}/users/${id}`, { method: 'DELETE' }),
 };
