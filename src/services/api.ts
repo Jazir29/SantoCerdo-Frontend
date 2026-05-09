@@ -9,8 +9,7 @@ import {
   User
 } from '../types';
 
-// Apunta al nuevo backend en puerto 4000
-const API_BASE = 'https://santocerdo-backend.onrender.com/api';
+const API_BASE = 'https://santocerdo-backend-0z22.onrender.com/api';
 
 // ── Token helpers ─────────────────────────────────────────────
 const getToken = (): string | null => localStorage.getItem('token');
