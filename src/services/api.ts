@@ -9,7 +9,7 @@ import {
   User
 } from '../types';
 
-const API_BASE = 'https://santocerdo-backend-0z22.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_URL ?? 'https://santocerdo-backend-0z22.onrender.com/api';
 
 // ── Token helpers ─────────────────────────────────────────────
 const getToken = (): string | null => localStorage.getItem('token');
