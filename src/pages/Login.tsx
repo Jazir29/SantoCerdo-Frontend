@@ -179,8 +179,7 @@ export default function Login({ onLogin }: LoginProps) {
             
             <div className="pt-4 text-center">
               <p className="text-zinc-400 text-xs">
-                Acceso exclusivo para personal autorizado. <br />
-                Prueba con <span className="font-bold text-zinc-900 underline decoration-amber-500/30">admin / admin123</span>
+                Acceso exclusivo para personal autorizado.
               </p>
             </div>
           </form>
