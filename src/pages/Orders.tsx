@@ -11,6 +11,7 @@ import { Table, TableRow, TableCell } from '../components/ui/Table';
 import { DatePicker } from '../components/ui/DatePicker';
 import { api } from '../services/api';
 import { Order, Customer, Product, OrderItem, CustomerAddress } from '../types';
+import { useToast } from '../components/ui/Toast';
 
 export default function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -67,7 +68,7 @@ export default function Orders() {
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  
+  const toast = useToast();
 
   useEffect(() => {
     fetchOrders(1);
@@ -80,8 +81,8 @@ export default function Orders() {
     try {
       const data = await api.getPromotions(1, 1000);
       setPromotions(Array.isArray(data.data) ? data.data.filter(p => p.active) : []);
-    } catch (error) {
-      console.error('Error fetching promotions:', error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al cargar promociones', 'error');
     }
   };
 
@@ -104,8 +105,8 @@ export default function Orders() {
             }
           }
         })
-        .catch(err => {
-          console.error('Error fetching addresses:', err);
+        .catch((err: any) => {
+          toast(err?.message || 'Error al cargar direcciones', 'error');
           setCustomerAddresses([]);
         });
       setIsAddingNewAddress(false);
@@ -131,8 +132,8 @@ export default function Orders() {
       setTotalPages(data.totalPages || 1);
       setTotalOrders(data.total || 0);
       setCurrentPage(data.page || 1);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al cargar órdenes', 'error');
       setOrders([]);
     } finally {
       setLoading(false);
@@ -143,8 +144,8 @@ export default function Orders() {
     try {
       const data = await api.getAllCustomers();
       setCustomers(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Error fetching customers:', error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al cargar clientes', 'error');
       setCustomers([]);
     }
   };
@@ -153,8 +154,8 @@ export default function Orders() {
     try {
       const data = await api.getAllProducts();
       setProducts(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Error fetching products:', error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al cargar productos', 'error');
       setProducts([]);
     }
   };
@@ -209,8 +210,8 @@ export default function Orders() {
       }
       
       setIsModalOpen(true);
-    } catch (error) {
-      console.error('Error opening edit modal:', error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al abrir la orden', 'error');
     }
   };
 
@@ -333,8 +334,9 @@ export default function Orders() {
       await fetchOrders(currentPage);
       await fetchProducts(); // Refresh stock
       closeNewOrderModal();
-    } catch (error) {
-      console.error(error);
+      toast(isEditing ? 'Orden actualizada' : 'Orden creada', 'success');
+    } catch (error: any) {
+      toast(error?.message || 'Error al guardar la orden', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -343,12 +345,13 @@ export default function Orders() {
   const updateStatus = async (id: number, status: string) => {
     try {
       await api.updateOrderStatus(id, status);
+      toast('Estado actualizado', 'success');
       fetchOrders(currentPage);
       if (orderDetails && orderDetails.order_id === id) {
         viewOrderDetails(id);
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al actualizar estado', 'error');
     }
   };
 
@@ -357,9 +360,8 @@ export default function Orders() {
       const data = await api.getOrderById(id.toString());
       setOrderDetails(data);
       setIsDetailsModalOpen(true);
-    } catch (error) {
-      console.error('Error viewing order details:', error);
-      alert(`No se pudo cargar el detalle de la orden: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    } catch (error: any) {
+      toast(error?.message || 'No se pudo cargar el detalle de la orden', 'error');
     }
   };
 
@@ -377,14 +379,15 @@ export default function Orders() {
       setIsDetailsModalOpen(false);
       await fetchOrders(currentPage);
       await fetchProducts(); // Refresh stock
-    } catch (error) {
-      console.error(error);
+      toast('Orden cancelada', 'success');
+    } catch (error: any) {
+      toast(error?.message || 'Error al cancelar la orden', 'error');
     }
   };
 
   const downloadShippingLabel = async (order: any) => {
     if (!shippingLabelRef.current) {
-      console.error('Shipping label ref not found');
+      toast('Error al generar la guía de envío', 'error');
       return;
     }
     
@@ -408,9 +411,8 @@ export default function Orders() {
       document.body.removeChild(link);
       
       setIsGeneratingImage(false);
-    } catch (error) {
-      console.error('Error generating image:', error);
-      alert('Hubo un error al generar la imagen. Por favor, intente de nuevo.');
+    } catch (error: any) {
+      toast(error?.message || 'Hubo un error al generar la imagen. Por favor, intente de nuevo.', 'error');
       setIsGeneratingImage(false);
     }
   };

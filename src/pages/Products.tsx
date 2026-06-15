@@ -9,9 +9,11 @@ import { Modal } from '../components/ui/Modal';
 import { PageHeader } from '../components/ui/PageHeader';
 import { api } from '../services/api';
 import { Product } from '../types';
+import { useToast } from '../components/ui/Toast';
 
 export default function Products() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -60,8 +62,8 @@ export default function Products() {
         setHasMore(data.data.length === limit);
         setOffset(currentOffset + data.data.length);
       }
-    } catch (error) {
-      console.error('Error fetching products:', error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al cargar productos', 'error');
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -97,8 +99,9 @@ export default function Products() {
       
       await fetchProducts(true);
       closeModal();
-    } catch (error) {
-      console.error(error);
+      toast(selectedProduct ? 'Producto actualizado' : 'Producto creado', 'success');
+    } catch (error: any) {
+      toast(error?.message || 'Error al guardar producto', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -114,8 +117,9 @@ export default function Products() {
     try {
       await api.deleteProduct(productToDelete);
       await fetchProducts(true);
-    } catch (error) {
-      console.error(error);
+      toast('Producto eliminado', 'success');
+    } catch (error: any) {
+      toast(error?.message || 'Error al eliminar producto', 'error');
     } finally {
       setIsDeleteModalOpen(false);
       setProductToDelete(null);

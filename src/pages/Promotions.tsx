@@ -10,8 +10,10 @@ import { PageHeader } from '../components/ui/PageHeader';
 import { DatePicker } from '../components/ui/DatePicker';
 import { api } from '../services/api';
 import { Promotion } from '../types';
+import { useToast } from '../components/ui/Toast';
 
 export default function Promotions() {
+  const toast = useToast();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,8 +47,8 @@ export default function Promotions() {
       setTotalPages(data.totalPages || 1);
       setTotalPromotions(data.total || 0);
       setCurrentPage(data.page || 1);
-    } catch (error) {
-      console.error('Error fetching promotions:', error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al cargar promociones', 'error');
       setPromotions([]);
     } finally {
       setLoading(false);
@@ -67,17 +69,10 @@ export default function Promotions() {
       await fetchPromotions(currentPage);
       setIsModalOpen(false);
       setIsEditing(false);
-      setCurrentPromo({
-        name: '',
-        code: '',
-        type: 'percentage',
-        value: 0,
-        start_date: '',
-        end_date: '',
-        active: 1
-      });
-    } catch (error) {
-      console.error('Error saving promotion:', error);
+      setCurrentPromo({ name: '', code: '', type: 'percentage', value: 0, start_date: '', end_date: '', active: 1 });
+      toast(isEditing ? 'Promoción actualizada' : 'Promoción creada', 'success');
+    } catch (error: any) {
+      toast(error?.message || 'Error al guardar promoción', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -89,8 +84,9 @@ export default function Promotions() {
     try {
       await api.deletePromotion(id);
       fetchPromotions(currentPage);
-    } catch (error) {
-      console.error('Error deleting promotion:', error);
+      toast('Promoción eliminada', 'success');
+    } catch (error: any) {
+      toast(error?.message || 'Error al eliminar promoción', 'error');
     }
   };
 

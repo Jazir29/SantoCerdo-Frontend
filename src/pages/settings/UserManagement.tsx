@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
     User as UserIcon, Lock, Save, Shield, UserPlus,
-    Users as UsersIcon, Edit2, Trash2, Eye, EyeOff, CheckCircle2
+    Users as UsersIcon, Edit2, Trash2, Eye, EyeOff
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent } from '../../components/ui/Card';
@@ -9,6 +9,7 @@ import { Input } from '../../components/ui/Input';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { User } from '../../types';
 import { api } from '../../services/api';
+import { useToast } from '../../components/ui/Toast';
 
 interface UserManagementProps {
     currentUser: User;
@@ -17,6 +18,7 @@ interface UserManagementProps {
 const ROLES = ['Administrador', 'Vendedor', 'Producción'];
 
 export default function UserManagement({ currentUser }: UserManagementProps) {
+    const toast = useToast();
     const [allUsers, setAllUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -34,7 +36,6 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
 
     const [isSaving, setIsSaving] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
-    const [formSuccess, setFormSuccess] = useState(false);
 
     useEffect(() => { fetchUsers(); }, []);
 
@@ -43,8 +44,8 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
         try {
             const data = await api.getUsers();
             setAllUsers(data);
-        } catch (err) {
-            console.error(err);
+        } catch (err: any) {
+            toast(err?.message || 'Error al cargar usuarios', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -101,12 +102,11 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                     first_name: firstName, last_name: lastName, role,
                 });
             }
-            setFormSuccess(true);
             setIsFormOpen(false);
             setEditingUser(null);
             resetForm();
             fetchUsers();
-            setTimeout(() => setFormSuccess(false), 3000);
+            toast(editingUser ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente', 'success');
         } catch (err: any) {
             setFormError(err.message || 'Error al guardar usuario');
         } finally {
@@ -120,8 +120,9 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
         try {
             await api.deleteUser(u.id);
             fetchUsers();
-        } catch (err) {
-            console.error(err);
+            toast('Usuario eliminado', 'success');
+        } catch (err: any) {
+            toast(err?.message || 'Error al eliminar usuario', 'error');
         }
     };
 
@@ -214,12 +215,6 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                 </table>
                             </div>
 
-                            {formSuccess && (
-                                <div className="mx-6 mb-4 p-3 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-2 text-emerald-600 text-sm font-medium">
-                                    <CheckCircle2 size={16} />
-                                    {editingUser ? 'Usuario actualizado correctamente.' : 'Usuario creado correctamente.'}
-                                </div>
-                            )}
                         </CardContent>
                     </Card>
                 </div>

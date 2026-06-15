@@ -8,6 +8,7 @@ import { PageHeader } from '../components/ui/PageHeader';
 import { Select } from '../components/ui/Select';
 import { api } from '../services/api';
 import { Customer, CustomerAddress } from '../types';
+import { useToast } from '../components/ui/Toast';
 
 export default function Customers() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -44,6 +45,8 @@ export default function Customers() {
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
+  const toast = useToast();
+
   useEffect(() => { fetchCustomers(true); }, [searchTerm, filterDepartment, filterProvince, filterDistrict, filterType]);
 
   // Cargar opciones de filtro desde customer_addresses
@@ -56,7 +59,7 @@ export default function Customers() {
           data.map((c: any) => c.primary_department).filter(Boolean)
         )).sort();
         setAllDepartments(depts);
-      } catch (e) { console.error(e); }
+      } catch (e: any) { toast(e?.message || 'Error al cargar filtros', 'error'); }
     };
     loadFilterOptions();
   }, []);
@@ -69,7 +72,7 @@ export default function Customers() {
       )).sort();
       setAllProvinces(provinces);
       if (filterProvince && !provinces.includes(filterProvince)) setFilterProvince('');
-    }).catch(console.error);
+    }).catch((e: any) => toast(e?.message || 'Error al cargar provincias', 'error'));
   }, [filterDepartment]);
 
   useEffect(() => {
@@ -80,7 +83,7 @@ export default function Customers() {
       )).sort();
       setAllDistricts(districts);
       if (filterDistrict && !districts.includes(filterDistrict)) setFilterDistrict('');
-    }).catch(console.error);
+    }).catch((e: any) => toast(e?.message || 'Error al cargar distritos', 'error'));
   }, [filterProvince]);
 
   const fetchCustomers = async (isInitial = true) => {
@@ -101,7 +104,7 @@ export default function Customers() {
         setHasMore(data.data.length === limit);
         setOffset(currentOffset + data.data.length);
       }
-    } catch (e) { console.error(e); }
+    } catch (e: any) { toast(e?.message || 'Error al cargar clientes', 'error'); }
     finally { setLoading(false); setLoadingMore(false); }
   };
 
@@ -150,13 +153,15 @@ export default function Customers() {
 
         await fetchCustomers(true);
         closeModal();
+        toast('Cliente creado correctamente', 'success');
       } else {
         await api.updateCustomer(selectedCustomer.id, editForm);
         setSelectedCustomer({ ...selectedCustomer, ...editForm } as Customer);
         setIsEditing(false);
         await fetchCustomers(true);
+        toast('Cliente actualizado correctamente', 'success');
       }
-    } catch (e) { console.error(e); }
+    } catch (e: any) { toast(e?.message || 'Error al guardar cliente', 'error'); }
     finally { setIsSaving(false); }
   };
 
@@ -167,7 +172,8 @@ export default function Customers() {
       await api.updateCustomerAddress(selectedCustomer.id, addressId, addressEditForm);
       setCustomerAddresses(await api.getCustomerAddresses(selectedCustomer.id));
       setEditingAddressId(null);
-    } catch (e) { console.error(e); }
+      toast('Dirección actualizada', 'success');
+    } catch (e: any) { toast(e?.message || 'Error al actualizar dirección', 'error'); }
     finally { setIsSavingAddress(false); }
   };
 
@@ -177,7 +183,8 @@ export default function Customers() {
       await api.deleteCustomerAddress(selectedCustomer.id, addressId);
       setCustomerAddresses(await api.getCustomerAddresses(selectedCustomer.id));
       await fetchCustomers(true);
-    } catch (e) { console.error(e); }
+      toast('Dirección eliminada', 'success');
+    } catch (e: any) { toast(e?.message || 'Error al eliminar dirección', 'error'); }
   };
 
   const handleCreateAddress = async () => {
@@ -196,7 +203,8 @@ export default function Customers() {
       await fetchCustomers(true);
       setIsAddingAddress(false);
       setNewAddressForm({});
-    } catch (e) { console.error(e); }
+      toast('Dirección creada correctamente', 'success');
+    } catch (e: any) { toast(e?.message || 'Error al crear dirección', 'error'); }
     finally { setIsSavingAddress(false); }
   };
 
@@ -205,7 +213,8 @@ export default function Customers() {
     try {
       await api.deleteCustomer(id);
       await fetchCustomers(true);
-    } catch (e) { console.error(e); }
+      toast('Cliente eliminado', 'success');
+    } catch (e: any) { toast(e?.message || 'Error al eliminar cliente', 'error'); }
   };
 
   const handleSetFavoriteAddress = async (addressId: number) => {
@@ -215,7 +224,8 @@ export default function Customers() {
       setCustomerAddresses(await api.getCustomerAddresses(selectedCustomer.id));
       await fetchCustomers(true);
       setSelectedCustomer({ ...selectedCustomer, favorite_address_id: addressId });
-    } catch (e) { console.error(e); }
+      toast('Dirección favorita actualizada', 'success');
+    } catch (e: any) { toast(e?.message || 'Error al marcar favorita', 'error'); }
   };
 
   const renderField = (

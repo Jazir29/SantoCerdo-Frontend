@@ -9,6 +9,7 @@ import { Table, TableRow, TableCell } from '../components/ui/Table';
 import { PageHeader } from '../components/ui/PageHeader';
 import { api } from '../services/api';
 import { DashboardStats } from '../types';
+import { useToast } from '../components/ui/Toast';
 
 const COLORS_CUSTOMER_TYPE = ['#18181b', '#f59e0b']; // zinc-900, amber-500
 const COLORS_ORDER_STATUS = ['#10b981', '#eab308']; // emerald-500, yellow-500
@@ -46,6 +47,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function Dashboard() {
+  const toast = useToast();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -63,8 +65,8 @@ export default function Dashboard() {
         setStats(data);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error('Error fetching stats:', err);
+      .catch((err: any) => {
+        toast(err?.message || 'Error al cargar estadísticas', 'error');
         setLoading(false);
       });
   }, [filters]);

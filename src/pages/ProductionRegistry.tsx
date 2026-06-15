@@ -7,8 +7,10 @@ import { Input } from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
 import { api } from '../services/api';
 import { ProductionBatch } from '../types';
+import { useToast } from '../components/ui/Toast';
 
 export default function ProductionRegistry() {
+  const toast = useToast();
   const [batches, setBatches]       = useState<ProductionBatch[]>([]);
   const [loading, setLoading]       = useState(true);
   const [page, setPage]             = useState(1);
@@ -35,8 +37,8 @@ export default function ProductionRegistry() {
       setBatches(response.data);
       setTotalPages(response.totalPages);
       setTotal(response.total);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      toast(error?.message || 'Error al cargar lotes', 'error');
       setBatches([]);
     } finally {
       setLoading(false);

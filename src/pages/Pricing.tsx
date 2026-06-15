@@ -11,6 +11,7 @@ import { PageHeader } from '../components/ui/PageHeader';
 import { api } from '../services/api';
 import { Product, ProductionBatch } from '../types';
 import { Modal } from '../components/ui/Modal';
+import { useToast } from '../components/ui/Toast';
 
 interface CostItem {
   id: string;
@@ -59,7 +60,8 @@ export default function Pricing() {
   const [isUpdatePriceModalOpen, setIsUpdatePriceModalOpen] = useState(false);
   const [updateEditablePrice, setUpdateEditablePrice] = useState<number>(0);
   const [updatePriceMode, setUpdatePriceMode] = useState<'keep' | 'new'>('keep');
-  
+
+  const toast = useToast();
 
   // ── Load products ───────────────────────────────────────────
   useEffect(() => {
@@ -184,8 +186,6 @@ export default function Pricing() {
         margin_percent: Number(actualMargin.toFixed(2)),
       };
 
-      console.log('Payload enviado:', payload); // ← agrega esto temporalmente
-
       await api.createProductWithBatch(payload);
 
       setSaveSuccess(true);
@@ -194,11 +194,12 @@ export default function Pricing() {
       setNotes('');
       setIsCreateModalOpen(false);
       setTimeout(() => setSaveSuccess(false), 3000);
+      toast('Producto creado correctamente', 'success');
 
       const updated = await api.getAllProducts();
       setProducts(updated);
-    } catch (err) {
-      console.error('Error completo:', err); // ← y esto
+    } catch (err: any) {
+      toast(err?.message || 'Error al crear el producto', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -221,13 +222,14 @@ export default function Pricing() {
         setNotes('');
         setIsUpdateModalOpen(false);
         setTimeout(() => setSaveSuccess(false), 3000);
+        toast('Producto actualizado correctamente', 'success');
         const updated = await api.getAllProducts();
         setProducts(updated);
         const updatedBatches = await api.getProductBatches(Number(selectedProductId));
         setBatches(updatedBatches);
         setShowHistory(true);
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        toast(err?.message || 'Error al actualizar el producto', 'error');
       } finally {
         setIsSaving(false);
       }
@@ -264,13 +266,14 @@ export default function Pricing() {
       setNotes('');
       setIsUpdatePriceModalOpen(false);
       setTimeout(() => setSaveSuccess(false), 3000);
+      toast('Lote registrado correctamente', 'success');
       const updated = await api.getAllProducts();
       setProducts(updated);
       const updatedBatches = await api.getProductBatches(Number(selectedProductId));
       setBatches(updatedBatches);
       setShowHistory(true);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      toast(err?.message || 'Error al registrar el lote', 'error');
     } finally {
       setIsSaving(false);
     }
