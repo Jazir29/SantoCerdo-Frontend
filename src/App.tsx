@@ -27,6 +27,9 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
+    // Limpieza de migración: el token ya vive en httpOnly cookie, no en localStorage
+    localStorage.removeItem('token');
+
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       try {
