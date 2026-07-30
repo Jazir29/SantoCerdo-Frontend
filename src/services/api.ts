@@ -11,30 +11,18 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'https://santocerdo-backend-0z22.onrender.com/api';
 
-// ── Token helpers ─────────────────────────────────────────────
-const getToken = (): string | null => localStorage.getItem('token');
-
-const authHeaders = (): Record<string, string> => {
-  const token = getToken();
-  return {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-};
-
 // Wrapper que lanza el error si la respuesta no es ok
 async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...options,
+    credentials: 'include',
     headers: {
-      ...authHeaders(),
+      'Content-Type': 'application/json',
       ...(options?.headers ?? {}),
     },
   });
 
   if (res.status === 401) {
-    // Token expirado — limpiar sesión y redirigir al login
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/';
     throw new Error('Sesión expirada');
@@ -55,13 +43,20 @@ export const api = {
   login: async (credentials: { username: string; password: string }) => {
     const res = await fetch(`${API_BASE}/login`, {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Credenciales invalidas');
-    if (data.token) localStorage.setItem('token', data.token);
     return data;
+  },
+
+  logout: async (): Promise<void> => {
+    await fetch(`${API_BASE}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    }).catch(() => {});
   },
 
   // ── Stats ───────────────────────────────────────────────────

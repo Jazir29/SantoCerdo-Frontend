@@ -4,7 +4,7 @@
  */
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Dashboard from './pages/Dashboard';
@@ -19,6 +19,7 @@ import ProfileSettings from './pages/settings/ProfileSettings';
 import UserManagement  from './pages/settings/UserManagement';
 import { Sidebar } from './components/layout/Sidebar';
 import { User } from './types';
+import { api } from './services/api';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -42,10 +43,11 @@ export default function App() {
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(async () => {
+    await api.logout();
     setUser(null);
     localStorage.removeItem('user');
-  };
+  }, []);
 
   // Agrega esta función junto a handleLogout
   const handleUserUpdate = (updatedUser: User) => {
