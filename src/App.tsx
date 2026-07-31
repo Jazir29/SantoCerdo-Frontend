@@ -83,7 +83,7 @@ export default function App() {
 
         {/* Sidebar Container */}
         <div className={`
-          fixed inset-y-0 left-0 z-50 w-full lg:w-64 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+          fixed inset-y-0 left-0 z-50 w-full lg:w-52 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}>
           <Sidebar user={user} onLogout={handleLogout} onClose={() => setIsSidebarOpen(false)} />
@@ -106,7 +106,7 @@ export default function App() {
             </button>
           </header>
 
-          <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+          <main className="flex-1 overflow-y-auto p-3 md:p-6 custom-scrollbar">
             <div className="max-w-7xl mx-auto">
               <Routes>
                 <Route path="/" element={<Dashboard />} />

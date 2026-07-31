@@ -22,9 +22,9 @@ export const Card: React.FC<CardProps> = ({ children, className = '', animate = 
 };
 
 export const CardHeader: React.FC<{ title: string; subtitle?: string; action?: React.ReactNode }> = ({ title, subtitle, action }) => (
-  <div className="p-4 sm:p-8 border-b border-zinc-100 flex justify-between items-start">
+  <div className="p-4 sm:p-6 border-b border-zinc-100 flex justify-between items-start">
     <div>
-      <h3 className="text-xl font-bold text-zinc-900 tracking-tight">{title}</h3>
+      <h3 className="text-lg font-bold text-zinc-900 tracking-tight">{title}</h3>
       {subtitle && <p className="text-xs text-zinc-400 mt-1 uppercase tracking-widest font-bold">{subtitle}</p>}
     </div>
     {action && <div>{action}</div>}
@@ -32,7 +32,7 @@ export const CardHeader: React.FC<{ title: string; subtitle?: string; action?: R
 );
 
 export const CardContent: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`p-4 sm:p-8 ${className}`}>
+  <div className={`p-4 sm:p-6 ${className}`}>
     {children}
   </div>
 );
