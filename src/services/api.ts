@@ -76,23 +76,14 @@ export const api = {
     page = 1,
     limit = 10,
     search = ''
-  ): Promise<{ data: Product[]; total: number; totalPages: number }> => {
-    const offset = (page - 1) * limit;
-    const data = await apiFetch<{ items: Product[]; total: number }>(
-      `${API_BASE}/products?limit=${limit}&offset=${offset}&search=${encodeURIComponent(search)}`
-    );
-    return {
-      data: data.items,
-      total: data.total,
-      totalPages: Math.ceil(data.total / limit),
-    };
-  },
+  ): Promise<{ data: Product[]; total: number; totalPages: number; page: number }> =>
+    apiFetch(`${API_BASE}/products?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`),
 
   getAllProducts: async (): Promise<Product[]> => {
-    const data = await apiFetch<{ items: Product[]; total: number }>(
-      `${API_BASE}/products?limit=1000`
+    const data = await apiFetch<{ data: Product[] }>(
+      `${API_BASE}/products?page=1&limit=1000`
     );
-    return data.items || [];
+    return data.data || [];
   },
 
   createProduct: async (product: Partial<Product>): Promise<Product> =>
@@ -116,34 +107,20 @@ export const api = {
     district?: string;
   }): Promise<{ data: Customer[]; total: number; totalPages: number; page: number }> => {
     const limit  = params.limit || 10;
-    const offset =
-      params.offset !== undefined
-        ? params.offset
-        : ((params.page || 1) - 1) * limit;
-    const page = params.page || Math.floor(offset / limit) + 1;
-
-    const queryParams: any = { ...params };
-    delete queryParams.page;
-    queryParams.limit  = limit;
-    queryParams.offset = offset;
-
-    const query = new URLSearchParams(queryParams).toString();
-    const data  = await apiFetch<{ items: Customer[]; total: number }>(
-      `${API_BASE}/customers?${query}`
-    );
-    return {
-      data: data.items,
-      total: data.total,
-      totalPages: Math.ceil(data.total / limit),
-      page,
-    };
+    const page   = params.page || (params.offset !== undefined ? Math.floor(params.offset / limit) + 1 : 1);
+    const { search, type, department, province, district } = params;
+    const queryParams: any = { page, limit, search, type, department, province, district };
+    const query = new URLSearchParams(
+      Object.fromEntries(Object.entries(queryParams).filter(([, v]) => v !== undefined && v !== '')) as Record<string, string>
+    ).toString();
+    return apiFetch(`${API_BASE}/customers?${query}`);
   },
 
   getAllCustomers: async (): Promise<Customer[]> => {
-    const data = await apiFetch<{ items: Customer[]; total: number }>(
-      `${API_BASE}/customers?limit=1000`
+    const data = await apiFetch<{ data: Customer[] }>(
+      `${API_BASE}/customers?page=1&limit=1000`
     );
-    return data.items || [];
+    return data.data || [];
   },
 
   createCustomer: async (customer: Partial<Customer>): Promise<Customer> =>
@@ -192,34 +169,17 @@ export const api = {
   getOrders: async (params: {
     page?: number;
     limit?: number;
-    offset?: number;
     search?: string;
     status?: string;
     startDate?: string;
     endDate?: string;
   }): Promise<{ data: Order[]; total: number; totalPages: number; page: number }> => {
-    const limit  = params.limit || 10;
-    const offset =
-      params.offset !== undefined
-        ? params.offset
-        : ((params.page || 1) - 1) * limit;
-    const page = params.page || Math.floor(offset / limit) + 1;
-
-    const queryParams: any = { ...params };
-    delete queryParams.page;
-    queryParams.limit  = limit;
-    queryParams.offset = offset;
-
-    const query = new URLSearchParams(queryParams).toString();
-    const data  = await apiFetch<{ items: Order[]; total: number }>(
-      `${API_BASE}/orders?${query}`
-    );
-    return {
-      data: data.items,
-      total: data.total,
-      totalPages: Math.ceil(data.total / limit),
-      page,
-    };
+    const { page = 1, limit = 10, search, status, startDate, endDate } = params;
+    const queryParams: any = { page, limit, search, status, startDate, endDate };
+    const query = new URLSearchParams(
+      Object.fromEntries(Object.entries(queryParams).filter(([, v]) => v !== undefined && v !== '')) as Record<string, string>
+    ).toString();
+    return apiFetch(`${API_BASE}/orders?${query}`);
   },
 
   getOrderById: async (id: string): Promise<Order> =>
@@ -235,6 +195,15 @@ export const api = {
     apiFetch(`${API_BASE}/orders/${id}/status`, {
       method: 'PUT',
       body: JSON.stringify({ status }),
+    }),
+
+  updateOrderPayment: async (
+    id: number,
+    data: { payment_status: string; payment_method?: string | null }
+  ): Promise<void> =>
+    apiFetch(`${API_BASE}/orders/${id}/payment`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
     }),
 
   cancelOrder: async (id: number): Promise<void> =>
@@ -333,4 +302,21 @@ updateUser: async (id: number, data: {
 
 deleteUser: async (id: number): Promise<{ success: boolean }> =>
   apiFetch(`${API_BASE}/users/${id}`, { method: 'DELETE' }),
+
+  // ── Stock Movements ──────────────────────────────────────────
+  getStockMovements: async (params: {
+    page?: number;
+    limit?: number;
+    productId?: number;
+    type?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<{ data: any[]; total: number; totalPages: number; page: number }> => {
+    const { page = 1, limit = 20, productId, type, startDate, endDate } = params;
+    const queryParams: any = { page, limit, productId, type, startDate, endDate };
+    const query = new URLSearchParams(
+      Object.fromEntries(Object.entries(queryParams).filter(([, v]) => v !== undefined && v !== '')) as Record<string, string>
+    ).toString();
+    return apiFetch(`${API_BASE}/stock-movements?${query}`);
+  },
 };

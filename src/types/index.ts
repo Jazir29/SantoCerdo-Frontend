@@ -65,6 +65,9 @@ export interface Order {
   customer_id: number;
   total_amount: number;
   status: 'pending' | 'shipped' | 'completed' | 'cancelled';
+  payment_status: 'unpaid' | 'partial' | 'paid';
+  payment_method?: 'cash' | 'transfer' | 'yape' | 'plin' | 'other' | null;
+  paid_at?: string | null;
   created_at: string;
   delivery_address: string;
   delivery_department: string;

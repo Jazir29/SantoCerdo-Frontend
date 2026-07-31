@@ -15,6 +15,7 @@ import Pricing from './pages/Pricing';
 import Promotions from './pages/Promotions';
 import Login from './pages/Login';
 import ProductionRegistry from './pages/ProductionRegistry';
+import StockMovements from './pages/StockMovements';
 import ProfileSettings from './pages/settings/ProfileSettings';
 import UserManagement  from './pages/settings/UserManagement';
 import { Sidebar } from './components/layout/Sidebar';
@@ -115,6 +116,7 @@ export default function App() {
                 <Route path="/promotions" element={<Promotions />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/production-registry" element={<ProductionRegistry />} />
+                <Route path="/stock-movements" element={<StockMovements />} />
                 <Route path="/settings/profile" element={<ProfileSettings user={user} onUpdateUser={handleUserUpdate} />} />
                 <Route path="/settings/users"   element={<UserManagement currentUser={user} />} />
               </Routes>

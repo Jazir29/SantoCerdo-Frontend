@@ -1,8 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
+import {
   LayoutDashboard, ShoppingCart, Package, Users, Calculator,
   LogOut, Tag, History, User as UserIcon, Shield,X,
-  ChevronLeft, Settings as SettingsIcon
+  ChevronLeft, Settings as SettingsIcon, TrendingDown
 } from 'lucide-react';
 import { User } from '../../types';
 import { useState, useEffect } from 'react';
@@ -30,6 +30,7 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
     { path: '/promotions',          label: 'Promociones',            icon: Tag },
     { path: '/pricing',             label: 'Calculadora de Precios', icon: Calculator },
     { path: '/production-registry', label: 'Registro de Producción', icon: History },
+    { path: '/stock-movements',     label: 'Movimientos de Stock',   icon: TrendingDown },
   ];
 
   const settingsItems = [

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Search, CheckCircle, Clock, X, Save, Trash2, Eye, AlertTriangle, User, MapPin, Phone, Mail, Building2, Tag, DollarSign, Edit2, Truck, Download, Building, Package, Calendar,Filter } from 'lucide-react';
+import { Plus, Search, CheckCircle, Clock, X, Save, Trash2, Eye, AlertTriangle, User, MapPin, Phone, Mail, Building2, Tag, DollarSign, Edit2, Truck, Download, Building, Package, Calendar, Filter, CreditCard } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
@@ -42,6 +42,11 @@ export default function Orders() {
   // Order Details States
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [orderDetails, setOrderDetails] = useState<any>(null);
+
+  // Payment States
+  const [paymentStatus, setPaymentStatus] = useState<string>('unpaid');
+  const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [isSavingPayment, setIsSavingPayment] = useState(false);
   
   // Address States
   const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
@@ -359,9 +364,29 @@ export default function Orders() {
     try {
       const data = await api.getOrderById(id.toString());
       setOrderDetails(data);
+      setPaymentStatus(data.payment_status || 'unpaid');
+      setPaymentMethod(data.payment_method || '');
       setIsDetailsModalOpen(true);
     } catch (error: any) {
       toast(error?.message || 'No se pudo cargar el detalle de la orden', 'error');
+    }
+  };
+
+  const handleUpdatePayment = async () => {
+    if (!orderDetails) return;
+    setIsSavingPayment(true);
+    try {
+      await api.updateOrderPayment(orderDetails.order_id, {
+        payment_status: paymentStatus,
+        payment_method: paymentMethod || null,
+      });
+      setOrderDetails({ ...orderDetails, payment_status: paymentStatus, payment_method: paymentMethod || null, paid_at: paymentStatus === 'paid' ? new Date().toISOString() : null });
+      await fetchOrders(currentPage);
+      toast('Pago actualizado', 'success');
+    } catch (error: any) {
+      toast(error?.message || 'Error al actualizar el pago', 'error');
+    } finally {
+      setIsSavingPayment(false);
     }
   };
 
@@ -540,20 +565,19 @@ export default function Orders() {
     {order.customer_name} {order.customer_last_name}
   </h4>
 
-  {/* Fila 3: total + descuento + botones */}
+  {/* Fila 3: total + pago + botones */}
   <div className="flex items-center justify-between gap-2" onClick={(e) => e.stopPropagation()}>
     <div className="flex items-center gap-2 flex-1 min-w-0">
       <span className="text-base font-bold text-zinc-900 whitespace-nowrap">
         S/ {Number(order.total_amount).toFixed(2)}
       </span>
-      {order.promotion_name && (
-        <span 
-          className="h-6 w-6 flex items-center justify-center bg-amber-50 border border-amber-100 rounded-full text-amber-500"
-          title={order.promotion_name}
-        >
-          <Tag size={10} />
-        </span>
-      )}
+      <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${
+        order.payment_status === 'paid'    ? 'bg-emerald-50 text-emerald-600' :
+        order.payment_status === 'partial' ? 'bg-amber-50 text-amber-600' :
+        'bg-red-50 text-red-500'
+      }`}>
+        {order.payment_status === 'paid' ? 'Pagado' : order.payment_status === 'partial' ? 'Parcial' : 'Sin pagar'}
+      </span>
     </div>
     <div className="flex items-center gap-1 shrink-0">
 <button onClick={(e) => { e.stopPropagation(); viewOrderDetails(order.id); }}
@@ -586,7 +610,7 @@ export default function Orders() {
 
         <div className="hidden md:block overflow-x-auto">
           <Table 
-            headers={['ID', 'Cliente', 'Fecha', 'Total', 'Descuento', 'Estado', 'Acciones']}
+            headers={['ID', 'Cliente', 'Fecha', 'Total', 'Descuento', 'Estado', 'Pago', 'Acciones']}
             loading={loading}
             emptyMessage="No se encontraron órdenes"
           >
@@ -622,6 +646,16 @@ export default function Orders() {
                     order.status === 'shipped'   ? <><Truck size={11} /> Enviado</> :
                     order.status === 'cancelled' ? <><X size={11} /> Cancelada</> :
                     <><Clock size={11} /> Pendiente</>}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider whitespace-nowrap ${
+                    order.payment_status === 'paid'    ? 'bg-emerald-50 text-emerald-600' :
+                    order.payment_status === 'partial' ? 'bg-amber-50 text-amber-600' :
+                    'bg-red-50 text-red-500'
+                  }`}>
+                    <CreditCard size={11} />
+                    {order.payment_status === 'paid' ? 'Pagado' : order.payment_status === 'partial' ? 'Parcial' : 'Sin pagar'}
                   </span>
                 </TableCell>
                 <TableCell align="right">
@@ -1135,6 +1169,61 @@ export default function Orders() {
                   </div>
                 </div>
               </div>
+
+            {/* Payment section */}
+            <div className="border border-zinc-100 rounded-2xl p-4 space-y-3">
+              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                <CreditCard size={11} /> Registro de Pago
+              </p>
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="flex-1 min-w-[130px]">
+                  <Select
+                    label="Estado de Pago"
+                    size="sm"
+                    value={paymentStatus}
+                    onChange={setPaymentStatus}
+                    options={[
+                      { value: 'unpaid',  label: 'Sin pagar' },
+                      { value: 'partial', label: 'Pago parcial' },
+                      { value: 'paid',    label: 'Pagado' },
+                    ]}
+                  />
+                </div>
+                {paymentStatus !== 'unpaid' && (
+                  <div className="flex-1 min-w-[130px]">
+                    <Select
+                      label="Método de Pago"
+                      size="sm"
+                      value={paymentMethod}
+                      onChange={setPaymentMethod}
+                      options={[
+                        { value: '',          label: 'Sin especificar' },
+                        { value: 'cash',      label: 'Efectivo' },
+                        { value: 'transfer',  label: 'Transferencia' },
+                        { value: 'yape',      label: 'Yape' },
+                        { value: 'plin',      label: 'Plin' },
+                        { value: 'other',     label: 'Otro' },
+                      ]}
+                    />
+                  </div>
+                )}
+                <Button
+                  size="sm"
+                  onClick={handleUpdatePayment}
+                  loading={isSavingPayment}
+                  icon={Save}
+                  className="h-[38px] shrink-0"
+                >
+                  Guardar
+                </Button>
+              </div>
+              {orderDetails.paid_at && (
+                <p className="text-xs text-emerald-600 flex items-center gap-1">
+                  <CheckCircle size={11} />
+                  Pagado el {new Date(orderDetails.paid_at).toLocaleDateString()}
+                </p>
+              )}
+            </div>
 
             {/* Desktop table */}
             <div className="hidden md:block border border-zinc-100 rounded-2xl overflow-hidden">
