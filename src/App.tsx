@@ -83,7 +83,7 @@ export default function App() {
 
         {/* Sidebar Container */}
         <div className={`
-          fixed inset-y-0 left-0 z-50 w-full lg:w-52 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+          fixed inset-y-0 left-0 z-50 w-full lg:w-56 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}>
           <Sidebar user={user} onLogout={handleLogout} onClose={() => setIsSidebarOpen(false)} />

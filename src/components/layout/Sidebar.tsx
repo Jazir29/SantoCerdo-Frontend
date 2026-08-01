@@ -39,7 +39,7 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
   ];
 
   return (
-    <div className="w-full lg:w-52 bg-white border-r border-zinc-200 h-screen flex flex-col shadow-2xl lg:shadow-none">
+    <div className="w-full lg:w-56 bg-white border-r border-zinc-200 h-screen flex flex-col shadow-2xl lg:shadow-none">
       {/* Logo */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
