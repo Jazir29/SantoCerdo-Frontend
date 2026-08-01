@@ -120,17 +120,17 @@ export default function Dashboard() {
             <Activity size={10} strokeWidth={3} />
             <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em]">Sistema de Control v2.4</span>
           </div>
-          <h1 className="text-xl md:text-2xl font-bold text-zinc-900 tracking-tight">Panel de Control</h1>
-          <p className="text-zinc-500 text-[10px] md:text-xs font-medium max-w-2xl">
+          <h1 className="text-2xl md:text-4xl font-bold text-zinc-900 tracking-tight">Panel de Control</h1>
+          <p className="text-zinc-500 text-[10px] md:text-sm font-medium max-w-2xl">
             Métricas operativas y financieras en tiempo real para la gestión de producción artesanal.
           </p>
         </div>
-        <div className="flex flex-row items-center gap-3 md:gap-4">
+        <div className="flex flex-row items-center gap-3 md:gap-6">
           <div className="text-left hidden sm:block">
             <p className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold">Última Actualización</p>
-            <p className="text-xs font-bold text-zinc-800">13 MAR 2026 — 15:36</p>
+            <p className="text-xs md:text-sm font-bold text-zinc-800">13 MAR 2026 — 15:36</p>
           </div>
-          <button className="flex-1 sm:flex-none bg-zinc-900 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg border border-zinc-700">
+          <button className="flex-1 sm:flex-none bg-zinc-900 text-white px-5 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[9px] md:text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg border border-zinc-700">
             Exportar Reporte
           </button>
         </div>
@@ -256,7 +256,7 @@ export default function Dashboard() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: i * 0.1 }}
-      className={`p-3 md:p-5 flex flex-col items-center md:items-start min-h-[100px] md:min-h-[130px] ${
+      className={`px-3 py-3 md:px-4 md:py-4 flex flex-col items-center md:items-start min-h-[100px] md:min-h-[130px] ${
         i === 0 ? 'order-5 md:order-1 col-span-2 sm:col-span-1' :
         i === 1 ? 'order-3 md:order-2' :
         i === 2 ? 'order-2 md:order-3' :
@@ -274,7 +274,7 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <h3 className="text-lg md:text-2xl font-bold text-zinc-900 tracking-tight leading-none mt-2 md:mt-3 md:self-center">
+      <h3 className="text-xl md:text-3xl font-bold text-zinc-900 tracking-tight leading-none mt-2 md:mt-3 md:self-center">
         {stat.value}
       </h3>
 
@@ -303,7 +303,7 @@ export default function Dashboard() {
         >
           <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4 md:mb-5">
             <div>
-              <h3 className="text-base md:text-lg font-bold text-zinc-900">Evolución de Rendimiento</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-zinc-900">Evolución de Rendimiento</h3>
               <p className="text-[9px] md:text-[10px] text-zinc-400 mt-0.5 uppercase tracking-[0.2em] font-black">Ingresos vs Volumen de Órdenes</p>
             </div>
             <div className="flex gap-4 md:gap-6">
@@ -317,7 +317,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="h-[220px] md:h-[280px] w-full">
+          <div className="h-[300px] md:h-[380px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={stats?.salesData || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -387,12 +387,12 @@ export default function Dashboard() {
               <PieChartIcon size={15} />
             </div>
             <div>
-              <h3 className="text-base md:text-lg font-bold text-zinc-900">Estado Operativo</h3>
+              <h3 className="text-lg md:text-xl font-bold text-zinc-900">Estado Operativo</h3>
               <p className="text-[9px] md:text-[10px] text-zinc-400 mt-0.5 uppercase tracking-[0.2em] font-black">Distribución de Órdenes</p>
             </div>
           </div>
           <div className="flex-1 flex flex-col justify-center">
-            <div className="h-44 md:h-52 w-full">
+            <div className="h-60 md:h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -431,7 +431,7 @@ export default function Dashboard() {
                     <p className="text-[8px] md:text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-1">
                       {labels[item.name] || item.name}
                     </p>
-                    <p className="text-lg md:text-xl font-bold text-zinc-900">{item.value}</p>
+                    <p className="text-xl md:text-2xl font-bold text-zinc-900">{item.value}</p>
                   </div>
                 );
               })}
@@ -609,18 +609,18 @@ export default function Dashboard() {
               </div>
               <div className="space-y-1">
                 <p className="text-zinc-500 text-[9px] md:text-[10px] uppercase tracking-widest font-black">Líder en Ventas</p>
-                <h4 className="text-xl md:text-2xl font-bold text-white leading-tight tracking-tight">{stats.topProduct.name}</h4>
+                <h4 className="text-2xl md:text-3xl font-bold text-white leading-tight tracking-tight">{stats.topProduct.name}</h4>
               </div>
               <div className="mt-5 pt-4 border-t border-zinc-800 flex justify-between items-end">
                 <div>
                   <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest font-black mb-1">Unidades Vendidas</p>
-                  <p className="text-2xl md:text-3xl font-bold text-orange-500 tracking-tighter">
+                  <p className="text-3xl md:text-4xl font-bold text-orange-500 tracking-tighter">
                     {stats.topProduct.total_sold}<span className="text-xs ml-1 font-black">UND</span>
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest font-black mb-1">Total en Ventas</p>
-                  <p className="text-lg md:text-xl font-bold text-amber-400 tracking-tighter">
+                  <p className="text-xl md:text-2xl font-bold text-amber-400 tracking-tighter">
                     S/ {Number(stats.topProduct.total_revenue || 0).toLocaleString()}
                   </p>
                 </div>
