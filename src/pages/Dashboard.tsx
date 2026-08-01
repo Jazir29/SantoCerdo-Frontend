@@ -136,7 +136,7 @@ export default function Dashboard() {
       />
 
       {/* Filter Bar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 bg-white p-2 md:p-3 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
         <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 rounded-xl border border-zinc-100 shrink-0">
           <Filter size={12} className="text-zinc-400" />
           <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest">Filtros</span>

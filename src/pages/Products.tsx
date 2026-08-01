@@ -140,7 +140,7 @@ export default function Products() {
         }
       />
 
-      <div className="flex items-center bg-white px-2 py-1 md:p-3 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
+      <div className="flex items-center bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
         <div className="relative flex-1">
           <Input
             value={searchTerm}
