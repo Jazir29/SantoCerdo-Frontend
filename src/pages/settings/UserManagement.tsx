@@ -161,10 +161,10 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="bg-zinc-50/50">
-                                            <th className="px-6 py-4 text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Usuario</th>
-                                            <th className="px-6 py-4 text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Nombre</th>
-                                            <th className="px-6 py-4 text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Rol</th>
-                                            <th className="px-6 py-4 text-[11px] font-bold text-zinc-400 uppercase tracking-widest text-right">Acciones</th>
+                                            <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Usuario</th>
+                                            <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Nombre</th>
+                                            <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Rol</th>
+                                            <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest text-right">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-zinc-100">
@@ -179,7 +179,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                                         </div>
                                                         <span className="font-bold text-zinc-900 text-sm">{u.username}</span>
                                                         {u.id === currentUser.id && (
-                                                            <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Tú</span>
+                                                            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Tú</span>
                                                         )}
                                                     </div>
                                                 </td>
@@ -187,7 +187,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                                     {u.first_name ? `${u.first_name} ${u.last_name}` : u.name}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${u.role === 'Administrador' ? 'bg-amber-100 text-amber-700' :
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${u.role === 'Administrador' ? 'bg-amber-100 text-amber-700' :
                                                             u.role === 'Vendedor' ? 'bg-blue-100 text-blue-700' :
                                                                 'bg-zinc-100 text-zinc-700'
                                                         }`}>
@@ -267,7 +267,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                     )}
 
                                     <div className="space-y-1.5">
-                                        <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Rol</label>
+                                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">Rol</label>
                                         <select value={role} onChange={(e) => setRole(e.target.value)}
                                             className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none transition-all">
                                             {ROLES.map(r => <option key={r} value={r}>{r}</option>)}

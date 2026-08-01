@@ -72,9 +72,7 @@ const isSm = size === 'sm';
  return (
     <div className={`w-full space-y-1 ${className}`} ref={containerRef}>
       {label && (
-        <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
-          isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
-        }`}>
+        <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-xs">
           {label}
         </label>
       )}
@@ -161,7 +159,7 @@ const isSm = size === 'sm';
   <div className="flex flex-col">
     <span>{option.label}</span>
     {option.subLabel && (
-      <span className={`text-[9px] md:text-[10px] font-medium ${isSelected ? 'text-amber-600/70' : 'text-zinc-400'}`}>
+      <span className={`text-2xs md:text-xs font-medium ${isSelected ? 'text-amber-600/70' : 'text-zinc-400'}`}>
         {option.subLabel}
       </span>
     )}
@@ -177,7 +175,7 @@ const isSm = size === 'sm';
         </AnimatePresence>
       </div>
 
-      {error && <p className="text-[10px] text-red-500 ml-1 font-bold uppercase tracking-wider">{error}</p>}
+      {error && <p className="text-xs text-red-500 ml-1 font-bold uppercase tracking-wider">{error}</p>}
     </div>
   );
 };

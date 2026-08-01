@@ -145,7 +145,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     return (
       <div className="grid grid-cols-7 mb-2">
         {days.map((day, i) => (
-          <div key={i} className="text-[10px] font-black text-zinc-400 uppercase text-center py-2">
+          <div key={i} className="text-xs font-black text-zinc-400 uppercase text-center py-2">
             {day}
           </div>
         ))}
@@ -261,9 +261,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   return (
     <div className={`w-full space-y-1.5 ${className}`} ref={containerRef}>
       {label && (
-        <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
-          isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
-        }`}>
+        <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-xs">
           {label}
         </label>
       )}
@@ -343,7 +341,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                       setCurrentMonth(today);
                       handleDateClick(today);
                     }}
-                    className="text-[10px] font-black text-amber-500 uppercase tracking-widest hover:text-amber-600 transition-colors py-1 px-4"
+                    className="text-xs font-black text-amber-500 uppercase tracking-widest hover:text-amber-600 transition-colors py-1 px-4"
                   >
                     Hoy
                   </button>
@@ -354,7 +352,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         </AnimatePresence>
       </div>
 
-      {error && <p className="text-[10px] font-bold text-red-500 uppercase tracking-tight ml-1">{error}</p>}
+      {error && <p className="text-xs font-bold text-red-500 uppercase tracking-tight ml-1">{error}</p>}
     </div>
   );
 };

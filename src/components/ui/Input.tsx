@@ -24,14 +24,13 @@ export const Input: React.FC<InputProps> = ({
   ...props
 }) => {
   const isView = variant === 'view';
+  const isGhost = variant === 'ghost';
   const isSm = size === 'sm';
 
   return (
     <div className="space-y-1 w-full">
       {label && (
-        <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
-          isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
-        }`}>
+        <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-xs">
           {label}
         </label>
       )}
@@ -42,7 +41,7 @@ export const Input: React.FC<InputProps> = ({
             className={`absolute top-1/2 -translate-y-1/2 transition-colors ${
               isSm ? 'left-3 md:left-4' : 'left-4'
             } ${
-              error ? 'text-red-400' : isView ? 'text-zinc-400' : 'text-zinc-400 group-focus-within:text-amber-500'
+              error ? 'text-red-400' : (isView || isGhost) ? 'text-zinc-400' : 'text-zinc-400 group-focus-within:text-amber-500'
             }`}
           />
         )}
@@ -59,6 +58,8 @@ export const Input: React.FC<InputProps> = ({
             )}
             ${isView
               ? 'bg-white border border-zinc-200 font-bold text-zinc-900 cursor-default'
+              : isGhost
+              ? 'bg-transparent border-transparent text-zinc-900 focus:ring-0'
               : `bg-zinc-50 border focus:ring-4 ${
                   error
                     ? 'border-red-200 focus:border-red-500 focus:ring-red-500/10 text-red-900'
@@ -77,7 +78,7 @@ export const Input: React.FC<InputProps> = ({
         )}
       </div>
       {error && (
-        <p className="text-[10px] font-bold text-red-500 uppercase tracking-tight ml-1">
+        <p className="text-xs font-bold text-red-500 uppercase tracking-tight ml-1">
           {error}
         </p>
       )}

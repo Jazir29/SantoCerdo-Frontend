@@ -443,8 +443,8 @@ export default function Orders() {
   };
 
   return (
-    <div className="space-y-8">
-      <PageHeader 
+    <div className="space-y-5">
+      <PageHeader
         title="Órdenes"
         subtitle="Gestiona los pedidos de manteca"
         action={
@@ -473,7 +473,7 @@ export default function Orders() {
               </div>
               <button
                 onClick={() => setIsFilterModalOpen(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-50 rounded-lg border border-zinc-100 text-zinc-500 text-[10px] font-bold shrink-0"
+                className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-50 rounded-lg border border-zinc-100 text-zinc-500 text-xs font-bold shrink-0"
               >
                 <Filter size={11} />
                 Filtros
@@ -483,46 +483,45 @@ export default function Orders() {
               </button>
             </div>
 
-            {/* ── DESKTOP: filtros completos ── */}
-            <div className="hidden md:block px-4 py-2.5">
-              <div className="flex flex-wrap gap-4 items-end">
-                <div className="flex-1 min-w-0">
-                  <Input
-                    label="Buscar"
-                    placeholder="Buscar orden..."
-                    icon={Search}
-                    className="w-full"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <div className="w-48">
-                  <Select
-                    label="Estado"
-                    value={filterStatus}
-                    onChange={setFilterStatus}
-                    options={[
-                      { value: 'all', label: 'Todos los estados' },
-                      { value: 'pending', label: 'Pendiente' },
-                      { value: 'shipped', label: 'Enviado' },
-                      { value: 'completed', label: 'Completado' },
-                      { value: 'cancelled', label: 'Cancelada' }
-                    ]}
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <div className="w-44">
-                    <DatePicker label="Desde" value={filterStartDate} onChange={setFilterStartDate}/>
-                  </div>
-                  <div className="w-44">
-                    <DatePicker label="Hasta" value={filterEndDate} onChange={setFilterEndDate}/>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm" onClick={() => { setSearchTerm(''); setFilterStatus('all'); setFilterStartDate(''); setFilterEndDate(''); }}
-                  className="text-zinc-400 hover:text-zinc-600 h-[38px]">
-                  Limpiar
-                </Button>
+            {/* ── DESKTOP: filtros ghost en línea ── */}
+            <div className="hidden md:flex items-center divide-x divide-zinc-100 py-1">
+              <div className="flex-1 min-w-0 px-2">
+                <Input
+                  placeholder="Buscar orden..."
+                  icon={Search}
+                  variant="ghost"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
+              <div className="w-52 px-2">
+                <Select
+                  placeholder="Todos los estados"
+                  icon={Filter}
+                  variant="ghost"
+                  value={filterStatus}
+                  onChange={setFilterStatus}
+                  options={[
+                    { value: 'all', label: 'Todos los estados' },
+                    { value: 'pending', label: 'Pendiente' },
+                    { value: 'shipped', label: 'Enviado' },
+                    { value: 'completed', label: 'Completado' },
+                    { value: 'cancelled', label: 'Cancelada' }
+                  ]}
+                />
+              </div>
+              <div className="flex items-center gap-2 px-2">
+                <DatePicker placeholder="Desde" value={filterStartDate} onChange={setFilterStartDate} variant="ghost" />
+                <span className="text-zinc-300 text-2xs font-black shrink-0">al</span>
+                <DatePicker placeholder="Hasta" value={filterEndDate} onChange={setFilterEndDate} variant="ghost" />
+              </div>
+              <button
+                onClick={() => { setSearchTerm(''); setFilterStatus('all'); setFilterStartDate(''); setFilterEndDate(''); }}
+                className="px-3 py-2 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
+                title="Limpiar filtros"
+              >
+                <X size={14} />
+              </button>
             </div>
           </div>
 
@@ -541,14 +540,14 @@ export default function Orders() {
   {/* Fila 1: ID + fecha + estado */}
   <div className="flex items-center justify-between mb-2">
     <div className="flex items-center gap-2">
-      <span className="text-[11px] font-mono font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-lg">
+      <span className="text-xs font-mono font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-lg">
         #{(order.id || '').toString().padStart(4, '0')}
       </span>
-      <span className="text-[11px] text-zinc-400 flex items-center gap-1">
+      <span className="text-xs text-zinc-400 flex items-center gap-1">
         <Calendar size={10} /> {new Date(order.created_at).toLocaleDateString()}
       </span>
     </div>
-    <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
       order.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
       order.status === 'shipped' ? 'bg-blue-50 text-blue-600' :
       order.status === 'cancelled' ? 'bg-red-50 text-red-600' :
@@ -571,7 +570,7 @@ export default function Orders() {
       <span className="text-base font-bold text-zinc-900 whitespace-nowrap">
         S/ {Number(order.total_amount).toFixed(2)}
       </span>
-      <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${
+      <span className={`px-1.5 py-0.5 rounded-md text-xs font-bold ${
         order.payment_status === 'paid'    ? 'bg-emerald-50 text-emerald-600' :
         order.payment_status === 'partial' ? 'bg-amber-50 text-amber-600' :
         'bg-red-50 text-red-500'
@@ -616,24 +615,24 @@ export default function Orders() {
           >
             {(orders || []).map((order) => (
               <TableRow key={order.id}>
-                <TableCell className="font-mono text-[10px] md:text-xs text-zinc-500">#{(order.id || '').toString().padStart(4, '0')}</TableCell>
+                <TableCell className="font-mono text-xs text-zinc-500">#{(order.id || '').toString().padStart(4, '0')}</TableCell>
                 <TableCell className="font-bold text-zinc-900 text-xs md:text-sm whitespace-nowrap">{order.customer_name} {order.customer_last_name}</TableCell>
                 <TableCell className="text-zinc-500 text-xs md:text-sm whitespace-nowrap">{new Date(order.created_at).toLocaleDateString()}</TableCell>
                 <TableCell className="font-bold text-zinc-900 text-xs md:text-sm whitespace-nowrap">S/ {order.total_amount.toLocaleString()}</TableCell>
                 <TableCell>
                   {order.promotion_name ? (
-                    <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-amber-50 border border-amber-100 rounded-lg text-[10px] font-black uppercase tracking-wider text-amber-600 whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-amber-50 border border-amber-100 rounded-lg text-xs font-black uppercase tracking-wider text-amber-600 whitespace-nowrap">
                       <Tag size={10} />
                       {order.promotion_name}
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-300">
+                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                       No aplicado
                     </span>
                   )}
                 </TableCell>
                 <TableCell>
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider whitespace-nowrap ${
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider whitespace-nowrap ${
                     order.status === 'completed'
                       ? 'bg-emerald-50 text-emerald-600'
                       : order.status === 'shipped'
@@ -649,7 +648,7 @@ export default function Orders() {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider whitespace-nowrap ${
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider whitespace-nowrap ${
                     order.payment_status === 'paid'    ? 'bg-emerald-50 text-emerald-600' :
                     order.payment_status === 'partial' ? 'bg-amber-50 text-amber-600' :
                     'bg-red-50 text-red-500'
@@ -885,7 +884,7 @@ export default function Orders() {
           {/* Order Items */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+              <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">
                 Productos
               </label>
               <Button 
@@ -1152,7 +1151,7 @@ export default function Orders() {
                     />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1 ml-1">Estado</p>
+                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1 ml-1">Estado</p>
                     <div>
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold ${
                         orderDetails.status === 'completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
@@ -1172,7 +1171,7 @@ export default function Orders() {
 
             {/* Payment section */}
             <div className="border border-zinc-100 rounded-2xl p-4 space-y-3">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+              <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
                 <CreditCard size={11} /> Registro de Pago
               </p>
               <div className="flex flex-wrap items-end gap-3">
@@ -1230,10 +1229,10 @@ export default function Orders() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-zinc-50 border-b border-zinc-100">
-                    <th className="p-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Producto</th>
-                    <th className="p-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-center">Cant.</th>
-                    <th className="p-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Precio</th>
-                    <th className="p-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Total</th>
+                    <th className="p-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Producto</th>
+                    <th className="p-4 text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">Cant.</th>
+                    <th className="p-4 text-xs font-bold text-zinc-400 uppercase tracking-widest text-right">Precio</th>
+                    <th className="p-4 text-xs font-bold text-zinc-400 uppercase tracking-widest text-right">Total</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-50">
@@ -1373,7 +1372,7 @@ export default function Orders() {
               >
                 <div>
                   <p 
-                    className="text-[10px] font-black uppercase tracking-widest mb-1"
+                    className="text-xs font-black uppercase tracking-widest mb-1"
                     style={{ color: '#a1a1aa' }}
                   >
                     Número de Orden
@@ -1382,7 +1381,7 @@ export default function Orders() {
                 </div>
                 <div className="text-right">
                   <p 
-                    className="text-[10px] font-black uppercase tracking-widest mb-1"
+                    className="text-xs font-black uppercase tracking-widest mb-1"
                     style={{ color: '#a1a1aa' }}
                   >
                     Fecha de Emisión
@@ -1394,7 +1393,7 @@ export default function Orders() {
               <div className="grid grid-cols-1 gap-8">
                 <section>
                   <h2 
-                    className="text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2"
+                    className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2"
                     style={{ color: '#f59e0b' }}
                   >
                     <User size={12} /> Información del Cliente
@@ -1402,7 +1401,7 @@ export default function Orders() {
                   <div className="space-y-3">
                     <div>
                       <p 
-                        className="text-[10px] font-bold uppercase"
+                        className="text-xs font-bold uppercase"
                         style={{ color: '#a1a1aa' }}
                       >
                         Nombre / Razón Social
@@ -1416,7 +1415,7 @@ export default function Orders() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p 
-                          className="text-[10px] font-bold uppercase"
+                          className="text-xs font-bold uppercase"
                           style={{ color: '#a1a1aa' }}
                         >
                           {orderDetails.type === 'empresa' ? 'RUC' : 'DNI'}
@@ -1425,7 +1424,7 @@ export default function Orders() {
                       </div>
                       <div>
                         <p 
-                          className="text-[10px] font-bold uppercase"
+                          className="text-xs font-bold uppercase"
                           style={{ color: '#a1a1aa' }}
                         >
                           Celular
@@ -1438,7 +1437,7 @@ export default function Orders() {
 
                 <section>
                   <h2 
-                    className="text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2"
+                    className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2"
                     style={{ color: '#f59e0b' }}
                   >
                     <MapPin size={12} /> Detalles de Envío
@@ -1446,7 +1445,7 @@ export default function Orders() {
                                    <div className="grid grid-cols-3 gap-6">
                       <div>
                         <p 
-                          className="text-[10px] font-bold uppercase"
+                          className="text-xs font-bold uppercase"
                           style={{ color: '#a1a1aa' }}
                         >
                           Departamento
@@ -1455,7 +1454,7 @@ export default function Orders() {
                       </div>
                       <div>
                         <p 
-                          className="text-[10px] font-bold uppercase"
+                          className="text-xs font-bold uppercase"
                           style={{ color: '#a1a1aa' }}
                         >
                           Provincia
@@ -1464,7 +1463,7 @@ export default function Orders() {
                       </div>
                       <div>
                         <p 
-                          className="text-[10px] font-bold uppercase"
+                          className="text-xs font-bold uppercase"
                           style={{ color: '#a1a1aa' }}
                         >
                           Distrito
@@ -1474,7 +1473,7 @@ export default function Orders() {
                     </div>
                     <div>
                       <p 
-                        className="text-[10px] font-bold uppercase"
+                        className="text-xs font-bold uppercase"
                         style={{ color: '#a1a1aa' }}
                       >
                         Dirección Exacta
@@ -1483,7 +1482,7 @@ export default function Orders() {
                     </div>
                     <div>
                       <p 
-                        className="text-[10px] font-bold uppercase"
+                        className="text-xs font-bold uppercase"
                         style={{ color: '#a1a1aa' }}
                       >
                         Referencia
@@ -1499,7 +1498,7 @@ export default function Orders() {
   
                   <section className="pt-6 border-t" style={{ borderColor: '#f4f4f5' }}>
                     <h2 
-                      className="text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2"
+                      className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2"
                       style={{ color: '#f59e0b' }}
                     >
                       <Package size={12} /> Productos
@@ -1520,7 +1519,7 @@ export default function Orders() {
                 style={{ borderColor: '#f4f4f5' }}
               >
                 <p 
-                  className="text-[10px] font-black uppercase tracking-[0.2em]"
+                  className="text-xs font-black uppercase tracking-[0.2em]"
                   style={{ color: '#d4d4d8' }}
                 >
                   Santo Cerdo - Manteca Artesanal 100% Pura

@@ -21,9 +21,7 @@ export const Textarea: React.FC<TextareaProps> = ({
   return (
     <div className="space-y-1 w-full">
       {label && (
-        <label className={`font-bold text-zinc-400 uppercase tracking-widest ml-1 ${
-          isSm ? 'text-[10px]' : 'text-[10px] md:text-[11px]'
-        }`}>
+        <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-xs">
           {label}
         </label>
       )}
@@ -45,7 +43,7 @@ export const Textarea: React.FC<TextareaProps> = ({
         {...props}
       />
       {error && (
-        <p className="text-[10px] font-bold text-red-500 uppercase tracking-tight ml-1 animate-in fade-in slide-in-from-top-1">
+        <p className="text-xs font-bold text-red-500 uppercase tracking-tight ml-1 animate-in fade-in slide-in-from-top-1">
           {error}
         </p>
       )}

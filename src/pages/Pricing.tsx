@@ -395,7 +395,7 @@ export default function Pricing() {
                   size="sm"
                 />
                 {batchYield > 0 && (
-                  <p className="text-[10px] text-zinc-400 mt-1 ml-1">
+                  <p className="text-xs text-zinc-400 mt-1 ml-1">
                     ≈ {(batchYield / 1000).toFixed(2)} kg
                   </p>
                 )}
@@ -458,47 +458,47 @@ export default function Pricing() {
                 <div className="space-y-4 md:space-y-6">
                   <div className="grid grid-cols-2 gap-3 md:gap-4 border-b border-zinc-800 pb-3 md:pb-4">
                     <div>
-                      <p className="text-zinc-400 text-[10px] md:text-xs mb-1">Costo (1 kg)</p>
+                      <p className="text-zinc-400 text-xs mb-1">Costo (1 kg)</p>
                       <p className="text-lg md:text-2xl font-medium text-zinc-300">S/ {safe(costPerKg).toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-zinc-400 text-[10px] md:text-xs mb-1">Costo (1 und)</p>
+                      <p className="text-zinc-400 text-xs mb-1">Costo (1 und)</p>
                       <p className="text-lg md:text-2xl font-medium text-zinc-300">S/ {safe(costPerUnit).toFixed(2)}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3 md:gap-4 border-b border-zinc-800 pb-3 md:pb-4">
                     <div>
-                      <p className="text-zinc-400 text-[10px] md:text-xs mb-1">Ganancia (1 kg)</p>
+                      <p className="text-zinc-400 text-xs mb-1">Ganancia (1 kg)</p>
                       <p className="text-lg md:text-2xl font-medium text-emerald-400">S/ {safe(profitPerKg).toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-zinc-400 text-[10px] md:text-xs mb-1">Ganancia (1 und)</p>
+                      <p className="text-zinc-400 text-xs mb-1">Ganancia (1 und)</p>
                       <p className="text-lg md:text-2xl font-medium text-emerald-400">S/ {safe(profitPerUnit).toFixed(2)}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3 md:gap-4">
                     <div>
-                      <p className="text-zinc-400 text-[10px] md:text-xs mb-1 uppercase tracking-wider font-bold">Precio (Kg)</p>
+                      <p className="text-zinc-400 text-xs mb-1 uppercase tracking-wider font-bold">Precio (Kg)</p>
                       <p className="text-2xl md:text-3xl font-black text-white">S/ {safe(suggestedPricePerKg).toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-zinc-400 text-[10px] md:text-xs mb-1 uppercase tracking-wider font-bold">Precio (Und)</p>
+                      <p className="text-zinc-400 text-xs mb-1 uppercase tracking-wider font-bold">Precio (Und)</p>
                       <p className="text-2xl md:text-3xl font-black text-white">S/ {safe(suggestedPricePerUnit).toFixed(2)}</p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-zinc-400 text-[10px] md:text-xs mb-1 uppercase tracking-wider font-bold">Unidades del lote</p>
+                    <p className="text-zinc-400 text-xs mb-1 uppercase tracking-wider font-bold">Unidades del lote</p>
                     <p className="text-base md:text-lg font-bold text-amber-400">{Math.floor(calculatedUnits)} unidades de {unitWeightGrams}g</p>
                   </div>
                   {suggestedPricePerKg > 0 && isFinite(suggestedPricePerKg) && (
                     <div className="pt-2">
-                      <p className="text-[10px] text-zinc-500 mb-2 font-medium uppercase tracking-wider">Composición del Precio</p>
+                      <p className="text-xs text-zinc-500 mb-2 font-medium uppercase tracking-wider">Composición del Precio</p>
                       <div className="h-2 md:h-3 w-full bg-zinc-800 rounded-full overflow-hidden flex">
                         <div style={{ width: `${ingPct}%` }} className="bg-blue-500" />
                         <div style={{ width: `${opPct}%` }} className="bg-purple-500" />
                         <div style={{ width: `${profPct}%` }} className="bg-emerald-500" />
                       </div>
-                      <div className="flex justify-between mt-2 text-[10px] md:text-xs font-medium">
+                      <div className="flex justify-between mt-2 text-xs font-medium">
                         <div className="flex items-center gap-1 text-zinc-400"><div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-blue-500" />Insumos</div>
                         <div className="flex items-center gap-1 text-zinc-400"><div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-purple-500" />Operativo</div>
                         <div className="flex items-center gap-1 text-zinc-400"><div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500" />Ganancia</div>
@@ -521,7 +521,7 @@ export default function Pricing() {
                       <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-amber-500 flex items-center justify-center shrink-0">
                         <CheckCircle2 size={9} className="text-white" />
                       </div>
-                      <p className="text-[10px] md:text-xs font-bold text-amber-700">
+                      <p className="text-xs font-bold text-amber-700">
                         Coincidencia encontrada ({unitWeightGrams}g)
                       </p>
                     </div>
@@ -543,7 +543,7 @@ export default function Pricing() {
                           />
                           <div>
                             <p className="text-xs md:text-sm font-bold text-zinc-900">{p.name}</p>
-                            <p className="text-[10px] md:text-xs text-zinc-400 mt-0.5">
+                            <p className="text-xs text-zinc-400 mt-0.5">
                               Stock actual: {p.stock} + {Math.floor(calculatedUnits)} und
                             </p>
                           </div>
@@ -564,7 +564,7 @@ export default function Pricing() {
                         />
                         <div>
                           <p className="text-xs md:text-sm font-bold text-zinc-900">Crear como producto nuevo</p>
-                          <p className="text-[10px] md:text-xs text-zinc-400 mt-0.5">Se generará una nueva entrada en el catálogo</p>
+                          <p className="text-xs text-zinc-400 mt-0.5">Se generará una nueva entrada en el catálogo</p>
                         </div>
                       </label>
                     </div>
@@ -575,7 +575,7 @@ export default function Pricing() {
                 {matchingProducts.length === 0 && (
                   <div className="flex items-center gap-2 px-3 py-1.5 md:py-2 bg-blue-50 border border-blue-100 rounded-xl">
                     <Plus size={12} className="text-blue-500 shrink-0" />
-                    <p className="text-[10px] md:text-xs font-medium text-blue-600">
+                    <p className="text-xs font-medium text-blue-600">
                       Nuevo peso detectado: se creará un producto nuevo.
                     </p>
                   </div>
@@ -659,19 +659,19 @@ export default function Pricing() {
                             <div className="px-4 pb-4 space-y-3 border-t border-zinc-100 pt-3">
                               <div className="grid grid-cols-2 gap-3">
                                 <div className="bg-zinc-50 rounded-xl p-3">
-                                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Costo/und</p>
+                                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Costo/und</p>
                                   <p className="text-base font-bold text-zinc-900">S/ {Number(batch.cost_per_unit).toFixed(2)}</p>
                                 </div>
                                 <div className="bg-zinc-50 rounded-xl p-3">
-                                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Lote total</p>
+                                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Lote total</p>
                                   <p className="text-base font-bold text-zinc-900">S/ {Number(batch.total_batch_cost).toFixed(2)}</p>
                                 </div>
                                 <div className="bg-zinc-50 rounded-xl p-3">
-                                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Rendimiento</p>
+                                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Rendimiento</p>
                                   <p className="text-base font-bold text-zinc-900">{(batch.batch_yield_grams / 1000).toFixed(2)} kg kg</p>
                                 </div>
                                 <div className="bg-emerald-50 rounded-xl p-3">
-                                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Ganancia/und</p>
+                                  <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Ganancia/und</p>
                                   <p className="text-base font-bold text-emerald-700">
                                     S/ {(Number(batch.price_per_unit) - Number(batch.cost_per_unit)).toFixed(2)}
                                   </p>
@@ -680,7 +680,7 @@ export default function Pricing() {
 
                               {batch.ingredients_detail?.length > 0 && (
                                 <div>
-                                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-2">Insumos</p>
+                                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Insumos</p>
                                   <div className="space-y-1">
                                     {batch.ingredients_detail.map((ing, i) => (
                                       <div key={i} className="flex justify-between text-xs text-zinc-600">
@@ -694,7 +694,7 @@ export default function Pricing() {
 
                               {batch.operations_detail?.length > 0 && (
                                 <div>
-                                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-2">Operativos</p>
+                                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Operativos</p>
                                   <div className="space-y-1">
                                     {batch.operations_detail.map((op, i) => (
                                       <div key={i} className="flex justify-between text-xs text-zinc-600">
@@ -708,7 +708,7 @@ export default function Pricing() {
 
                               {batch.notes && (
                                 <div className="bg-zinc-50 rounded-xl p-3">
-                                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Notas</p>
+                                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Notas</p>
                                   <p className="text-xs text-zinc-600 italic">{batch.notes}</p>
                                 </div>
                               )}
@@ -751,15 +751,15 @@ export default function Pricing() {
           {/* Métricas del lote */}
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Rendimiento Lote</p>
+              <p className="text-zinc-400 text-xs uppercase font-bold tracking-wider mb-1">Rendimiento Lote</p>
               <p className="text-base font-bold text-zinc-900">{batchYield}g</p>
             </div>
             <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Peso Unitario</p>
+              <p className="text-zinc-400 text-xs uppercase font-bold tracking-wider mb-1">Peso Unitario</p>
               <p className="text-base font-bold text-zinc-900">{unitWeightGrams}g</p>
             </div>
             <div className="p-3 bg-amber-50 rounded-2xl border border-amber-100">
-              <p className="text-amber-600 text-[10px] uppercase font-bold tracking-wider mb-1">Stock a Registrar</p>
+              <p className="text-amber-600 text-xs uppercase font-bold tracking-wider mb-1">Stock a Registrar</p>
               <p className="text-base font-bold text-amber-700">{Math.floor(calculatedUnits)} und</p>
             </div>
           </div>
@@ -767,18 +767,18 @@ export default function Pricing() {
           {/* Métricas de precio */}
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Costo Unitario</p>
+              <p className="text-zinc-400 text-xs uppercase font-bold tracking-wider mb-1">Costo Unitario</p>
               <p className="text-base font-bold text-zinc-900">S/ {safe(costPerUnit).toFixed(2)}</p>
             </div>
             <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Sugerido ({margin}%)</p>
+              <p className="text-zinc-400 text-xs uppercase font-bold tracking-wider mb-1">Sugerido ({margin}%)</p>
               <p className="text-base font-bold text-zinc-600">S/ {safe(suggestedPricePerUnit).toFixed(2)}</p>
             </div>
             <div className={`p-3 rounded-2xl border ${(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
               ? 'bg-emerald-50 border-emerald-100'
               : 'bg-amber-50 border-amber-100'
               }`}>
-              <p className={`text-[10px] uppercase font-bold tracking-wider mb-1 ${(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
+              <p className={`text-xs uppercase font-bold tracking-wider mb-1 ${(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
                 ? 'text-emerald-600' : 'text-amber-600'
                 }`}>Margen Real</p>
               <p className={`text-base font-bold ${(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0) >= margin
@@ -786,7 +786,7 @@ export default function Pricing() {
                 }`}>
                 {(editablePrice > 0 ? ((editablePrice - costPerUnit) / editablePrice) * 100 : 0).toFixed(1)}%
               </p>
-              <p className="text-[10px] text-zinc-400">Inicial: {initialRealMargin.toFixed(1)}%</p>
+              <p className="text-xs text-zinc-400">Inicial: {initialRealMargin.toFixed(1)}%</p>
             </div>
           </div>
 
@@ -817,7 +817,7 @@ export default function Pricing() {
             size="sm"
           />
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+            <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">
               Notas del lote (opcional)
             </label>
             <textarea
@@ -856,11 +856,11 @@ export default function Pricing() {
           {/* Info del lote */}
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Unidades a sumar</p>
+              <p className="text-zinc-400 text-xs uppercase font-bold tracking-wider mb-1">Unidades a sumar</p>
               <p className="text-base font-bold text-zinc-900">{Math.floor(calculatedUnits)} und</p>
             </div>
             <div className="p-3 bg-amber-50 rounded-2xl border border-amber-100">
-              <p className="text-amber-600 text-[10px] uppercase font-bold tracking-wider mb-1">Precio actual</p>
+              <p className="text-amber-600 text-xs uppercase font-bold tracking-wider mb-1">Precio actual</p>
               <p className="text-base font-bold text-amber-700">
                 S/ {(() => {
                   const prod = products.find(p => p.id.toString() === selectedProductId);
@@ -886,7 +886,7 @@ export default function Pricing() {
               />
               <div>
                 <p className="text-sm font-bold text-zinc-900">Solo actualizar stock</p>
-                <p className="text-[10px] text-zinc-400 mt-0.5">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   Se suma <span className="font-bold text-zinc-600">{Math.floor(calculatedUnits)} und</span> al stock actual. El precio no cambia.
                 </p>
               </div>
@@ -904,7 +904,7 @@ export default function Pricing() {
               />
               <div>
                 <p className="text-sm font-bold text-zinc-900">Actualizar stock y precio</p>
-                <p className="text-[10px] text-zinc-400 mt-0.5">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   Se suma el stock y podrás ajustar el nuevo precio de venta.
                 </p>
               </div>
@@ -972,20 +972,20 @@ export default function Pricing() {
                 <div className="grid grid-cols-[1fr_48px_1fr] w-full">
                   {/* Anterior */}
                   <div className={`p-3 rounded-xl text-center border ${highlight ? 'bg-zinc-100 border-zinc-200' : 'bg-zinc-50 border-zinc-100'}`}>
-                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-0.5">{label} anterior</p>
+                    <p className="text-2xs font-bold text-zinc-400 uppercase tracking-wider mb-0.5">{label} anterior</p>
                     <p className="text-sm font-black text-zinc-600">{format(prev)}</p>
                   </div>
 
                   {/* Delta */}
                   <div className="flex flex-col items-center justify-center">
-                    <span className="text-[9px] font-black text-zinc-300 tracking-widest">VS</span>
+                    <span className="text-2xs font-black text-zinc-300 tracking-widest">VS</span>
                     {!isFlat && (
-                      <span className={`text-[9px] font-bold leading-tight text-center ${isUp ? 'text-emerald-600' : 'text-red-500'
+                      <span className={`text-2xs font-bold leading-tight text-center ${isUp ? 'text-emerald-600' : 'text-red-500'
                         }`}>
                         {isUp ? '▲' : '▼'}{pct !== undefined ? `${Math.abs(pct).toFixed(1)}%` : `${Math.abs(diff).toFixed(2)}`}
                       </span>
                     )}
-                    {isFlat && <span className="text-[9px] text-zinc-300">—</span>}
+                    {isFlat && <span className="text-2xs text-zinc-300">—</span>}
                   </div>
 
                   {/* Nuevo */}
@@ -993,7 +993,7 @@ export default function Pricing() {
                     : isUp ? 'bg-emerald-50 border-emerald-100'
                       : 'bg-red-50 border-red-100'
                     }`}>
-                    <p className={`text-[9px] font-bold uppercase tracking-wider mb-0.5 ${isFlat ? 'text-zinc-400' : isUp ? 'text-emerald-600' : 'text-red-500'
+                    <p className={`text-2xs font-bold uppercase tracking-wider mb-0.5 ${isFlat ? 'text-zinc-400' : isUp ? 'text-emerald-600' : 'text-red-500'
                       }`}>{label} nuevo</p>
                     <p className={`text-sm font-black ${isFlat ? 'text-zinc-400' : isUp ? 'text-emerald-700' : 'text-red-600'
                       }`}>
@@ -1009,7 +1009,7 @@ export default function Pricing() {
                 {/* Header */}
                 <div className="px-4 py-2.5 bg-zinc-50 border-b border-zinc-100 flex items-center gap-2">
                   <TrendingUp size={13} className="text-zinc-400" />
-                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Comparación de lote</p>
+                  <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Comparación de lote</p>
                 </div>
 
                 <div className="pt-3 space-y-3">
@@ -1050,7 +1050,7 @@ export default function Pricing() {
 
           {/* ── OPCIONES DE PRECIO ── */}
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+            <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">
               Precio de venta
             </label>
 
@@ -1067,7 +1067,7 @@ export default function Pricing() {
               />
               <div>
                 <p className="text-sm font-bold text-zinc-900">Mantener precio anterior</p>
-                <p className="text-[10px] text-zinc-400 mt-0.5">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   El producto seguirá vendiéndose a{' '}
                   <span className="font-bold text-zinc-600">
                     S/ {(() => {
@@ -1092,7 +1092,7 @@ export default function Pricing() {
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-zinc-900">Ingresar nuevo precio</p>
-                <p className="text-[10px] text-zinc-400 mt-0.5">Ajusta el precio de venta para este lote.</p>
+                <p className="text-xs text-zinc-400 mt-0.5">Ajusta el precio de venta para este lote.</p>
               </div>
             </label>
 
@@ -1114,7 +1114,7 @@ export default function Pricing() {
 
           {/* Notas */}
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+            <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">
               Notas del lote (opcional)
             </label>
             <textarea

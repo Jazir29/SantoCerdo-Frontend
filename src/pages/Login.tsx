@@ -186,7 +186,7 @@ export default function Login({ onLogin }: LoginProps) {
 
           <div className="pt-10 flex items-center justify-center gap-6">
             <div className="h-px flex-1 bg-zinc-100" />
-            <span className="text-[10px] text-zinc-300 uppercase tracking-[0.3em] font-bold">Santo Cerdo ERP</span>
+            <span className="text-xs text-zinc-300 uppercase tracking-[0.3em] font-bold">Santo Cerdo ERP</span>
             <div className="h-px flex-1 bg-zinc-100" />
           </div>
         </motion.div>

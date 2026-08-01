@@ -47,8 +47,8 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
             <span className="text-base">🐷</span>
           </div>
           <div>
-            <h1 className="text-[15px] font-black text-zinc-900 tracking-tight">SANTO CERDO</h1>
-            <p className="text-amber-500 text-[9px] font-bold tracking-widest uppercase">Extra Pura</p>
+            <h1 className="text-sm font-black text-zinc-900 tracking-tight">SANTO CERDO</h1>
+            <p className="text-amber-500 text-2xs font-bold tracking-widest uppercase">Extra Pura</p>
           </div>
         </div>
         {onClose && (
@@ -66,7 +66,7 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
         {isSettingsMode ? (
           <>
             <div className="px-3 mb-2">
-              <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Configuración</p>
+              <p className="text-2xs font-bold text-zinc-400 uppercase tracking-widest">Configuración</p>
             </div>
             {settingsItems.map((item) => {
               const Icon     = item.icon;
@@ -79,14 +79,14 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
                       : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900'
                   }`}>
                   <Icon size={15} />
-                  <span className="text-[13px]">{item.label}</span>
+                  <span className="text-sm">{item.label}</span>
                 </Link>
               );
             })}
             <button onClick={onLogout}
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all text-red-500 hover:bg-red-50 hover:text-red-600">
               <LogOut size={15} />
-              <span className="text-[13px] font-medium">Cerrar Sesión</span>
+              <span className="text-sm font-medium">Cerrar Sesión</span>
             </button>
           </>
         ) : (
@@ -101,7 +101,7 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
                     : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900'
                 }`}>
                 <Icon size={15} />
-                <span className="text-[13px]">{item.label}</span>
+                <span className="text-sm">{item.label}</span>
               </Link>
             );
           })
@@ -116,7 +116,7 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 group"
           >
             <ChevronLeft size={15} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="font-bold uppercase tracking-wider text-[11px]">Volver al Menú</span>
+            <span className="font-bold uppercase tracking-wider text-xs">Volver al Menú</span>
           </button>
         )}
         <button
@@ -129,12 +129,12 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
             {user?.first_name?.charAt(0) || user?.name?.charAt(0) || 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-bold text-zinc-900 truncate">
+            <p className="text-sm font-bold text-zinc-900 truncate">
               {user?.first_name
                 ? `${user.first_name} ${user.last_name || ''}`.trim()
                 : user?.name}
             </p>
-            <p className="text-[9px] text-zinc-400 truncate uppercase tracking-wider">
+            <p className="text-2xs text-zinc-400 truncate uppercase tracking-wider">
               {user?.role || 'Administrador'}
             </p>
           </div>

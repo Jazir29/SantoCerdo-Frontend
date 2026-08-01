@@ -252,7 +252,7 @@ export default function Customers() {
   const safeCustomers = Array.isArray(customers) ? customers : [];
 
   return (
-    <div className="space-y-8 relative">
+    <div className="space-y-5 relative">
       <PageHeader
         title="Clientes"
         subtitle="Directorio de panaderías y restaurantes"
@@ -266,7 +266,7 @@ export default function Customers() {
       />
 
       {/* Filter Bar */}
-      <div className="flex items-center bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-xl md:rounded-[2rem] border border-zinc-200 shadow-sm">
+      <div className="flex items-center bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
         
         {/* Búsqueda — siempre visible */}
         <div className="relative flex-1">
@@ -291,7 +291,7 @@ export default function Customers() {
         <div className="hidden md:flex items-center gap-4">
           <div className="flex items-center gap-2 px-4 py-2 bg-zinc-50 rounded-xl border border-zinc-100">
             <Filter size={14} className="text-zinc-400" />
-            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Filtros Activos</span>
+            <span className="text-xs font-black text-zinc-400 uppercase tracking-widest">Filtros Activos</span>
           </div>
           <div className="w-px h-8 bg-zinc-100" />
           <Select value={filterDepartment} onChange={setFilterDepartment} placeholder="Departamento" icon={Map}
@@ -368,16 +368,16 @@ export default function Customers() {
     {customer.type === 'empresa' ? (customer.trade_name || customer.name) : `${customer.name} ${customer.last_name || ''}`}
   </h3>
 
-  <p className="text-[10px] text-zinc-400 font-mono mb-2">
+  <p className="text-xs text-zinc-400 font-mono mb-2">
     {customer.type === 'empresa' ? 'RUC' : 'DNI'}: {customer.document_id || 'N/A'}
   </p>
 
   <div className="space-y-1.5 mb-3">
-    <div className="flex items-center gap-1.5 text-zinc-500 text-[10px]">
+    <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
       <Map size={11} className="text-zinc-400 shrink-0" />
       <span className="line-clamp-1">{customer.primary_district || 'Sin ubicación'}</span>
     </div>
-    <div className="flex items-center gap-1.5 text-zinc-500 text-[10px]">
+    <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
       <Phone size={11} className="text-zinc-400 shrink-0" />
       <span>{customer.phone || 'Sin teléfono'}</span>
     </div>
@@ -390,7 +390,7 @@ export default function Customers() {
       className="flex-1 h-8 bg-zinc-50 rounded-xl text-red-400 hover:text-red-600 hover:bg-red-50"
       icon={Trash2} />
     <Button variant="ghost" onClick={() => openModal(customer)}
-      className="flex-1 h-8 bg-amber-50 rounded-xl text-amber-600 text-[10px] font-bold">
+      className="flex-1 h-8 bg-amber-50 rounded-xl text-amber-600 text-xs font-bold">
       Ver
     </Button>
   </div>
@@ -503,7 +503,7 @@ export default function Customers() {
           <div className="space-y-4 md:space-y-8">
             {/* Identificación */}
             <div>
-              <h3 className="text-[10px] md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
+              <h3 className="text-xs md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
                 <div className="w-1 h-3 md:h-4 bg-amber-500 rounded-full" /> Identificación
               </h3>
               <div className="grid grid-cols-2 gap-2 md:gap-4">
@@ -518,7 +518,7 @@ export default function Customers() {
 
             {/* Contacto */}
             <div>
-              <h3 className="text-[10px] md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
+              <h3 className="text-xs md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
                 <div className="w-1 h-3 md:h-4 bg-amber-500 rounded-full" /> Contacto
               </h3>
               <div className="grid grid-cols-2 gap-2 md:gap-4">
@@ -530,7 +530,7 @@ export default function Customers() {
             {/* Direcciones — solo desde customer_addresses */}
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-[10px] md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
+                <h3 className="text-xs md:text-sm font-bold md:font-bold text-zinc-400 md:text-zinc-900 uppercase tracking-widest md:tracking-wider mb-2 md:mb-4 ml-1 md:ml-0 flex items-center gap-2">
                   <div className="w-1 h-3 md:h-4 bg-amber-500 rounded-full" /> Direcciones
                 </h3>
                 {isEditing && (
@@ -622,10 +622,10 @@ export default function Customers() {
                             </button>
                           </div>
                           <p className="text-xs md:text-sm text-zinc-700 font-medium">{addr.address}</p>
-                          <p className="text-[10px] md:text-xs text-zinc-500 mt-1">
+                          <p className="text-xs md:text-xs text-zinc-500 mt-1">
                             {[addr.department, addr.province, addr.district].filter(Boolean).join(' - ')}
                           </p>
-                          {addr.reference && <p className="text-[10px] md:text-xs text-zinc-500 mt-1">Ref: {addr.reference}</p>}
+                          {addr.reference && <p className="text-xs md:text-xs text-zinc-500 mt-1">Ref: {addr.reference}</p>}
                         </div>
                         {isEditing && (
                           <div className="flex gap-1">
@@ -645,7 +645,7 @@ export default function Customers() {
                     <div className="flex-1">
                       <p className="text-xs font-bold text-zinc-900">{newAddressForm.name || 'Dirección'}</p>
                       <p className="text-xs text-zinc-600">{newAddressForm.address}</p>
-                      <p className="text-[10px] text-zinc-400 mt-0.5">
+                      <p className="text-xs text-zinc-400 mt-0.5">
                         {[newAddressForm.department, newAddressForm.province, newAddressForm.district].filter(Boolean).join(' - ')}
                       </p>
                     </div>

@@ -114,7 +114,7 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
               </h3>
               <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full">
                 <Shield size={13} className="text-amber-600" />
-                <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">
+                <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
                   {user.role}
                 </span>
               </div>

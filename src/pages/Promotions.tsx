@@ -138,7 +138,7 @@ export default function Promotions() {
     >
       {/* Fila 1: fecha + estado */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[11px] text-zinc-400 flex items-center gap-1">
+        <span className="text-xs text-zinc-400 flex items-center gap-1">
           {(promo.start_date || promo.end_date) && (
             <>
               <Calendar size={10} />
@@ -149,9 +149,9 @@ export default function Promotions() {
           )}
         </span>
         {promo.active ? (
-          <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-600">Activo</span>
+          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600">Activo</span>
         ) : (
-          <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-zinc-100 text-zinc-400">Inactivo</span>
+          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-zinc-100 text-zinc-400">Inactivo</span>
         )}
       </div>
 
@@ -160,7 +160,7 @@ export default function Promotions() {
 
       {/* Fila 3: código + descuento + botones */}
       <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-        <span className="font-mono text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">
+        <span className="font-mono text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">
           {promo.code}
         </span>
         <span className="text-sm font-bold text-emerald-600 flex items-center gap-0.5">
@@ -207,7 +207,7 @@ export default function Promotions() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="px-2 py-0.5 md:px-3 md:py-1 bg-zinc-100 text-zinc-600 rounded-lg font-mono font-bold text-[10px] md:text-xs uppercase tracking-wider whitespace-nowrap">
+                  <span className="px-2 py-0.5 md:px-3 md:py-1 bg-zinc-100 text-zinc-600 rounded-lg font-mono font-bold text-xs uppercase tracking-wider whitespace-nowrap">
                     {promo.code}
                   </span>
                 </TableCell>
@@ -221,7 +221,7 @@ export default function Promotions() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2 text-[10px] md:text-xs text-zinc-500 font-medium whitespace-nowrap">
+                  <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium whitespace-nowrap">
                     <Calendar size={12} className="text-zinc-400" />
                     <span>
                       {promo.start_date ? new Date(promo.start_date).toLocaleDateString() : '∞'} - {promo.end_date ? new Date(promo.end_date).toLocaleDateString() : '∞'}
@@ -230,11 +230,11 @@ export default function Promotions() {
                 </TableCell>
                 <TableCell>
                   {promo.active ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-2xs md:text-xs font-black uppercase tracking-wider whitespace-nowrap">
                       <CheckCircle size={10} /> Activo
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-zinc-100 text-zinc-400 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-zinc-100 text-zinc-400 rounded-full text-2xs md:text-xs font-black uppercase tracking-wider whitespace-nowrap">
                       <XCircle size={10} /> Inactivo
                     </span>
                   )}
@@ -391,7 +391,7 @@ export default function Promotions() {
       variant={isViewing ? 'view' : 'default'}
     />
     <div className="space-y-1">
-      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Estado</label>
+      <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">Estado</label>
       <div className="flex items-center gap-3 h-[34px]">
         <label className={`flex items-center gap-2.5 ${isViewing ? 'cursor-default' : 'cursor-pointer'} group`}>
           <input

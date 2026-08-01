@@ -124,36 +124,36 @@ export default function ProductionRegistry() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-b border-zinc-800 pb-6">
               <div>
-                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mb-1">Costo (1 kg)</p>
+                <p className="text-zinc-500 text-xs uppercase font-bold tracking-wider mb-1">Costo (1 kg)</p>
                 <p className="text-xl font-bold text-zinc-300">S/ {costPerKg.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mb-1">Costo (1 und)</p>
+                <p className="text-zinc-500 text-xs uppercase font-bold tracking-wider mb-1">Costo (1 und)</p>
                 <p className="text-xl font-bold text-zinc-300">S/ {safe(b.cost_per_unit).toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mb-1">Ganancia (1 kg)</p>
+                <p className="text-zinc-500 text-xs uppercase font-bold tracking-wider mb-1">Ganancia (1 kg)</p>
                 <p className="text-xl font-bold text-emerald-400">S/ {profitPerKg.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mb-1">Ganancia (1 und)</p>
+                <p className="text-zinc-500 text-xs uppercase font-bold tracking-wider mb-1">Ganancia (1 und)</p>
                 <p className="text-xl font-bold text-emerald-400">S/ {profitPerUnit.toFixed(2)}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mb-1">Precio Sugerido (Kg)</p>
+                <p className="text-zinc-500 text-xs uppercase font-bold tracking-wider mb-1">Precio Sugerido (Kg)</p>
                 <p className="text-3xl font-black text-white">S/ {suggestedPricePerKg.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mb-1">Precio Sugerido (Und)</p>
+                <p className="text-zinc-500 text-xs uppercase font-bold tracking-wider mb-1">Precio Sugerido (Und)</p>
                 <p className="text-3xl font-black text-white">S/ {safe(b.price_per_unit).toFixed(2)}</p>
               </div>
             </div>
 
             <div>
-              <p className="text-[10px] text-zinc-500 mb-2 font-bold uppercase tracking-wider">
+              <p className="text-xs text-zinc-500 mb-2 font-bold uppercase tracking-wider">
                 Composición del Precio en este Lote
               </p>
               <div className="h-3 w-full bg-zinc-800 rounded-full overflow-hidden flex">
@@ -182,20 +182,20 @@ export default function ProductionRegistry() {
         {/* Resumen del lote */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-            <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Rendimiento</p>
+            <p className="text-zinc-400 text-xs uppercase font-bold tracking-wider mb-1">Rendimiento</p>
             <p className="text-base font-bold text-zinc-900">{safe(b.batch_yield_grams).toLocaleString()}g</p>
-            <p className="text-[10px] text-zinc-400">{batchYieldKg.toFixed(2)} kg</p>
+            <p className="text-xs text-zinc-400">{batchYieldKg.toFixed(2)} kg</p>
           </div>
           <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-            <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Peso Unitario</p>
+            <p className="text-zinc-400 text-xs uppercase font-bold tracking-wider mb-1">Peso Unitario</p>
             <p className="text-base font-bold text-zinc-900">{safe(b.unit_weight_grams)}g</p>
           </div>
           <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-100">
-            <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-wider mb-1">Unidades</p>
+            <p className="text-zinc-400 text-xs uppercase font-bold tracking-wider mb-1">Unidades</p>
             <p className="text-base font-bold text-zinc-900">{safe(b.units_produced)} und</p>
           </div>
           <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100">
-            <p className="text-emerald-600 text-[10px] uppercase font-bold tracking-wider mb-1">Margen Aplicado</p>
+            <p className="text-emerald-600 text-xs uppercase font-bold tracking-wider mb-1">Margen Aplicado</p>
             <p className="text-base font-bold text-emerald-700">{safe(b.margin_percent)}%</p>
           </div>
         </div>
@@ -203,7 +203,7 @@ export default function ProductionRegistry() {
         {/* Notas */}
         {b.notes && (
           <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
-            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Notas</p>
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Notas</p>
             <p className="text-sm text-zinc-600 italic">{b.notes}</p>
           </div>
         )}
@@ -272,7 +272,7 @@ export default function ProductionRegistry() {
                   <div className="p-2 bg-zinc-800 rounded-lg">
                     <Package size={16} className="text-amber-400" />
                   </div>
-                  <span className="text-[10px] font-bold text-zinc-500 flex items-center gap-1">
+                  <span className="text-xs font-bold text-zinc-500 flex items-center gap-1">
                     <Calendar size={10} />
                     {formatDate(batch.created_at)}
                   </span>
@@ -287,22 +287,22 @@ export default function ProductionRegistry() {
               <CardContent className="p-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 mb-0.5">Producción</p>
+                    <p className="text-xs uppercase tracking-wider font-bold text-zinc-400 mb-0.5">Producción</p>
                     <p className="text-sm font-bold text-zinc-900">{safe(batch.units_produced)} unidades</p>
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 mb-0.5">Costo Total</p>
+                    <p className="text-xs uppercase tracking-wider font-bold text-zinc-400 mb-0.5">Costo Total</p>
                     <p className="text-sm font-bold text-zinc-900">S/ {safe(batch.total_batch_cost).toFixed(2)}</p>
                   </div>
                 </div>
 
                 <div className="pt-2 border-t border-zinc-100 grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 mb-0.5">Costo Unitario</p>
+                    <p className="text-xs uppercase tracking-wider font-bold text-zinc-400 mb-0.5">Costo Unitario</p>
                     <p className="text-sm font-bold text-zinc-600">S/ {safe(batch.cost_per_unit).toFixed(2)}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 mb-0.5">Precio Venta</p>
+                    <p className="text-xs uppercase tracking-wider font-bold text-zinc-400 mb-0.5">Precio Venta</p>
                     <p className="text-sm font-bold text-emerald-600">S/ {safe(batch.price_per_unit).toFixed(2)}</p>
                   </div>
                 </div>

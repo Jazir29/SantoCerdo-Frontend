@@ -45,10 +45,10 @@ export const Modal: React.FC<ModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className={`relative bg-white w-full ${sizes[size]} rounded-3xl md:rounded-[2.5rem] shadow-2xl border border-zinc-200 overflow-hidden flex flex-col max-h-[90vh]`}
+            className={`relative bg-white w-full ${sizes[size]} rounded-3xl shadow-2xl border border-zinc-200 overflow-hidden flex flex-col max-h-[90vh]`}
           >
             {/* Header */}
-            <div className="px-5 pt-[15px] pb-[15px] md:p-8 border-b border-zinc-100 flex justify-between items-start shrink-0">
+            <div className="px-5 py-4 md:p-6 border-b border-zinc-100 flex justify-between items-start shrink-0">
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-zinc-900 tracking-tight">{title}</h2>
                 {subtitle && (
@@ -64,13 +64,13 @@ export const Modal: React.FC<ModalProps> = ({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-5 md:p-8 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-5 md:p-6 custom-scrollbar">
               {children}
             </div>
 
             {/* Footer */}
             {footer && (
-              <div className="px-5 pt-[15px] pb-[15px] md:p-8 border-t border-zinc-100 bg-zinc-50/50 shrink-0 flex justify-end gap-3">
+              <div className="px-5 py-4 md:py-6 border-t border-zinc-100 bg-zinc-50/50 shrink-0 flex justify-end gap-3">
                 {footer}
               </div>
             )}

@@ -43,7 +43,7 @@ const TYPE_OPTIONS = [
 function TypeBadge({ type }: { type: string }) {
   const cfg = TYPE_LABELS[type] ?? { label: type, className: 'bg-zinc-50 text-zinc-700 border-zinc-200' };
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border ${cfg.className}`}>
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${cfg.className}`}>
       {cfg.label}
     </span>
   );
@@ -177,7 +177,7 @@ export default function StockMovements() {
 
           {/* Start date */}
           <div className="w-full space-y-1">
-            <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-[10px] md:text-[11px]">
+            <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-xs">
               Desde
             </label>
             <input
@@ -190,7 +190,7 @@ export default function StockMovements() {
 
           {/* End date */}
           <div className="w-full space-y-1">
-            <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-[10px] md:text-[11px]">
+            <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-xs">
               Hasta
             </label>
             <input

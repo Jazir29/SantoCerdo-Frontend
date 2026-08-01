@@ -14,7 +14,7 @@ export const Card: React.FC<CardProps> = ({ children, className = '', animate = 
     <Component
       initial={animate ? { opacity: 0, y: 10 } : undefined}
       animate={animate ? { opacity: 1, y: 0 } : undefined}
-      className={`bg-white border border-zinc-200 rounded-[2rem] shadow-sm overflow-hidden ${className}`}
+      className={`bg-white border border-zinc-200 rounded-3xl shadow-sm overflow-hidden ${className}`}
     >
       {children}
     </Component>

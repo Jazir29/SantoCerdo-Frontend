@@ -19,7 +19,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-zinc-900 text-white p-4 rounded-xl shadow-2xl border border-zinc-800 backdrop-blur-md bg-opacity-90">
-        <p className="text-zinc-400 text-[10px] uppercase tracking-widest mb-2">{label}</p>
+        <p className="text-zinc-400 text-xs uppercase tracking-widest mb-2">{label}</p>
         {payload.map((entry: any, index: number) => {
           let name = entry.name;
           if (name === 'amount' || name === 'revenue') name = 'Ingresos';
@@ -107,40 +107,39 @@ export default function Dashboard() {
           >
             <div className="bg-zinc-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
               <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Actualizando Métricas...</span>
+              <span className="text-xs font-black uppercase tracking-widest">Actualizando Métricas...</span>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4">
-        <div className="space-y-0.5">
+      <PageHeader
+        overTitle={
           <div className="flex items-center gap-2 text-orange-500">
             <Activity size={10} strokeWidth={3} />
-            <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em]">Sistema de Control v2.4</span>
+            <span className="text-2xs md:text-xs font-black uppercase tracking-[0.2em]">Sistema de Control v2.4</span>
           </div>
-          <h1 className="text-2xl md:text-4xl font-bold text-zinc-900 tracking-tight">Panel de Control</h1>
-          <p className="text-zinc-500 text-[10px] md:text-sm font-medium max-w-2xl">
-            Métricas operativas y financieras en tiempo real para la gestión de producción artesanal.
-          </p>
-        </div>
-        <div className="flex flex-row items-center gap-3 md:gap-6">
-          <div className="text-left hidden sm:block">
-            <p className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold">Última Actualización</p>
-            <p className="text-xs md:text-sm font-bold text-zinc-800">13 MAR 2026 — 15:36</p>
+        }
+        title="Panel de Control"
+        subtitle="Métricas operativas y financieras en tiempo real para la gestión de producción artesanal."
+        action={
+          <div className="flex flex-row items-center gap-3 md:gap-6">
+            <div className="text-left hidden sm:block">
+              <p className="text-2xs text-zinc-400 uppercase tracking-widest font-bold">Última Actualización</p>
+              <p className="text-xs md:text-sm font-bold text-zinc-800">13 MAR 2026 — 15:36</p>
+            </div>
+            <button className="flex-1 sm:flex-none bg-zinc-900 text-white px-5 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-2xs md:text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg border border-zinc-700">
+              Exportar Reporte
+            </button>
           </div>
-          <button className="flex-1 sm:flex-none bg-zinc-900 text-white px-5 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[9px] md:text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg border border-zinc-700">
-            Exportar Reporte
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Filter Bar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 bg-white p-2 md:p-3 rounded-2xl md:rounded-[2rem] border border-zinc-200 shadow-sm">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 bg-white p-2 md:p-3 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
         <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 rounded-xl border border-zinc-100 shrink-0">
           <Filter size={12} className="text-zinc-400" />
-          <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Filtros</span>
+          <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest">Filtros</span>
         </div>
         
         <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 md:gap-3 flex-1">
@@ -175,7 +174,7 @@ export default function Dashboard() {
                   className="flex-1 sm:w-28"
                   variant="ghost"
                 />
-                <span className="text-zinc-300 text-[9px] font-black uppercase">al</span>
+                <span className="text-zinc-300 text-2xs font-black uppercase">al</span>
                 <DatePicker 
                   value={filters.endDate}
                   onChange={(val) => setFilters(prev => ({ ...prev, endDate: val }))}
@@ -237,13 +236,13 @@ export default function Dashboard() {
 
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest">Live</span>
+            <span className="text-3xs font-black text-zinc-400 uppercase tracking-widest">Live</span>
           </div>
         </div>
       </div>
 
 {/* Main Stats Row */}
-<div className="bg-white border border-zinc-200 rounded-2xl md:rounded-[2rem] shadow-sm overflow-hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-x divide-y sm:divide-y-0 divide-zinc-100">
+<div className="bg-white border border-zinc-200 rounded-2xl md:rounded-3xl shadow-sm overflow-hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-x divide-y sm:divide-y-0 divide-zinc-100">
   {[
     { label: 'Ingresos Totales',  labelShort: 'Ingresos',     value: `S/ ${(stats.revenue || 0).toLocaleString()}`,           icon: DollarSign,   trend: '+12.5%',      trendIcon: ArrowUpRight, color: 'text-emerald-500' },
     { label: 'Descuentos',        labelShort: 'Descuentos',   value: `S/ ${(stats.discounts || 0).toLocaleString()}`,         icon: Tag,          trend: 'Promociones', trendIcon: Activity,     color: 'text-amber-500'  },
@@ -268,7 +267,7 @@ export default function Dashboard() {
         <div className="p-1.5 bg-zinc-50 rounded-lg shrink-0">
           <stat.icon size={13} className="text-zinc-400" />
         </div>
-        <p className="text-[8px] md:text-[9px] font-black text-zinc-400 uppercase tracking-[0.15em] leading-tight">
+        <p className="text-3xs md:text-2xs font-black text-zinc-400 uppercase tracking-[0.15em] leading-tight">
           <span className="md:hidden">{stat.labelShort}</span>
           <span className="hidden md:inline">{stat.label}</span>
         </p>
@@ -279,13 +278,13 @@ export default function Dashboard() {
       </h3>
 
       <div className="flex items-center gap-2 mt-2 md:mt-3 md:self-center">
-        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] md:text-[9px] font-black ${
+        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-3xs md:text-2xs font-black ${
           stat.color.replace('text-', 'bg-').replace('500', '50')
         } ${stat.color}`}>
           <stat.trendIcon size={8} />
           {stat.trend}
         </span>
-        <span className="hidden md:block text-[8px] font-bold text-zinc-300 uppercase tracking-widest whitespace-nowrap">
+        <span className="hidden md:block text-3xs font-bold text-zinc-300 uppercase tracking-widest whitespace-nowrap">
           VS PERIODO ANTERIOR
         </span>
       </div>
@@ -299,21 +298,21 @@ export default function Dashboard() {
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="lg:col-span-2 bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-zinc-200 shadow-sm"
+          className="lg:col-span-2 bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm"
         >
           <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4 md:mb-5">
             <div>
               <h3 className="text-xl md:text-2xl font-bold text-zinc-900">Evolución de Rendimiento</h3>
-              <p className="text-[9px] md:text-[10px] text-zinc-400 mt-0.5 uppercase tracking-[0.2em] font-black">Ingresos vs Volumen de Órdenes</p>
+              <p className="text-2xs md:text-xs text-zinc-400 mt-0.5 uppercase tracking-[0.2em] font-black">Ingresos vs Volumen de Órdenes</p>
             </div>
             <div className="flex gap-4 md:gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-orange-500" />
-                <span className="text-[9px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Ingresos</span>
+                <span className="text-2xs md:text-xs font-bold text-zinc-400 uppercase tracking-widest">Ingresos</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-zinc-900" />
-                <span className="text-[9px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Órdenes</span>
+                <span className="text-2xs md:text-xs font-bold text-zinc-400 uppercase tracking-widest">Órdenes</span>
               </div>
             </div>
           </div>
@@ -380,7 +379,7 @@ export default function Dashboard() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-zinc-200 shadow-sm flex flex-col"
+          className="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm flex flex-col"
         >
           <div className="flex items-start gap-3 mb-4 md:mb-5">
             <div className="p-2 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-xl">
@@ -388,7 +387,7 @@ export default function Dashboard() {
             </div>
             <div>
               <h3 className="text-lg md:text-xl font-bold text-zinc-900">Estado Operativo</h3>
-              <p className="text-[9px] md:text-[10px] text-zinc-400 mt-0.5 uppercase tracking-[0.2em] font-black">Distribución de Órdenes</p>
+              <p className="text-2xs md:text-xs text-zinc-400 mt-0.5 uppercase tracking-[0.2em] font-black">Distribución de Órdenes</p>
             </div>
           </div>
           <div className="flex-1 flex flex-col justify-center">
@@ -428,7 +427,7 @@ export default function Dashboard() {
                 };
                 return (
                   <div key={i} className="bg-zinc-50 p-2.5 md:p-3 rounded-xl border border-zinc-100">
-                    <p className="text-[8px] md:text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-1">
+                    <p className="text-3xs md:text-2xs font-bold text-zinc-400 uppercase tracking-widest mb-1">
                       {labels[item.name] || item.name}
                     </p>
                     <p className="text-xl md:text-2xl font-bold text-zinc-900">{item.value}</p>
@@ -441,16 +440,16 @@ export default function Dashboard() {
       </div>
 
       {/* Secondary Metrics Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Profitability Bar Chart */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">
-          <div className="flex items-center gap-3 mb-8">
+        <div className="lg:col-span-2 bg-white p-4 md:p-6 rounded-3xl border border-zinc-200 shadow-sm">
+          <div className="flex items-center gap-3 mb-5">
             <div className="p-2 bg-zinc-100 text-zinc-900 rounded-lg">
               <Wallet size={18} />
             </div>
             <div>
               <h3 className="font-bold text-zinc-900">Análisis de Rentabilidad</h3>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Ingresos Brutos vs Costos Operativos</p>
+              <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Ingresos Brutos vs Costos Operativos</p>
             </div>
           </div>
           <div className="h-72 w-full">
@@ -480,14 +479,14 @@ export default function Dashboard() {
         </div>
 
         {/* Sales by District */}
-        <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">
-          <div className="flex items-center gap-3 mb-8">
+        <div className="bg-white p-4 md:p-6 rounded-3xl border border-zinc-200 shadow-sm">
+          <div className="flex items-center gap-3 mb-5">
             <div className="p-2 bg-zinc-100 text-zinc-900 rounded-lg">
               <MapPin size={18} />
             </div>
             <div>
               <h3 className="font-bold text-zinc-900">Cobertura Geográfica</h3>
-              <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Distribución de Ventas por Distrito</p>
+              <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Distribución de Ventas por Distrito</p>
             </div>
           </div>
           <div className="space-y-4">
@@ -512,15 +511,15 @@ export default function Dashboard() {
       </div>
 
       {/* Bottom Section: Table & Highlights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Recent Orders Table */}
-        <div className="lg:col-span-2 bg-white rounded-2xl md:rounded-[2rem] border border-zinc-200 shadow-sm overflow-hidden">
-          <div className="p-6 md:p-10 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="lg:col-span-2 bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
+          <div className="p-4 md:p-6 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h3 className="text-xl md:text-2xl font-bold text-zinc-900">Registro de Transacciones</h3>
-              <p className="text-[9px] md:text-[10px] text-zinc-400 mt-1 uppercase tracking-[0.2em] font-black">Últimas Órdenes Procesadas</p>
+              <p className="text-2xs md:text-xs text-zinc-400 mt-1 uppercase tracking-[0.2em] font-black">Últimas Órdenes Procesadas</p>
             </div>
-            <button className="text-[9px] md:text-[10px] font-black text-zinc-900 uppercase tracking-widest border-b-2 border-orange-500 pb-1 hover:text-orange-600 transition-colors">Ver Historial</button>
+            <button className="text-2xs md:text-xs font-black text-zinc-900 uppercase tracking-widest border-b-2 border-orange-500 pb-1 hover:text-orange-600 transition-colors">Ver Historial</button>
           </div>
           <div className="hidden sm:block overflow-x-auto">
             <Table 
@@ -530,23 +529,23 @@ export default function Dashboard() {
                 <TableRow key={order.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center text-[10px] md:text-xs font-bold shadow-md">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xs font-bold shadow-md">
                         {(order.customer_name || 'U').charAt(0)}
                       </div>
                       <div className="min-w-0">
                         <p className="font-bold text-zinc-900 text-xs md:text-sm truncate">{order.customer_name}</p>
-                        <p className="text-[9px] text-zinc-400 font-bold">#{(order.id || '').toString().slice(-4)}</p>
+                        <p className="text-2xs text-zinc-400 font-bold">#{(order.id || '').toString().slice(-4)}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="text-[10px] md:text-xs font-bold text-zinc-500">{new Date(order.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</p>
+                    <p className="text-xs font-bold text-zinc-500">{new Date(order.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</p>
                   </TableCell>
                   <TableCell>
                     <p className="text-xs md:text-sm font-bold text-zinc-900">S/ {order.total_amount.toLocaleString()}</p>
                   </TableCell>
                   <TableCell align="right">
-  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider whitespace-nowrap ${
+  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider whitespace-nowrap ${
     order.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
     order.status === 'shipped'   ? 'bg-blue-50 text-blue-600' :
     order.status === 'cancelled' ? 'bg-red-50 text-red-600' :
@@ -573,14 +572,14 @@ export default function Dashboard() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-bold text-zinc-900 text-xs truncate">{order.customer_name}</p>
-                    <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">
+                    <p className="text-2xs text-zinc-400 font-bold uppercase tracking-widest">
                       {new Date(order.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}
                     </p>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-xs font-black text-zinc-900">S/ {order.total_amount.toLocaleString()}</p>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest mt-1 ${
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-3xs font-black uppercase tracking-widest mt-1 ${
                     order.status === 'completed' 
                       ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
                       : 'bg-yellow-50 text-yellow-700 border border-yellow-100'
@@ -596,7 +595,7 @@ export default function Dashboard() {
         {/* Highlights Column */}
         <div className="space-y-4">
           {/* Top Product Card */}
-          <div className="bg-zinc-900 p-5 md:p-6 rounded-2xl md:rounded-[2rem] shadow-xl border border-zinc-800 relative overflow-hidden group">
+          <div className="bg-zinc-900 p-5 md:p-6 rounded-2xl md:rounded-3xl shadow-xl border border-zinc-800 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
               <Award size={80} className="text-orange-500" />
             </div>
@@ -605,21 +604,21 @@ export default function Dashboard() {
                 <div className="p-1.5 bg-orange-500/20 text-orange-500 rounded-xl">
                   <Star size={15} />
                 </div>
-                <h3 className="font-black text-white uppercase tracking-[0.2em] text-[9px] md:text-[10px]">Producto Estrella</h3>
+                <h3 className="font-black text-white uppercase tracking-[0.2em] text-2xs md:text-xs">Producto Estrella</h3>
               </div>
               <div className="space-y-1">
-                <p className="text-zinc-500 text-[9px] md:text-[10px] uppercase tracking-widest font-black">Líder en Ventas</p>
+                <p className="text-zinc-500 text-2xs md:text-xs uppercase tracking-widest font-black">Líder en Ventas</p>
                 <h4 className="text-2xl md:text-3xl font-bold text-white leading-tight tracking-tight">{stats.topProduct.name}</h4>
               </div>
               <div className="mt-5 pt-4 border-t border-zinc-800 flex justify-between items-end">
                 <div>
-                  <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest font-black mb-1">Unidades Vendidas</p>
+                  <p className="text-2xs md:text-xs text-zinc-500 uppercase tracking-widest font-black mb-1">Unidades Vendidas</p>
                   <p className="text-3xl md:text-4xl font-bold text-orange-500 tracking-tighter">
                     {stats.topProduct.total_sold}<span className="text-xs ml-1 font-black">UND</span>
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest font-black mb-1">Total en Ventas</p>
+                  <p className="text-2xs md:text-xs text-zinc-500 uppercase tracking-widest font-black mb-1">Total en Ventas</p>
                   <p className="text-xl md:text-2xl font-bold text-amber-400 tracking-tighter">
                     S/ {Number(stats.topProduct.total_revenue || 0).toLocaleString()}
                   </p>
@@ -629,12 +628,12 @@ export default function Dashboard() {
           </div>
 
           {/* Inventory Alert Card */}
-          <div className={`p-5 md:p-6 rounded-2xl md:rounded-[2rem] border shadow-sm ${stats.lowStock > 0 ? 'bg-white border-red-200' : 'bg-white border-zinc-200'}`}>
+          <div className={`p-5 md:p-6 rounded-2xl md:rounded-3xl border shadow-sm ${stats.lowStock > 0 ? 'bg-white border-red-200' : 'bg-white border-zinc-200'}`}>
             <div className="flex items-center gap-3 mb-4">
               <div className={`p-1.5 rounded-xl ${stats.lowStock > 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
                 <Package size={15} />
               </div>
-              <h3 className="font-black text-zinc-900 uppercase tracking-[0.2em] text-[9px] md:text-[10px]">Estado de Almacén</h3>
+              <h3 className="font-black text-zinc-900 uppercase tracking-[0.2em] text-2xs md:text-xs">Estado de Almacén</h3>
             </div>
 
             <div className="space-y-4">
@@ -648,10 +647,10 @@ export default function Dashboard() {
               <div className={`p-4 md:p-6 rounded-xl md:rounded-2xl border flex items-start gap-3 md:gap-4 ${stats.lowStock > 0 ? 'bg-red-50/50 border-red-100' : 'bg-emerald-50/50 border-emerald-100'}`}>
                 {stats.lowStock > 0 ? <AlertTriangle size={18} className="text-red-600 shrink-0 mt-0.5" /> : <Activity size={18} className="text-emerald-600 shrink-0 mt-0.5" />}
                 <div>
-                  <p className={`text-[10px] md:text-[11px] font-black uppercase tracking-widest ${stats.lowStock > 0 ? 'text-red-900' : 'text-emerald-900'}`}>
+                  <p className={`text-xs font-black uppercase tracking-widest ${stats.lowStock > 0 ? 'text-red-900' : 'text-emerald-900'}`}>
                     {stats.lowStock > 0 ? 'Acción Requerida' : 'Operación Normal'}
                   </p>
-                  <p className={`text-[9px] md:text-[10px] mt-2 leading-relaxed font-medium ${stats.lowStock > 0 ? 'text-red-700/80' : 'text-emerald-700/80'}`}>
+                  <p className={`text-2xs md:text-xs mt-2 leading-relaxed font-medium ${stats.lowStock > 0 ? 'text-red-700/80' : 'text-emerald-700/80'}`}>
                     {stats.lowStock > 0 
                       ? 'Revisar stock de seguridad.' 
                       : 'Niveles óptimos.'}

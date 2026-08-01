@@ -5,6 +5,10 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Custom text sizes below the Tailwind xs (12px) baseline */
+  --text-2xs: 0.5625rem; /* 9px — for tags, labels, badges */
+  --text-3xs: 0.5rem;    /* 8px — for micro indicators only */
 }
 
 @layer base {

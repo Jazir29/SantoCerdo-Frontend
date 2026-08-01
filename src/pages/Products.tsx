@@ -140,7 +140,7 @@ export default function Products() {
         }
       />
 
-      <div className="flex items-center bg-white px-2 py-1 md:p-3 rounded-xl md:rounded-[2rem] border border-zinc-200 shadow-sm">
+      <div className="flex items-center bg-white px-2 py-1 md:p-3 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
         <div className="relative flex-1">
           <Input
             value={searchTerm}
@@ -167,7 +167,7 @@ export default function Products() {
           <div className="p-1.5 bg-amber-50 text-amber-600 rounded-lg">
             <Package size={14} />
           </div>
-          <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
+          <span className={`px-1.5 py-0.5 rounded-full text-2xs font-bold ${
             product.stock > 20 ? 'bg-emerald-100 text-emerald-700' :
             product.stock > 0  ? 'bg-orange-100 text-orange-700' :
             'bg-red-100 text-red-700'
@@ -178,7 +178,7 @@ export default function Products() {
 
         {/* Badge gramos */}
         {product.weight_grams && (
-          <span className="inline-flex items-center px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-bold rounded-full mb-2">
+          <span className="inline-flex items-center px-2 py-0.5 bg-indigo-50 text-indigo-600 text-2xs font-bold rounded-full mb-2">
             {product.weight_grams}g por unidad
           </span>
         )}
@@ -186,12 +186,12 @@ export default function Products() {
 
         <div className="flex gap-1.5 mb-3">
           <div className="flex-1 bg-amber-50 p-1.5 rounded-lg">
-            <p className="text-[8px] font-bold text-amber-400 uppercase tracking-widest mb-0.5">Venta</p>
-            <p className="text-[11px] font-bold text-amber-600 whitespace-nowrap">S/ {product.price}</p>
+            <p className="text-3xs font-bold text-amber-400 uppercase tracking-widest mb-0.5">Venta</p>
+            <p className="text-xs font-bold text-amber-600 whitespace-nowrap">S/ {product.price}</p>
           </div>
           <div className="flex-1 bg-zinc-50 p-1.5 rounded-lg">
-            <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Costo</p>
-            <p className="text-[11px] font-bold text-zinc-700 whitespace-nowrap">S/ {product.cost}</p>
+            <p className="text-3xs font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Costo</p>
+            <p className="text-xs font-bold text-zinc-700 whitespace-nowrap">S/ {product.cost}</p>
           </div>
         </div>
 
