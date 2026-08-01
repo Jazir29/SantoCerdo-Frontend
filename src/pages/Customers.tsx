@@ -296,19 +296,19 @@ export default function Customers() {
           <div className="w-px h-8 bg-zinc-100" />
           <Select value={filterDepartment} onChange={setFilterDepartment} placeholder="Departamento" icon={Map}
             options={[{ value: '', label: 'Todos' }, ...(allDepartments).map(d => ({ value: d, label: d }))]}
-            className="min-w-[160px]" variant="ghost" />
+            className="min-w-[120px]" variant="ghost" />
           <div className="w-px h-8 bg-zinc-100" />
           <Select value={filterProvince} onChange={setFilterProvince} placeholder="Provincia"
             options={[{ value: '', label: 'Todas' }, ...(allProvinces).map(p => ({ value: p, label: p }))]}
-            className="min-w-[160px]" variant="ghost" />
+            className="min-w-[120px]" variant="ghost" />
           <div className="w-px h-8 bg-zinc-100" />
           <Select value={filterDistrict} onChange={setFilterDistrict} placeholder="Distrito"
             options={[{ value: '', label: 'Todos' }, ...(allDistricts).map(d => ({ value: d, label: d }))]}
-            className="min-w-[160px]" variant="ghost" />
+            className="min-w-[120px]" variant="ghost" />
           <div className="w-px h-8 bg-zinc-100" />
           <Select value={filterType} onChange={setFilterType} placeholder="Tipo" icon={User}
             options={[{ value: '', label: 'Todos' }, { value: 'natural', label: 'Persona Natural' }, { value: 'empresa', label: 'Empresa' }]}
-            className="min-w-[160px]" variant="ghost" />
+            className="min-w-[120px]" variant="ghost" />
         </div>
       </div>
 

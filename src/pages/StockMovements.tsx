@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X } from 'lucide-react';
+import { X, Filter, Search } from 'lucide-react';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
 import { DatePicker } from '../components/ui/DatePicker';
+import { Input } from '../components/ui/Input';
+import { Modal } from '../components/ui/Modal';
 import { Table, TableRow, TableCell } from '../components/ui/Table';
 import { useToast } from '../components/ui/Toast';
 import { api } from '../services/api';
@@ -54,7 +56,7 @@ function TypeBadge({ type }: { type: string }) {
 function QuantityCell({ quantity }: { quantity: number }) {
   const isPositive = quantity > 0;
   return (
-    <span className={`font-bold tabular-nums ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+    <span className={`font-bold tabular-nums text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
       {isPositive ? `+${quantity}` : `${quantity}`}
     </span>
   );
@@ -76,6 +78,12 @@ function formatDate(dateStr: string) {
     ' ' + d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
 }
 
+function formatDateShort(dateStr: string) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' }) +
+    ' · ' + d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+}
+
 // ── Main page ─────────────────────────────────────────────────
 
 export default function StockMovements() {
@@ -94,7 +102,16 @@ export default function StockMovements() {
   const [startDate, setStartDate]   = useState<string>('');
   const [endDate, setEndDate]       = useState<string>('');
 
+  // Mobile filter modal
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [draftProductId, setDraftProductId] = useState<string>('');
+  const [draftType, setDraftType]           = useState<string>('all');
+  const [draftStartDate, setDraftStartDate] = useState<string>('');
+  const [draftEndDate, setDraftEndDate]     = useState<string>('');
+
   const LIMIT = 20;
+
+  const activeFilterCount = [productId, type !== 'all', startDate, endDate].filter(Boolean).length;
 
   const fetchMovements = useCallback(async (currentPage: number) => {
     setLoading(true);
@@ -117,22 +134,15 @@ export default function StockMovements() {
     }
   }, [productId, type, startDate, endDate, toast]);
 
-  // Load products for filter select
   useEffect(() => {
     api.getAllProducts()
       .then(setProducts)
       .catch(() => {});
   }, []);
 
-  // Fetch movements when filters or page change
   useEffect(() => {
     fetchMovements(page);
   }, [fetchMovements, page]);
-
-  const handleFilterChange = () => {
-    setPage(1);
-    fetchMovements(1);
-  };
 
   const handleClearFilters = () => {
     setProductId('');
@@ -140,6 +150,23 @@ export default function StockMovements() {
     setStartDate('');
     setEndDate('');
     setPage(1);
+  };
+
+  const openFilterModal = () => {
+    setDraftProductId(productId);
+    setDraftType(type);
+    setDraftStartDate(startDate);
+    setDraftEndDate(endDate);
+    setIsFilterModalOpen(true);
+  };
+
+  const applyMobileFilters = () => {
+    setProductId(draftProductId);
+    setType(draftType);
+    setStartDate(draftStartDate);
+    setEndDate(draftEndDate);
+    setPage(1);
+    setIsFilterModalOpen(false);
   };
 
   const productOptions = [
@@ -156,8 +183,35 @@ export default function StockMovements() {
         subtitle="Historial de entradas y salidas de stock"
       />
 
-      {/* Filter Bar */}
-      <div className="flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-x divide-zinc-100">
+      {/* ── MOBILE Filter Bar ── */}
+      <div className="flex items-center gap-2 md:hidden bg-white rounded-2xl border border-zinc-200 shadow-sm px-3 py-2">
+        <Filter size={14} className="text-zinc-400 shrink-0" />
+        <button
+          onClick={openFilterModal}
+          className="flex-1 text-left text-sm text-zinc-400"
+        >
+          {activeFilterCount > 0 ? `${activeFilterCount} filtro${activeFilterCount > 1 ? 's' : ''} activo${activeFilterCount > 1 ? 's' : ''}` : 'Filtrar movimientos...'}
+        </button>
+        {activeFilterCount > 0 && (
+          <>
+            <span className="px-2 py-0.5 bg-amber-500 text-white text-xs font-bold rounded-full">
+              {activeFilterCount}
+            </span>
+            <button onClick={handleClearFilters} className="text-zinc-300 hover:text-zinc-600 p-1">
+              <X size={14} />
+            </button>
+          </>
+        )}
+        <button
+          onClick={openFilterModal}
+          className="px-3 py-1.5 bg-zinc-100 rounded-xl text-zinc-600 text-xs font-bold shrink-0"
+        >
+          Filtros
+        </button>
+      </div>
+
+      {/* ── DESKTOP Filter Bar ── */}
+      <div className="hidden md:flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-x divide-zinc-100">
         <div className="flex-1 px-2 min-w-0">
           <Select
             variant="ghost"
@@ -167,7 +221,7 @@ export default function StockMovements() {
             placeholder="Todos los productos"
           />
         </div>
-        <div className="w-52 px-2 shrink-0">
+        <div className="w-44 px-2 shrink-0">
           <Select
             variant="ghost"
             options={TYPE_OPTIONS}
@@ -200,7 +254,7 @@ export default function StockMovements() {
         </button>
       </div>
 
-      {/* Table */}
+      {/* ── Table container ── */}
       <div className="bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
         {/* Summary bar */}
         <div className="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
@@ -209,36 +263,70 @@ export default function StockMovements() {
           </p>
         </div>
 
-        <Table headers={TABLE_HEADERS} loading={loading} emptyMessage="No hay movimientos registrados">
-          {movements.map((m) => (
-            <TableRow key={m.id}>
-              <TableCell>
-                <span className="text-xs text-zinc-500 whitespace-nowrap">{formatDate(m.created_at)}</span>
-              </TableCell>
-              <TableCell>
-                <span className="font-semibold text-zinc-900 text-sm">{m.product_name || '—'}</span>
-              </TableCell>
-              <TableCell>
-                <QuantityCell quantity={m.quantity} />
-              </TableCell>
-              <TableCell>
-                <TypeBadge type={m.type} />
-              </TableCell>
-              <TableCell>
-                <ReferenceCell referenceId={m.reference_id} referenceType={m.reference_type} />
-              </TableCell>
-              <TableCell>
-                <span className="text-xs text-zinc-500">{m.created_by_name?.trim() || '—'}</span>
-              </TableCell>
-            </TableRow>
-          ))}
-        </Table>
+        {/* ── MOBILE Card List ── */}
+        <div className="md:hidden">
+          {loading ? (
+            <div className="py-12 text-center text-zinc-400 text-sm">Cargando...</div>
+          ) : movements.length === 0 ? (
+            <div className="py-12 text-center text-zinc-400 text-sm">No hay movimientos registrados</div>
+          ) : (
+            <div className="divide-y divide-zinc-100">
+              {movements.map((m) => (
+                <div key={m.id} className="px-4 py-3 flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                      <TypeBadge type={m.type} />
+                      <span className="text-zinc-400 text-xs ml-auto shrink-0">{formatDateShort(m.created_at)}</span>
+                    </div>
+                    <p className="font-semibold text-zinc-900 text-sm truncate mb-0.5">{m.product_name || '—'}</p>
+                    <div className="flex items-center gap-3">
+                      <ReferenceCell referenceId={m.reference_id} referenceType={m.reference_type} />
+                      {m.created_by_name && (
+                        <span className="text-xs text-zinc-400 truncate">{m.created_by_name.trim()}</span>
+                      )}
+                    </div>
+                  </div>
+                  <QuantityCell quantity={m.quantity} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── DESKTOP Table ── */}
+        <div className="hidden md:block">
+          <Table headers={TABLE_HEADERS} loading={loading} emptyMessage="No hay movimientos registrados">
+            {movements.map((m) => (
+              <TableRow key={m.id}>
+                <TableCell>
+                  <span className="text-xs text-zinc-500 whitespace-nowrap">{formatDate(m.created_at)}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-semibold text-zinc-900 text-sm">{m.product_name || '—'}</span>
+                </TableCell>
+                <TableCell>
+                  <QuantityCell quantity={m.quantity} />
+                </TableCell>
+                <TableCell>
+                  <TypeBadge type={m.type} />
+                </TableCell>
+                <TableCell>
+                  <ReferenceCell referenceId={m.reference_id} referenceType={m.reference_type} />
+                </TableCell>
+                <TableCell>
+                  <span className="text-xs text-zinc-500">{m.created_by_name?.trim() || '—'}</span>
+                </TableCell>
+              </TableRow>
+            ))}
+          </Table>
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between">
             <p className="text-xs text-zinc-400 font-medium">
-              Página {page} de {totalPages}
+              <span className="md:hidden">{page} / {totalPages}</span>
+              <span className="hidden md:inline">Página {page} de {totalPages}</span>
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -249,26 +337,19 @@ export default function StockMovements() {
               >
                 Anterior
               </Button>
-              <div className="flex items-center gap-1">
+              <div className="hidden md:flex items-center gap-1">
                 {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                   let pageNum: number;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (page <= 3) {
-                    pageNum = i + 1;
-                  } else if (page >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = page - 2 + i;
-                  }
+                  if (totalPages <= 5) pageNum = i + 1;
+                  else if (page <= 3) pageNum = i + 1;
+                  else if (page >= totalPages - 2) pageNum = totalPages - 4 + i;
+                  else pageNum = page - 2 + i;
                   return (
                     <button
                       key={pageNum}
                       onClick={() => setPage(pageNum)}
                       className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                        pageNum === page
-                          ? 'bg-amber-500 text-zinc-900 shadow-sm'
-                          : 'text-zinc-500 hover:bg-zinc-100'
+                        pageNum === page ? 'bg-amber-500 text-zinc-900 shadow-sm' : 'text-zinc-500 hover:bg-zinc-100'
                       }`}
                     >
                       {pageNum}
@@ -288,6 +369,57 @@ export default function StockMovements() {
           </div>
         )}
       </div>
+
+      {/* ── MOBILE Filter Modal ── */}
+      <Modal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        title="Filtros"
+        size="sm"
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={() => {
+              setDraftProductId(''); setDraftType('all'); setDraftStartDate(''); setDraftEndDate('');
+            }}>
+              Limpiar
+            </Button>
+            <Button size="sm" onClick={applyMobileFilters}>
+              Aplicar filtros
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Select
+            label="Producto"
+            options={productOptions}
+            value={draftProductId}
+            onChange={setDraftProductId}
+            size="sm"
+          />
+          <Select
+            label="Tipo de movimiento"
+            options={TYPE_OPTIONS}
+            value={draftType}
+            onChange={setDraftType}
+            size="sm"
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <DatePicker
+              label="Desde"
+              value={draftStartDate}
+              onChange={setDraftStartDate}
+              size="sm"
+            />
+            <DatePicker
+              label="Hasta"
+              value={draftEndDate}
+              onChange={setDraftEndDate}
+              size="sm"
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

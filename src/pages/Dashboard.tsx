@@ -136,7 +136,7 @@ export default function Dashboard() {
       />
 
       {/* Filter Bar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
         <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 rounded-xl border border-zinc-100 shrink-0">
           <Filter size={12} className="text-zinc-400" />
           <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest">Filtros</span>
@@ -155,7 +155,7 @@ export default function Dashboard() {
             ]}
             value={filters.range}
             onChange={(val) => setFilters(prev => ({ ...prev, range: val }))}
-            className="w-full sm:w-auto min-w-[140px]"
+            className="w-full sm:w-auto min-w-[120px]"
             variant="ghost"
           />
 
@@ -199,7 +199,7 @@ export default function Dashboard() {
             ]}
             value={filters.status}
             onChange={(val) => setFilters(prev => ({ ...prev, status: val }))}
-            className="w-full sm:w-auto min-w-[140px]"
+            className="w-full sm:w-auto min-w-[120px]"
             variant="ghost"
           />
 
@@ -214,13 +214,13 @@ export default function Dashboard() {
             ]}
             value={filters.customerType}
             onChange={(val) => setFilters(prev => ({ ...prev, customerType: val }))}
-            className="w-full sm:w-auto min-w-[140px]"
+            className="w-full sm:w-auto min-w-[120px]"
             variant="ghost"
           />
         </div>
 
-        <div className="flex items-center justify-between lg:justify-end gap-4 px-2 lg:px-0 border-t lg:border-t-0 border-zinc-100 pt-2 lg:pt-0">
-          <button 
+        <div className="flex items-center justify-between md:justify-end gap-4 px-2 md:px-0 border-t md:border-t-0 border-zinc-100 pt-2 md:pt-0">
+          <button
             onClick={() => setFilters({
               range: '30days',
               status: 'all',
@@ -228,7 +228,7 @@ export default function Dashboard() {
               startDate: '',
               endDate: ''
             })}
-            className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors bg-zinc-50 lg:bg-transparent rounded-lg"
+            className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors bg-zinc-50 md:bg-transparent rounded-lg"
             title="Limpiar Filtros"
           >
             <X size={14} />

@@ -236,7 +236,8 @@ export default function ProductionRegistry() {
             Anterior
           </Button>
           <span className="text-sm font-medium text-zinc-500 px-2 whitespace-nowrap">
-            Página {page} de {totalPages}
+            <span className="md:hidden">{page} / {totalPages}</span>
+            <span className="hidden md:inline">Página {page} de {totalPages}</span>
           </span>
           <Button variant="ghost" size="sm" icon={ChevronRight}
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}

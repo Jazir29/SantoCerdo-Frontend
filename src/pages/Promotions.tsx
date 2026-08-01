@@ -37,6 +37,7 @@ export default function Promotions() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   useEffect(() => {
     fetchPromotions(1);
@@ -142,12 +143,14 @@ export default function Promotions() {
             />
           </div>
           <button
-            onClick={() => setActiveFilter(activeFilter === 'all' ? 'active' : activeFilter === 'active' ? 'inactive' : 'all')}
-            className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-50 rounded-lg border border-zinc-100 text-zinc-500 text-xs font-bold shrink-0"
+            onClick={() => setIsFilterModalOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-zinc-50 rounded-lg border border-zinc-100 text-zinc-500 text-xs font-bold shrink-0"
           >
             <Filter size={11} />
-            {activeFilter === 'all' ? 'Estado' : activeFilter === 'active' ? 'Activos' : 'Inactivos'}
-            {activeFilter !== 'all' && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
+            Filtros
+            {(activeFilter !== 'all' || startDate || endDate) && (
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            )}
           </button>
         </div>
 
@@ -162,7 +165,7 @@ export default function Promotions() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="w-44 px-2 shrink-0">
+          <div className="w-36 px-2 shrink-0">
             <Select
               variant="ghost"
               options={[
@@ -500,6 +503,52 @@ export default function Promotions() {
     />
   </div>
 </form>
+      </Modal>
+
+      {/* Mobile Filter Modal */}
+      <Modal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        title="Filtros"
+        size="sm"
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={clearFilters}>
+              Limpiar
+            </Button>
+            <Button size="sm" onClick={() => setIsFilterModalOpen(false)}>
+              Aplicar
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Select
+            label="Estado"
+            size="sm"
+            options={[
+              { value: 'all',      label: 'Todos los estados' },
+              { value: 'active',   label: 'Activos' },
+              { value: 'inactive', label: 'Inactivos' },
+            ]}
+            value={activeFilter}
+            onChange={(v) => setActiveFilter(v as any)}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <DatePicker
+              label="Vigencia desde"
+              size="sm"
+              value={startDate}
+              onChange={setStartDate}
+            />
+            <DatePicker
+              label="Vigencia hasta"
+              size="sm"
+              value={endDate}
+              onChange={setEndDate}
+            />
+          </div>
+        </div>
       </Modal>
     </div>
   );
