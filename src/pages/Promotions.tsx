@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Tag, Trash2, Edit2, CheckCircle, XCircle, Calendar, Percent, DollarSign, Search, Save, Eye } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Plus, Tag, Trash2, Edit2, CheckCircle, XCircle, Calendar, Percent, DollarSign, Search, Save, Eye, X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import { Card, CardContent } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { Table, TableRow, TableCell } from '../components/ui/Table';
@@ -34,6 +33,9 @@ export default function Promotions() {
     active: 1
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     fetchPromotions(1);
@@ -90,8 +92,25 @@ export default function Promotions() {
     }
   };
 
+  const filteredPromotions = useMemo(() => {
+    return promotions.filter((p) => {
+      if (activeFilter === 'active' && !p.active) return false;
+      if (activeFilter === 'inactive' && p.active) return false;
+      if (startDate && p.end_date && p.end_date < startDate) return false;
+      if (endDate && p.start_date && p.start_date > endDate) return false;
+      return true;
+    });
+  }, [promotions, activeFilter, startDate, endDate]);
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setActiveFilter('all');
+    setStartDate('');
+    setEndDate('');
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <PageHeader 
         title="Promociones" 
         subtitle="Gestiona descuentos y cupones para tus clientes"
@@ -107,26 +126,64 @@ export default function Promotions() {
         }
       />
 
-      <Card>
-        <div className="border-b border-zinc-100 flex items-center divide-x divide-zinc-100">
-          <div className="flex-1 px-2">
-            <Input
-              placeholder="Buscar por nombre o código..."
-              icon={Search}
-              variant="ghost"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+      {/* Filter Bar */}
+      <div className="flex items-center bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-x divide-zinc-100">
+        <div className="flex-1 min-w-0 px-1">
+          <Input
+            placeholder="Buscar por nombre o código..."
+            icon={Search}
+            variant="ghost"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        <div className="w-44 px-2 shrink-0">
+          <Select
+            variant="ghost"
+            options={[
+              { value: 'all',      label: 'Todos los estados' },
+              { value: 'active',   label: 'Activos' },
+              { value: 'inactive', label: 'Inactivos' },
+            ]}
+            value={activeFilter}
+            onChange={(v) => setActiveFilter(v as any)}
+            placeholder="Todos los estados"
+          />
+        </div>
+        <div className="flex items-center gap-2 px-3 shrink-0">
+          <DatePicker
+            placeholder="Desde"
+            value={startDate}
+            onChange={setStartDate}
+            variant="ghost"
+          />
+          <span className="text-zinc-300 text-2xs font-black">al</span>
+          <DatePicker
+            placeholder="Hasta"
+            value={endDate}
+            onChange={setEndDate}
+            variant="ghost"
+          />
+        </div>
+        <button
+          onClick={clearFilters}
+          className="px-3 py-2 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
+          title="Limpiar filtros"
+        >
+          <X size={14} />
+        </button>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
 
         {/* Mobile Card List */}
-<div className="md:hidden">
+        <div className="md:hidden">
   {loading ? (
     <div className="p-8 text-center text-zinc-500 text-sm">Cargando promociones...</div>
-  ) : promotions.length === 0 ? (
+  ) : filteredPromotions.length === 0 ? (
     <div className="p-8 text-center text-zinc-500 text-sm">No se encontraron promociones</div>
-  ) : promotions.map((promo) => (
+  ) : filteredPromotions.map((promo) => (
     <div
       key={promo.id}
       className="px-4 py-4 active:bg-zinc-50 transition-colors border-b-4 border-zinc-50 last:border-b-0"
@@ -191,7 +248,7 @@ export default function Promotions() {
             loading={loading}
             emptyMessage="No se encontraron promociones"
           >
-            {(promotions || []).map((promo) => (
+            {filteredPromotions.map((promo) => (
               <TableRow key={promo.id}>
                 <TableCell>
                   <div className="flex items-center gap-3 min-w-[150px]">
@@ -276,9 +333,9 @@ export default function Promotions() {
         </div>
 
         {/* Pagination */}
-        <div className="px-4 py-4 md:px-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-zinc-50/50">
+        <div className="px-4 py-3 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-zinc-50/50">
           <div className="text-xs md:text-sm text-zinc-500 order-2 sm:order-1">
-            <span className="font-medium text-zinc-900">{promotions.length}</span> de <span className="font-medium text-zinc-900">{totalPromotions}</span> promociones
+            <span className="font-medium text-zinc-900">{filteredPromotions.length}</span> de <span className="font-medium text-zinc-900">{totalPromotions}</span> promociones
           </div>
           <div className="flex gap-1 md:gap-2 order-1 sm:order-2">
             <Button
@@ -314,7 +371,7 @@ export default function Promotions() {
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
 
       <Modal
         isOpen={isModalOpen}
