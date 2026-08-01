@@ -289,9 +289,9 @@ export default function Customers() {
 
         {/* Filtros desktop — ocultos en móvil */}
         <div className="hidden md:flex items-center gap-4">
-          <div className="flex items-center gap-2 px-4 py-2 bg-zinc-50 rounded-xl border border-zinc-100">
-            <Filter size={14} className="text-zinc-400" />
-            <span className="text-xs font-black text-zinc-400 uppercase tracking-widest">Filtros Activos</span>
+          <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 rounded-xl border border-zinc-100 shrink-0">
+            <Filter size={12} className="text-zinc-400" />
+            <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest">Filtros</span>
           </div>
           <div className="w-px h-8 bg-zinc-100" />
           <Select value={filterDepartment} onChange={setFilterDepartment} placeholder="Departamento" icon={Map}

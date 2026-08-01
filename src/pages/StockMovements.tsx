@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { X } from 'lucide-react';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
+import { DatePicker } from '../components/ui/DatePicker';
 import { Table, TableRow, TableCell } from '../components/ui/Table';
 import { useToast } from '../components/ui/Toast';
 import { api } from '../services/api';
@@ -148,73 +150,58 @@ export default function StockMovements() {
   const TABLE_HEADERS = ['Fecha', 'Producto', 'Cantidad', 'Tipo', 'Referencia', 'Usuario'];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title="Movimientos de Inventario"
         subtitle="Historial de entradas y salidas de stock"
       />
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-4 md:p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          {/* Product filter */}
+      {/* Filter Bar */}
+      <div className="flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-x divide-zinc-100">
+        <div className="flex-1 px-2 min-w-0">
           <Select
-            label="Producto"
+            variant="ghost"
             options={productOptions}
             value={productId}
-            onChange={(v) => { setProductId(v === '' ? '' : v); }}
+            onChange={(v) => { setProductId(v === '' ? '' : v); setPage(1); }}
             placeholder="Todos los productos"
           />
-
-          {/* Type filter */}
+        </div>
+        <div className="w-52 px-2 shrink-0">
           <Select
-            label="Tipo"
+            variant="ghost"
             options={TYPE_OPTIONS}
             value={type}
-            onChange={(v) => setType(v)}
+            onChange={(v) => { setType(v); setPage(1); }}
             placeholder="Todos los tipos"
           />
-
-          {/* Start date */}
-          <div className="w-full space-y-1">
-            <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-xs">
-              Desde
-            </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full py-2.5 md:py-3 px-4 text-sm font-bold bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all"
-            />
-          </div>
-
-          {/* End date */}
-          <div className="w-full space-y-1">
-            <label className="font-bold text-zinc-400 uppercase tracking-widest ml-1 text-xs">
-              Hasta
-            </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full py-2.5 md:py-3 px-4 text-sm font-bold bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all"
-            />
-          </div>
         </div>
-
-        {/* Filter actions */}
-        <div className="flex items-center gap-3 mt-4 justify-end">
-          <Button variant="secondary" size="sm" onClick={handleClearFilters}>
-            Limpiar filtros
-          </Button>
-          <Button variant="primary" size="sm" onClick={handleFilterChange}>
-            Aplicar filtros
-          </Button>
+        <div className="flex items-center gap-2 px-3 shrink-0">
+          <DatePicker
+            placeholder="Desde"
+            value={startDate}
+            onChange={(v) => { setStartDate(v); setPage(1); }}
+            variant="ghost"
+          />
+          <span className="text-zinc-300 text-2xs font-black">al</span>
+          <DatePicker
+            placeholder="Hasta"
+            value={endDate}
+            onChange={(v) => { setEndDate(v); setPage(1); }}
+            variant="ghost"
+          />
         </div>
+        <button
+          onClick={handleClearFilters}
+          className="px-3 py-2 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
+          title="Limpiar filtros"
+        >
+          <X size={14} />
+        </button>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
         {/* Summary bar */}
         <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between">
           <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">

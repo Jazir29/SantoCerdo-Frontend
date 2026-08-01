@@ -219,16 +219,17 @@ export default function ProductionRegistry() {
       />
 
       {/* Barra búsqueda + paginación */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl border border-zinc-100 shadow-sm">
-        <div className="w-full md:w-96">
+      <div className="flex flex-col md:flex-row gap-0 items-center justify-between bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-y md:divide-y-0 md:divide-x divide-zinc-100">
+        <div className="w-full md:flex-1 px-2">
           <Input
             placeholder="Buscar por producto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             icon={Search}
+            variant="ghost"
           />
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 px-3 py-1">
           <Button variant="ghost" size="sm" icon={ChevronLeft}
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1 || loading}>

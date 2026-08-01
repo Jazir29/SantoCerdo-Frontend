@@ -108,19 +108,15 @@ export default function Promotions() {
       />
 
       <Card>
-        <div className="border-b border-zinc-100">
-          {/* Móvil */}
-          <div className="flex items-center gap-2 p-2 md:hidden">
-            <div className="flex-1">
-              <Input placeholder="Buscar..." icon={Search} className="bg-transparent border-none focus:ring-0 text-xs"
-                value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} variant="ghost" />
-            </div>
-          </div>
-          {/* Desktop */}
-          <div className="hidden md:block p-4 md:p-8 bg-zinc-50/30">
-            <div className="max-w-md">
-              <Input icon={Search} placeholder="Buscar por nombre o código..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} size="sm" />
-            </div>
+        <div className="border-b border-zinc-100 flex items-center divide-x divide-zinc-100">
+          <div className="flex-1 px-2">
+            <Input
+              placeholder="Buscar por nombre o código..."
+              icon={Search}
+              variant="ghost"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 
