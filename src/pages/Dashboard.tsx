@@ -255,7 +255,7 @@ export default function Dashboard() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: i * 0.1 }}
-      className={`px-3 py-3 md:px-4 md:py-4 flex flex-col items-center md:items-start min-h-[100px] md:min-h-[130px] ${
+      className={`px-3 py-2.5 md:px-4 md:py-3 flex flex-col items-center md:items-start ${
         i === 0 ? 'order-5 md:order-1 col-span-2 sm:col-span-1' :
         i === 1 ? 'order-3 md:order-2' :
         i === 2 ? 'order-2 md:order-3' :
@@ -298,9 +298,9 @@ export default function Dashboard() {
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="lg:col-span-2 bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm"
+          className="lg:col-span-2 bg-white p-3 md:p-4 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4 md:mb-5">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-3 md:mb-4">
             <div>
               <h3 className="text-xl md:text-2xl font-bold text-zinc-900">Evolución de Rendimiento</h3>
               <p className="text-2xs md:text-xs text-zinc-400 mt-0.5 uppercase tracking-[0.2em] font-black">Ingresos vs Volumen de Órdenes</p>
@@ -379,9 +379,9 @@ export default function Dashboard() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm flex flex-col"
+          className="bg-white p-3 md:p-4 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm flex flex-col"
         >
-          <div className="flex items-start gap-3 mb-4 md:mb-5">
+          <div className="flex items-start gap-3 mb-3 md:mb-4">
             <div className="p-2 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-xl">
               <PieChartIcon size={15} />
             </div>
@@ -442,8 +442,8 @@ export default function Dashboard() {
       {/* Secondary Metrics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Profitability Bar Chart */}
-        <div className="lg:col-span-2 bg-white p-4 md:p-6 rounded-3xl border border-zinc-200 shadow-sm">
-          <div className="flex items-center gap-3 mb-5">
+        <div className="lg:col-span-2 bg-white p-3 md:p-4 rounded-3xl border border-zinc-200 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-zinc-100 text-zinc-900 rounded-lg">
               <Wallet size={18} />
             </div>
@@ -479,8 +479,8 @@ export default function Dashboard() {
         </div>
 
         {/* Sales by District */}
-        <div className="bg-white p-4 md:p-6 rounded-3xl border border-zinc-200 shadow-sm">
-          <div className="flex items-center gap-3 mb-5">
+        <div className="bg-white p-3 md:p-4 rounded-3xl border border-zinc-200 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-zinc-100 text-zinc-900 rounded-lg">
               <MapPin size={18} />
             </div>
@@ -514,7 +514,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Recent Orders Table */}
         <div className="lg:col-span-2 bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
-          <div className="p-4 md:p-6 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="p-3 md:p-4 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h3 className="text-xl md:text-2xl font-bold text-zinc-900">Registro de Transacciones</h3>
               <p className="text-2xs md:text-xs text-zinc-400 mt-1 uppercase tracking-[0.2em] font-black">Últimas Órdenes Procesadas</p>
@@ -595,12 +595,12 @@ export default function Dashboard() {
         {/* Highlights Column */}
         <div className="space-y-4">
           {/* Top Product Card */}
-          <div className="bg-zinc-900 p-5 md:p-6 rounded-2xl md:rounded-3xl shadow-xl border border-zinc-800 relative overflow-hidden group">
+          <div className="bg-zinc-900 p-4 md:p-5 rounded-2xl md:rounded-3xl shadow-xl border border-zinc-800 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
               <Award size={80} className="text-orange-500" />
             </div>
             <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="p-1.5 bg-orange-500/20 text-orange-500 rounded-xl">
                   <Star size={15} />
                 </div>
@@ -610,7 +610,7 @@ export default function Dashboard() {
                 <p className="text-zinc-500 text-2xs md:text-xs uppercase tracking-widest font-black">Líder en Ventas</p>
                 <h4 className="text-2xl md:text-3xl font-bold text-white leading-tight tracking-tight">{stats.topProduct.name}</h4>
               </div>
-              <div className="mt-5 pt-4 border-t border-zinc-800 flex justify-between items-end">
+              <div className="mt-4 pt-3 border-t border-zinc-800 flex justify-between items-end">
                 <div>
                   <p className="text-2xs md:text-xs text-zinc-500 uppercase tracking-widest font-black mb-1">Unidades Vendidas</p>
                   <p className="text-3xl md:text-4xl font-bold text-orange-500 tracking-tighter">
@@ -628,8 +628,8 @@ export default function Dashboard() {
           </div>
 
           {/* Inventory Alert Card */}
-          <div className={`p-5 md:p-6 rounded-2xl md:rounded-3xl border shadow-sm ${stats.lowStock > 0 ? 'bg-white border-red-200' : 'bg-white border-zinc-200'}`}>
-            <div className="flex items-center gap-3 mb-4">
+          <div className={`p-4 md:p-5 rounded-2xl md:rounded-3xl border shadow-sm ${stats.lowStock > 0 ? 'bg-white border-red-200' : 'bg-white border-zinc-200'}`}>
+            <div className="flex items-center gap-3 mb-3">
               <div className={`p-1.5 rounded-xl ${stats.lowStock > 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
                 <Package size={15} />
               </div>
@@ -644,7 +644,7 @@ export default function Dashboard() {
                 </span>
               </div>
               
-              <div className={`p-4 md:p-6 rounded-xl md:rounded-2xl border flex items-start gap-3 md:gap-4 ${stats.lowStock > 0 ? 'bg-red-50/50 border-red-100' : 'bg-emerald-50/50 border-emerald-100'}`}>
+              <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl border flex items-start gap-3 md:gap-4 ${stats.lowStock > 0 ? 'bg-red-50/50 border-red-100' : 'bg-emerald-50/50 border-emerald-100'}`}>
                 {stats.lowStock > 0 ? <AlertTriangle size={18} className="text-red-600 shrink-0 mt-0.5" /> : <Activity size={18} className="text-emerald-600 shrink-0 mt-0.5" />}
                 <div>
                   <p className={`text-xs font-black uppercase tracking-widest ${stats.lowStock > 0 ? 'text-red-900' : 'text-emerald-900'}`}>

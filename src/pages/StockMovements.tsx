@@ -203,7 +203,7 @@ export default function StockMovements() {
       {/* Table */}
       <div className="bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
         {/* Summary bar */}
-        <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between">
+        <div className="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
           <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
             {total} movimiento{total !== 1 ? 's' : ''}
           </p>
@@ -236,7 +236,7 @@ export default function StockMovements() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-zinc-100 flex items-center justify-between">
+          <div className="px-4 py-3 border-t border-zinc-100 flex items-center justify-between">
             <p className="text-xs text-zinc-400 font-medium">
               Página {page} de {totalPages}
             </p>

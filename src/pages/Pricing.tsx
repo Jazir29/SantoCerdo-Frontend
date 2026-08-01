@@ -298,8 +298,8 @@ export default function Pricing() {
 
           {/* Materia Prima */}
           <Card className="rounded-3xl">
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center justify-between mb-4 md:mb-6">
+            <CardContent className="p-3 md:p-4">
+              <div className="flex items-center justify-between mb-3 md:mb-4">
                 <div className="flex items-center gap-2 md:gap-3">
                   <div className="p-2 md:p-2.5 bg-amber-50 text-amber-600 rounded-xl">
                     <Package size={16} className="md:hidden" />
@@ -337,8 +337,8 @@ export default function Pricing() {
 
           {/* Costos Operativos */}
           <Card className="rounded-3xl">
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-center justify-between mb-4 md:mb-6">
+            <CardContent className="p-3 md:p-4">
+              <div className="flex items-center justify-between mb-3 md:mb-4">
                 <div className="flex items-center gap-2 md:gap-3">
                   <div className="p-2 md:p-2.5 bg-amber-50 text-amber-600 rounded-xl">
                     <Calculator size={16} className="md:hidden" />
@@ -377,7 +377,7 @@ export default function Pricing() {
           {/* Rendimiento, Peso y Margen */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
             <Card className="rounded-2xl md:rounded-3xl">
-              <CardContent className="p-3 md:p-6">
+              <CardContent className="p-3 md:p-4">
                 <div className="flex items-center gap-2 mb-2 md:mb-3">
                   <div className="p-1.5 md:p-2 bg-blue-50 text-blue-600 rounded-lg md:rounded-xl">
                     <Scale size={14} className="md:hidden" />
@@ -403,7 +403,7 @@ export default function Pricing() {
             </Card>
 
             <Card className="rounded-2xl md:rounded-3xl">
-              <CardContent className="p-3 md:p-6">
+              <CardContent className="p-3 md:p-4">
                 <div className="flex items-center gap-2 mb-2 md:mb-3">
                   <div className="p-1.5 md:p-2 bg-indigo-50 text-indigo-600 rounded-lg md:rounded-xl">
                     <Package size={14} className="md:hidden" />
@@ -424,7 +424,7 @@ export default function Pricing() {
             </Card>
 
             <Card className="rounded-2xl md:rounded-3xl col-span-2 md:col-span-1">
-              <CardContent className="p-3 md:p-6">
+              <CardContent className="p-3 md:p-4">
                 <div className="flex items-center gap-2 mb-2 md:mb-3">
                   <div className="p-1.5 md:p-2 bg-emerald-50 text-emerald-600 rounded-lg md:rounded-xl">
                     <Percent size={14} className="md:hidden" />
@@ -451,10 +451,10 @@ export default function Pricing() {
           <div className="sticky top-8 space-y-6">
 
             {/* Results */}
-            <div className="bg-zinc-900 p-4 md:p-8 rounded-3xl shadow-xl border border-zinc-800 text-white relative overflow-hidden">
+            <div className="bg-zinc-900 p-4 md:p-5 rounded-3xl shadow-xl border border-zinc-800 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-5"><TrendingUp size={160} /></div>
               <div className="relative z-10">
-                <h2 className="text-base md:text-xl font-bold text-amber-400 mb-4 md:mb-6">Análisis de Rentabilidad</h2>
+                <h2 className="text-base md:text-xl font-bold text-amber-400 mb-3 md:mb-4">Análisis de Rentabilidad</h2>
                 <div className="space-y-4 md:space-y-6">
                   <div className="grid grid-cols-2 gap-3 md:gap-4 border-b border-zinc-800 pb-3 md:pb-4">
                     <div>
@@ -511,7 +511,7 @@ export default function Pricing() {
 
             {/* Save Card */}
             <Card className="rounded-3xl">
-              <CardContent className="p-4 md:p-6 space-y-3 md:space-y-4">
+              <CardContent className="p-3 md:p-4 space-y-3">
                 <h3 className="font-bold text-zinc-900 text-sm md:text-base">Guardar en Catálogo</h3>
 
                 {/* ── COINCIDENCIA ENCONTRADA ── */}
@@ -601,7 +601,7 @@ export default function Pricing() {
             {/* Historial de lotes */}
             {selectedProductId !== 'new' && (
               <Card className="rounded-3xl">
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <button
                     onClick={() => setShowHistory(h => !h)}
                     className="w-full flex items-center justify-between"

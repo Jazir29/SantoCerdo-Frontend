@@ -705,7 +705,7 @@ export default function Orders() {
         </div>
 
         {/* Pagination */}
-        <div className="px-4 md:px-6 py-4 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between bg-zinc-50/50 gap-4">
+        <div className="px-4 py-3 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between bg-zinc-50/50 gap-4">
           <div className="text-xs md:text-sm text-zinc-500">
             Mostrando <span className="font-medium text-zinc-900">{orders.length}</span> de <span className="font-medium text-zinc-900">{totalOrders}</span> órdenes
           </div>

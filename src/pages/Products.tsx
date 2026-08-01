@@ -159,7 +159,7 @@ export default function Products() {
         ) : (products || []).map((product) => (
   <div key={product.id}>
     <Card className="hover:shadow-md transition-shadow h-full flex flex-col">
-      <CardContent className="p-3 md:p-6 flex flex-col flex-1">
+      <CardContent className="p-3 md:p-4 flex flex-col flex-1">
 
       {/* ── MÓVIL ── */}
       <div className="md:hidden flex flex-col h-full">

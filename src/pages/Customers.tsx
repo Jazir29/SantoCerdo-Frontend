@@ -350,7 +350,7 @@ export default function Customers() {
         {loading ? (
           <div className="col-span-full text-center py-12 text-zinc-500">Cargando clientes...</div>
         ) : safeCustomers.map((customer) => (
-          <div key={customer.id} className="bg-white rounded-2xl p-3 md:p-6 border border-zinc-200 shadow-sm hover:border-amber-500/30 transition-all hover:shadow-md flex flex-col">
+          <div key={customer.id} className="bg-white rounded-2xl p-3 md:p-4 border border-zinc-200 shadow-sm hover:border-amber-500/30 transition-all hover:shadow-md flex flex-col">
 
   {/* ── MÓVIL ── */}
 <div className="md:hidden flex flex-col h-full">

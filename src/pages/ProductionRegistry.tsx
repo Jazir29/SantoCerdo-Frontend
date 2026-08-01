@@ -115,7 +115,7 @@ export default function ProductionRegistry() {
         </div>
 
         {/* Análisis de Rentabilidad */}
-        <div className="bg-zinc-900 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden">
+        <div className="bg-zinc-900 rounded-3xl p-4 md:p-5 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-5"><TrendingUp size={120} /></div>
           <div className="relative z-10 space-y-6">
             <h4 className="text-lg font-bold text-amber-400 flex items-center gap-2">
