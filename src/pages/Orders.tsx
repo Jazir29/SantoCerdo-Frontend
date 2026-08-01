@@ -484,7 +484,7 @@ export default function Orders() {
             </div>
 
             {/* ── DESKTOP: filtros completos ── */}
-            <div className="hidden md:block p-4">
+            <div className="hidden md:block px-4 py-2.5">
               <div className="flex flex-wrap gap-4 items-end">
                 <div className="flex-1 min-w-0">
                   <Input
