@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Tag, Trash2, Edit2, CheckCircle, XCircle, Calendar, Percent, DollarSign, Search, Save, Eye, X } from 'lucide-react';
+import { Plus, Tag, Trash2, Edit2, CheckCircle, XCircle, Calendar, Percent, DollarSign, Search, Save, Eye, X, Filter } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { Card, CardContent } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { Table, TableRow, TableCell } from '../components/ui/Table';
@@ -126,56 +127,77 @@ export default function Promotions() {
         }
       />
 
-      {/* Filter Bar */}
-      <div className="flex items-center bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-x divide-zinc-100">
-        <div className="flex-1 min-w-0 px-1">
-          <Input
-            placeholder="Buscar por nombre o código..."
-            icon={Search}
-            variant="ghost"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="w-44 px-2 shrink-0">
-          <Select
-            variant="ghost"
-            options={[
-              { value: 'all',      label: 'Todos los estados' },
-              { value: 'active',   label: 'Activos' },
-              { value: 'inactive', label: 'Inactivos' },
-            ]}
-            value={activeFilter}
-            onChange={(v) => setActiveFilter(v as any)}
-            placeholder="Todos los estados"
-          />
-        </div>
-        <div className="flex items-center gap-2 px-3 shrink-0">
-          <DatePicker
-            placeholder="Desde"
-            value={startDate}
-            onChange={setStartDate}
-            variant="ghost"
-          />
-          <span className="text-zinc-300 text-2xs font-black">al</span>
-          <DatePicker
-            placeholder="Hasta"
-            value={endDate}
-            onChange={setEndDate}
-            variant="ghost"
-          />
-        </div>
-        <button
-          onClick={clearFilters}
-          className="px-3 py-2 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
-          title="Limpiar filtros"
-        >
-          <X size={14} />
-        </button>
-      </div>
+      <Card>
+        <CardContent className="p-0">
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
+        {/* Filter Bar – mobile */}
+        <div className="flex items-center gap-2 p-2 md:hidden border-b border-zinc-100">
+          <div className="flex-1">
+            <Input
+              placeholder="Buscar promoción..."
+              icon={Search}
+              variant="ghost"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={() => setActiveFilter(activeFilter === 'all' ? 'active' : activeFilter === 'active' ? 'inactive' : 'all')}
+            className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-50 rounded-lg border border-zinc-100 text-zinc-500 text-xs font-bold shrink-0"
+          >
+            <Filter size={11} />
+            {activeFilter === 'all' ? 'Estado' : activeFilter === 'active' ? 'Activos' : 'Inactivos'}
+            {activeFilter !== 'all' && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
+          </button>
+        </div>
+
+        {/* Filter Bar – desktop */}
+        <div className="hidden md:flex items-center divide-x divide-zinc-100 border-b border-zinc-100">
+          <div className="flex-1 min-w-0 px-2">
+            <Input
+              placeholder="Buscar por nombre o código..."
+              icon={Search}
+              variant="ghost"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="w-44 px-2 shrink-0">
+            <Select
+              variant="ghost"
+              options={[
+                { value: 'all',      label: 'Todos los estados' },
+                { value: 'active',   label: 'Activos' },
+                { value: 'inactive', label: 'Inactivos' },
+              ]}
+              value={activeFilter}
+              onChange={(v) => setActiveFilter(v as any)}
+              placeholder="Todos los estados"
+            />
+          </div>
+          <div className="flex items-center gap-2 px-3 shrink-0">
+            <DatePicker
+              placeholder="Desde"
+              value={startDate}
+              onChange={setStartDate}
+              variant="ghost"
+            />
+            <span className="text-zinc-300 text-2xs font-black">al</span>
+            <DatePicker
+              placeholder="Hasta"
+              value={endDate}
+              onChange={setEndDate}
+              variant="ghost"
+            />
+          </div>
+          <button
+            onClick={clearFilters}
+            className="px-3 py-2 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
+            title="Limpiar filtros"
+          >
+            <X size={14} />
+          </button>
+        </div>
 
         {/* Mobile Card List */}
         <div className="md:hidden">
@@ -371,7 +393,8 @@ export default function Promotions() {
             </Button>
           </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       <Modal
         isOpen={isModalOpen}

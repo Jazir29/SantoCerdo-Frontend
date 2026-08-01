@@ -266,13 +266,13 @@ export default function Customers() {
       />
 
       {/* Filter Bar */}
-      <div className="flex items-center bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
+      <div className="flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
         
         {/* Búsqueda — siempre visible */}
-        <div className="relative flex-1">
+        <div className="relative flex-1 px-2">
           <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar clientes..." icon={Search}
-            className="bg-transparent border-none focus:ring-0" variant="ghost" />
+            variant="ghost" />
         </div>
 
         {/* Botón filtros — solo móvil */}

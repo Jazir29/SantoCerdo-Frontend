@@ -140,14 +140,13 @@ export default function Products() {
         }
       />
 
-      <div className="flex items-center bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
-        <div className="relative flex-1">
+      <div className="flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
+        <div className="flex-1 px-2">
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar productos ..."
             icon={Search}
-            className="bg-transparent border-none focus:ring-0"
             variant="ghost"
           />
         </div>
