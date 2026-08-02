@@ -282,7 +282,7 @@ export default function Customers() {
           </button>
 
           {/* Filtros desktop — ocultos en móvil */}
-          <div className="hidden md:flex items-center gap-4 shrink-0 pl-2">
+          <div className="hidden md:flex items-center gap-4 shrink-0 pl-4">
             <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border shrink-0 transition-colors ${
               hasActiveFilters ? 'bg-green-50 border-green-200' : 'bg-zinc-50 border-zinc-100'
             }`}>
