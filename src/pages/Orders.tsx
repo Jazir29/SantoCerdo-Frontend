@@ -442,6 +442,9 @@ export default function Orders() {
     }
   };
 
+  const hasActiveFilters = !!(searchTerm || filterStatus !== 'all' || filterStartDate || filterEndDate);
+  const clearAllFilters = () => { setSearchTerm(''); setFilterStatus('all'); setFilterStartDate(''); setFilterEndDate(''); };
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -472,19 +475,30 @@ export default function Orders() {
                 />
               </div>
               <button
-                onClick={() => setIsFilterModalOpen(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 bg-zinc-50 rounded-lg border border-zinc-100 text-zinc-500 text-xs font-bold shrink-0"
+                onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold shrink-0 transition-colors ${
+                  hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
+                }`}
               >
                 <Filter size={11} />
                 Filtros
-                {(filterStatus !== 'all' || filterStartDate || filterEndDate) && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                )}
+                {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
               </button>
             </div>
 
             {/* ── DESKTOP: filtros ghost en línea ── */}
             <div className="hidden md:flex items-center divide-x divide-zinc-100 py-1">
+              <button
+                onClick={() => hasActiveFilters && clearAllFilters()}
+                className={`flex items-center gap-2 px-3 py-2 shrink-0 transition-colors ${
+                  hasActiveFilters ? 'bg-amber-50 cursor-pointer hover:bg-amber-100' : 'cursor-default'
+                }`}
+              >
+                <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
+                <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
+                  Filtros
+                </span>
+              </button>
               <div className="flex-1 min-w-0 px-2">
                 <Input
                   placeholder="Buscar orden..."

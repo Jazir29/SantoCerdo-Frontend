@@ -175,6 +175,7 @@ export default function StockMovements() {
   ];
 
   const TABLE_HEADERS = ['Fecha', 'Producto', 'Cantidad', 'Tipo', 'Referencia', 'Usuario'];
+  const hasActiveFilters = !!(productId || type !== 'all' || startDate || endDate);
 
   return (
     <div className="space-y-5">
@@ -185,26 +186,20 @@ export default function StockMovements() {
 
       {/* ── MOBILE Filter Bar ── */}
       <div className="flex items-center gap-2 md:hidden bg-white rounded-2xl border border-zinc-200 shadow-sm px-3 py-2">
-        <Filter size={14} className="text-zinc-400 shrink-0" />
-        <button
-          onClick={openFilterModal}
-          className="flex-1 text-left text-sm text-zinc-400"
-        >
+        <Filter size={14} className={hasActiveFilters ? 'text-amber-500 shrink-0' : 'text-zinc-400 shrink-0'} />
+        <button onClick={openFilterModal} className="flex-1 text-left text-sm text-zinc-400">
           {activeFilterCount > 0 ? `${activeFilterCount} filtro${activeFilterCount > 1 ? 's' : ''} activo${activeFilterCount > 1 ? 's' : ''}` : 'Filtrar movimientos...'}
         </button>
         {activeFilterCount > 0 && (
-          <>
-            <span className="px-2 py-0.5 bg-amber-500 text-white text-xs font-bold rounded-full">
-              {activeFilterCount}
-            </span>
-            <button onClick={handleClearFilters} className="text-zinc-300 hover:text-zinc-600 p-1">
-              <X size={14} />
-            </button>
-          </>
+          <span className="px-2 py-0.5 bg-amber-500 text-white text-xs font-bold rounded-full">
+            {activeFilterCount}
+          </span>
         )}
         <button
-          onClick={openFilterModal}
-          className="px-3 py-1.5 bg-zinc-100 rounded-xl text-zinc-600 text-xs font-bold shrink-0"
+          onClick={() => hasActiveFilters ? handleClearFilters() : openFilterModal()}
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 text-amber-600' : 'bg-zinc-100 text-zinc-600'
+          }`}
         >
           Filtros
         </button>
@@ -212,6 +207,17 @@ export default function StockMovements() {
 
       {/* ── DESKTOP Filter Bar ── */}
       <div className="hidden md:flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-x divide-zinc-100">
+        <button
+          onClick={() => hasActiveFilters && handleClearFilters()}
+          className={`flex items-center gap-2 px-3 py-2 shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 cursor-pointer hover:bg-amber-100' : 'cursor-default'
+          }`}
+        >
+          <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
+          <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
+            Filtros
+          </span>
+        </button>
         <div className="flex-1 px-2 min-w-0">
           <Select
             variant="ghost"

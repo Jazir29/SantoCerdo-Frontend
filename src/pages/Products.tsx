@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Package, Save, AlertTriangle, Eye, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, Package, Save, AlertTriangle, Eye, Search, Filter } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
@@ -126,6 +126,8 @@ export default function Products() {
     }
   };
 
+  const hasActiveFilters = !!searchTerm;
+
   return (
     <div className="space-y-8">
       <PageHeader 
@@ -141,7 +143,19 @@ export default function Products() {
       />
 
       <div className="flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
-        <div className="flex-1 px-2">
+        <button
+          onClick={() => hasActiveFilters && setSearchTerm('')}
+          className={`flex items-center gap-2 px-3 py-2 shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 cursor-pointer hover:bg-amber-100' : 'cursor-default'
+          }`}
+        >
+          <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
+          <span className={`text-2xs font-black uppercase tracking-widest hidden md:inline ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
+            Filtros
+          </span>
+        </button>
+        <div className="w-px h-8 bg-zinc-100 shrink-0" />
+        <div className="flex-1 px-2 min-w-0">
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
