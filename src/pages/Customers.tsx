@@ -252,6 +252,14 @@ export default function Customers() {
   const safeCustomers = Array.isArray(customers) ? customers : [];
   const hasActiveFilters = !!(filterDepartment || filterProvince || filterDistrict || filterType || searchTerm);
 
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setFilterDepartment('');
+    setFilterProvince('');
+    setFilterDistrict('');
+    setFilterType('');
+  };
+
   return (
     <div className="space-y-5 relative">
       <PageHeader
@@ -271,26 +279,29 @@ export default function Customers() {
 
           {/* Botón filtros — solo móvil */}
           <button
-            onClick={() => setIsFilterModalOpen(true)}
+            onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
             className={`md:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
-              hasActiveFilters ? 'bg-green-50 border-green-200 text-green-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
+              hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
             }`}
           >
             <Filter size={13} />
             Filtros
-            {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-green-500 ml-0.5" />}
+            {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-amber-500 ml-0.5" />}
           </button>
 
           {/* Filtros desktop — ocultos en móvil */}
           <div className="hidden md:flex items-center gap-4 shrink-0 pl-4">
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border shrink-0 transition-colors ${
-              hasActiveFilters ? 'bg-green-50 border-green-200' : 'bg-zinc-50 border-zinc-100'
-            }`}>
-              <Filter size={12} className={hasActiveFilters ? 'text-green-600' : 'text-zinc-400'} />
-              <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-green-600' : 'text-zinc-400'}`}>
+            <button
+              onClick={() => hasActiveFilters && clearAllFilters()}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border shrink-0 transition-colors ${
+                hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
+              }`}
+            >
+              <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
+              <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
                 Filtros
               </span>
-            </div>
+            </button>
             <div className="w-px h-8 bg-zinc-100" />
             <Select value={filterDepartment} onChange={setFilterDepartment} placeholder="Departamento" icon={Map}
               options={[{ value: '', label: 'Todos' }, ...(allDepartments).map(d => ({ value: d, label: d }))]}
