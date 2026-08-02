@@ -284,8 +284,8 @@ export default function Dashboard() {
           <stat.trendIcon size={8} />
           {stat.trend}
         </span>
-        <span className="hidden md:block text-3xs font-bold text-zinc-300 uppercase tracking-widest whitespace-nowrap">
-          VS PERIODO ANTERIOR
+        <span className="hidden md:block text-3xs font-bold text-zinc-300 uppercase tracking-wide">
+          vs período ant.
         </span>
       </div>
     </motion.div>
