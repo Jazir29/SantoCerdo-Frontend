@@ -142,7 +142,7 @@ export default function Dashboard() {
           <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest">Filtros</span>
         </div>
         
-        <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 md:gap-3 flex-1">
+        <div className="flex flex-col sm:flex-row flex-nowrap items-center gap-2 md:gap-3 flex-1 min-w-0">
           <Select 
             icon={Calendar}
             options={[
