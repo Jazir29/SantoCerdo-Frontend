@@ -250,7 +250,7 @@ export default function Customers() {
   };
 
   const safeCustomers = Array.isArray(customers) ? customers : [];
-  const hasActiveFilters = !!(filterDepartment || filterProvince || filterDistrict || filterType);
+  const hasActiveFilters = !!(filterDepartment || filterProvince || filterDistrict || filterType || searchTerm);
 
   return (
     <div className="space-y-5 relative">
