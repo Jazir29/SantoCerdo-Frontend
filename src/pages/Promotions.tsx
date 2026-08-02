@@ -157,11 +157,11 @@ export default function Promotions() {
         </div>
 
         {/* Filter Bar – desktop */}
-        <div className="hidden md:flex items-center divide-x divide-zinc-100 border-b border-zinc-100">
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 border-b border-zinc-100">
           <button
             onClick={() => hasActiveFilters && clearFilters()}
-            className={`flex items-center gap-2 px-3 py-2 shrink-0 transition-colors ${
-              hasActiveFilters ? 'bg-amber-50 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 cursor-default'
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
+              hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
             }`}
           >
             <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
@@ -169,16 +169,8 @@ export default function Promotions() {
               Filtros
             </span>
           </button>
-          <div className="flex-1 min-w-0 px-2">
-            <Input
-              placeholder="Buscar por nombre o código..."
-              icon={Search}
-              variant="ghost"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="w-36 px-2 shrink-0">
+          <div className="w-px h-6 bg-zinc-100 shrink-0" />
+          <div className="w-36 shrink-0">
             <Select
               variant="ghost"
               options={[
@@ -191,7 +183,8 @@ export default function Promotions() {
               placeholder="Todos los estados"
             />
           </div>
-          <div className="flex items-center gap-2 px-3 shrink-0">
+          <div className="w-px h-6 bg-zinc-100 shrink-0" />
+          <div className="flex items-center gap-2 shrink-0">
             <DatePicker
               placeholder="Desde"
               value={startDate}
@@ -208,11 +201,21 @@ export default function Promotions() {
           </div>
           <button
             onClick={clearFilters}
-            className="px-3 py-2 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
+            className="p-1.5 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
             title="Limpiar filtros"
           >
             <X size={14} />
           </button>
+          <div className="w-px h-6 bg-zinc-100 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <Input
+              placeholder="Buscar por nombre o código..."
+              icon={Search}
+              variant="ghost"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
 
         {/* Mobile Card List */}

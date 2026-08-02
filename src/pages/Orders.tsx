@@ -487,11 +487,11 @@ export default function Orders() {
             </div>
 
             {/* ── DESKTOP: filtros ghost en línea ── */}
-            <div className="hidden md:flex items-center divide-x divide-zinc-100 py-1">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5">
               <button
                 onClick={() => hasActiveFilters && clearAllFilters()}
-                className={`flex items-center gap-2 px-3 py-2 shrink-0 transition-colors ${
-                  hasActiveFilters ? 'bg-amber-50 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 cursor-default'
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
+                  hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
                 }`}
               >
                 <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
@@ -499,7 +499,8 @@ export default function Orders() {
                   Filtros
                 </span>
               </button>
-              <div className="flex-1 min-w-0 px-2">
+              <div className="w-px h-6 bg-zinc-100 shrink-0" />
+              <div className="flex-1 min-w-0">
                 <Input
                   placeholder="Buscar orden..."
                   icon={Search}
@@ -508,7 +509,8 @@ export default function Orders() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="w-52 px-2">
+              <div className="w-px h-6 bg-zinc-100 shrink-0" />
+              <div className="w-52">
                 <Select
                   placeholder="Todos los estados"
                   icon={Filter}
@@ -524,14 +526,15 @@ export default function Orders() {
                   ]}
                 />
               </div>
-              <div className="flex items-center gap-2 px-2">
+              <div className="w-px h-6 bg-zinc-100 shrink-0" />
+              <div className="flex items-center gap-2">
                 <DatePicker placeholder="Desde" value={filterStartDate} onChange={setFilterStartDate} variant="ghost" />
                 <span className="text-zinc-300 text-2xs font-black shrink-0">al</span>
                 <DatePicker placeholder="Hasta" value={filterEndDate} onChange={setFilterEndDate} variant="ghost" />
               </div>
               <button
                 onClick={() => { setSearchTerm(''); setFilterStatus('all'); setFilterStartDate(''); setFilterEndDate(''); }}
-                className="px-3 py-2 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
+                className="p-1.5 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
                 title="Limpiar filtros"
               >
                 <X size={14} />

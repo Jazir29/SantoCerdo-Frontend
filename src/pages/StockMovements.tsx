@@ -206,11 +206,11 @@ export default function StockMovements() {
       </div>
 
       {/* ── DESKTOP Filter Bar ── */}
-      <div className="hidden md:flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-x divide-zinc-100">
+      <div className="hidden md:flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm gap-2 px-3 py-1.5">
         <button
           onClick={() => hasActiveFilters && handleClearFilters()}
-          className={`flex items-center gap-2 px-3 py-2 shrink-0 transition-colors ${
-            hasActiveFilters ? 'bg-amber-50 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 cursor-default'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
           }`}
         >
           <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
@@ -218,7 +218,8 @@ export default function StockMovements() {
             Filtros
           </span>
         </button>
-        <div className="flex-1 px-2 min-w-0">
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <div className="flex-1 min-w-0">
           <Select
             variant="ghost"
             options={productOptions}
@@ -227,7 +228,8 @@ export default function StockMovements() {
             placeholder="Todos los productos"
           />
         </div>
-        <div className="w-44 px-2 shrink-0">
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <div className="w-44 shrink-0">
           <Select
             variant="ghost"
             options={TYPE_OPTIONS}
@@ -236,7 +238,8 @@ export default function StockMovements() {
             placeholder="Todos los tipos"
           />
         </div>
-        <div className="flex items-center gap-2 px-3 shrink-0">
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <div className="flex items-center gap-2 shrink-0">
           <DatePicker
             placeholder="Desde"
             value={startDate}
@@ -253,7 +256,7 @@ export default function StockMovements() {
         </div>
         <button
           onClick={handleClearFilters}
-          className="px-3 py-2 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
+          className="p-1.5 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
           title="Limpiar filtros"
         >
           <X size={14} />

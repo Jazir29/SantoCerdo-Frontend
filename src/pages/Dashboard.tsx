@@ -58,6 +58,9 @@ export default function Dashboard() {
     endDate: ''
   });
 
+  const clearFilters = () => setFilters({ range: '30days', status: 'all', customerType: 'all', startDate: '', endDate: '' });
+  const hasActiveFilters = filters.status !== 'all' || filters.customerType !== 'all' || filters.range !== '30days' || !!filters.startDate;
+
   useEffect(() => {
     setLoading(true);
     api.getStats(filters)
@@ -137,10 +140,17 @@ export default function Dashboard() {
 
       {/* Filter Bar */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
-        <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 rounded-xl border border-zinc-100 shrink-0">
-          <Filter size={12} className="text-zinc-400" />
-          <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest">Filtros</span>
-        </div>
+        <button
+          onClick={() => hasActiveFilters && clearFilters()}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
+          }`}
+        >
+          <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
+          <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
+            Filtros
+          </span>
+        </button>
         
         <div className="flex flex-col sm:flex-row flex-nowrap items-center gap-2 md:gap-3 flex-1 min-w-0">
           <Select 
@@ -221,13 +231,7 @@ export default function Dashboard() {
 
         <div className="flex items-center justify-between md:justify-end gap-4 px-2 md:px-0 border-t md:border-t-0 border-zinc-100 pt-2 md:pt-0">
           <button
-            onClick={() => setFilters({
-              range: '30days',
-              status: 'all',
-              customerType: 'all',
-              startDate: '',
-              endDate: ''
-            })}
+            onClick={clearFilters}
             className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors bg-zinc-50 md:bg-transparent rounded-lg"
             title="Limpiar Filtros"
           >

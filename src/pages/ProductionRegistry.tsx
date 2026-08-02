@@ -1,49 +1,86 @@
-import { useState, useEffect } from 'react';
-import { Package, Calendar, TrendingUp, ChevronLeft, ChevronRight, Search, Eye } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Package, Calendar, TrendingUp, ChevronLeft, ChevronRight, Search, Eye, Filter, X } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/Card';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { Select } from '../components/ui/Select';
+import { DatePicker } from '../components/ui/DatePicker';
 import { Modal } from '../components/ui/Modal';
 import { api } from '../services/api';
 import { ProductionBatch } from '../types';
 import { useToast } from '../components/ui/Toast';
 
+const PAGE_SIZE = 9;
+
 export default function ProductionRegistry() {
   const toast = useToast();
-  const [batches, setBatches]       = useState<ProductionBatch[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [page, setPage]             = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal]           = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [allBatches, setAllBatches] = useState<ProductionBatch[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   const [selectedBatch, setSelectedBatch] = useState<ProductionBatch | null>(null);
-  const [isModalOpen, setIsModalOpen]     = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterProduct, setFilterProduct] = useState('');
+  const [filterStartDate, setFilterStartDate] = useState('');
+  const [filterEndDate, setFilterEndDate] = useState('');
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchBatches();
-  }, [page]);
+    fetchAllBatches();
+  }, []);
 
+  // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1);
-    fetchBatches(1);
-  }, [searchTerm]);
+  }, [searchTerm, filterProduct, filterStartDate, filterEndDate]);
 
-  const fetchBatches = async (forcePage?: number) => {
+  const fetchAllBatches = async () => {
     setLoading(true);
     try {
-      const response = await api.getProductionBatches(forcePage ?? page, 10, searchTerm);
-      setBatches(response.data);
-      setTotalPages(response.totalPages);
-      setTotal(response.total);
+      const response = await api.getProductionBatches(1, 9999, '');
+      setAllBatches(response.data);
     } catch (error: any) {
       toast(error?.message || 'Error al cargar lotes', 'error');
-      setBatches([]);
+      setAllBatches([]);
     } finally {
       setLoading(false);
     }
   };
+
+  const productOptions = useMemo(() => {
+    const names = Array.from(new Set(allBatches.map(b => b.product_name).filter(Boolean)));
+    return [
+      { value: '', label: 'Todos los productos' },
+      ...names.sort().map(n => ({ value: n, label: n })),
+    ];
+  }, [allBatches]);
+
+  const filteredBatches = useMemo(() => {
+    return allBatches.filter(b => {
+      if (searchTerm && !b.product_name?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+      if (filterProduct && b.product_name !== filterProduct) return false;
+      const dateStr = b.created_at.split('T')[0];
+      if (filterStartDate && dateStr < filterStartDate) return false;
+      if (filterEndDate && dateStr > filterEndDate) return false;
+      return true;
+    });
+  }, [allBatches, searchTerm, filterProduct, filterStartDate, filterEndDate]);
+
+  const hasActiveFilters = !!(searchTerm || filterProduct || filterStartDate || filterEndDate);
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setFilterProduct('');
+    setFilterStartDate('');
+    setFilterEndDate('');
+  };
+
+  const totalPages = Math.max(1, Math.ceil(filteredBatches.length / PAGE_SIZE));
+  const displayBatches = filteredBatches.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleString('es-PE', {
@@ -218,9 +255,19 @@ export default function ProductionRegistry() {
         subtitle="Historial de lotes producidos y costos calculados"
       />
 
-      {/* Barra búsqueda + paginación */}
-      <div className="flex flex-col md:flex-row gap-0 items-center justify-between bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm divide-y md:divide-y-0 md:divide-x divide-zinc-100">
-        <div className="w-full md:flex-1 px-2">
+      {/* Mobile filter bar */}
+      <div className="md:hidden flex items-center gap-2 bg-white rounded-2xl border border-zinc-200 shadow-sm p-2">
+        <button
+          onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-bold shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
+          }`}
+        >
+          <Filter size={11} />
+          Filtros
+          {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
+        </button>
+        <div className="flex-1">
           <Input
             placeholder="Buscar por producto..."
             value={searchTerm}
@@ -229,20 +276,76 @@ export default function ProductionRegistry() {
             variant="ghost"
           />
         </div>
-        <div className="flex items-center gap-2 shrink-0 px-3 py-1">
+      </div>
+
+      {/* Desktop filter bar + pagination */}
+      <div className="hidden md:flex items-center bg-white rounded-3xl border border-zinc-200 shadow-sm gap-2 px-3 py-1.5">
+        <button
+          onClick={() => hasActiveFilters && clearAllFilters()}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
+          }`}
+        >
+          <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
+          <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
+            Filtros
+          </span>
+        </button>
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <div className="w-48 shrink-0">
+          <Select
+            variant="ghost"
+            options={productOptions}
+            value={filterProduct}
+            onChange={setFilterProduct}
+            placeholder="Todos los productos"
+          />
+        </div>
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <div className="flex items-center gap-2 shrink-0">
+          <DatePicker
+            placeholder="Desde"
+            value={filterStartDate}
+            onChange={setFilterStartDate}
+            variant="ghost"
+          />
+          <span className="text-zinc-300 text-2xs font-black">al</span>
+          <DatePicker
+            placeholder="Hasta"
+            value={filterEndDate}
+            onChange={setFilterEndDate}
+            variant="ghost"
+          />
+        </div>
+        <button
+          onClick={clearAllFilters}
+          className="p-1.5 text-zinc-300 hover:text-zinc-600 transition-colors shrink-0"
+          title="Limpiar filtros"
+        >
+          <X size={14} />
+        </button>
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <div className="flex-1 min-w-0">
+          <Input
+            placeholder="Buscar por producto..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            icon={Search}
+            variant="ghost"
+          />
+        </div>
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <div className="flex items-center gap-1 shrink-0">
           <Button variant="ghost" size="sm" icon={ChevronLeft}
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1 || loading}>
-            Anterior
           </Button>
           <span className="text-sm font-medium text-zinc-500 px-2 whitespace-nowrap">
-            <span className="md:hidden">{page} / {totalPages}</span>
-            <span className="hidden md:inline">Página {page} de {totalPages}</span>
+            {page} / {totalPages}
           </span>
           <Button variant="ghost" size="sm" icon={ChevronRight}
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages || loading}>
-            Siguiente
           </Button>
         </div>
       </div>
@@ -254,19 +357,21 @@ export default function ProductionRegistry() {
             <div key={i} className="h-64 bg-zinc-100 animate-pulse rounded-3xl" />
           ))}
         </div>
-      ) : batches.length === 0 ? (
+      ) : displayBatches.length === 0 ? (
         <Card className="rounded-3xl border-dashed border-2">
           <CardContent className="p-12 text-center">
             <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <Package className="text-zinc-300" size={32} />
             </div>
             <h3 className="text-lg font-bold text-zinc-900 mb-1">No hay registros</h3>
-            <p className="text-zinc-500">Los lotes que calcules y guardes aparecerán aquí.</p>
+            <p className="text-zinc-500">
+              {hasActiveFilters ? 'No hay lotes que coincidan con los filtros aplicados.' : 'Los lotes que calcules y guardes aparecerán aquí.'}
+            </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {batches.map((batch) => (
+          {displayBatches.map((batch) => (
             <Card key={batch.id} className="rounded-3xl hover:shadow-md transition-shadow overflow-hidden border-zinc-100">
               {/* Header oscuro */}
               <div className="bg-zinc-900 p-4 text-white">
@@ -329,10 +434,30 @@ export default function ProductionRegistry() {
         </div>
       )}
 
+      {/* Mobile pagination */}
+      {!loading && filteredBatches.length > 0 && (
+        <div className="md:hidden flex items-center justify-between py-2">
+          <span className="text-sm text-zinc-400">
+            {filteredBatches.length} lote{filteredBatches.length !== 1 ? 's' : ''}
+          </span>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" icon={ChevronLeft}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}>
+            </Button>
+            <span className="text-sm font-medium text-zinc-500">{page} / {totalPages}</span>
+            <Button variant="ghost" size="sm" icon={ChevronRight}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}>
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Footer total */}
-      {!loading && batches.length > 0 && (
+      {!loading && (
         <div className="text-sm text-zinc-400 text-center">
-          {total} lote{total !== 1 ? 's' : ''} registrado{total !== 1 ? 's' : ''}
+          {filteredBatches.length} de {allBatches.length} lote{allBatches.length !== 1 ? 's' : ''} registrado{allBatches.length !== 1 ? 's' : ''}
         </div>
       )}
 
@@ -349,6 +474,48 @@ export default function ProductionRegistry() {
         }
       >
         {renderDetails()}
+      </Modal>
+
+      {/* Mobile Filter Modal */}
+      <Modal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        title="Filtros"
+        size="sm"
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={clearAllFilters}>
+              Limpiar
+            </Button>
+            <Button size="sm" onClick={() => setIsFilterModalOpen(false)}>
+              Aplicar
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Select
+            label="Producto"
+            size="sm"
+            options={productOptions}
+            value={filterProduct}
+            onChange={setFilterProduct}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <DatePicker
+              label="Desde"
+              size="sm"
+              value={filterStartDate}
+              onChange={setFilterStartDate}
+            />
+            <DatePicker
+              label="Hasta"
+              size="sm"
+              value={filterEndDate}
+              onChange={setFilterEndDate}
+            />
+          </div>
+        </div>
       </Modal>
     </div>
   );
