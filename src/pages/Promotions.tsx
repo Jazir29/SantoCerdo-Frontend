@@ -161,7 +161,7 @@ export default function Promotions() {
           <button
             onClick={() => hasActiveFilters && clearFilters()}
             className={`flex items-center gap-2 px-3 py-2 shrink-0 transition-colors ${
-              hasActiveFilters ? 'bg-amber-50 cursor-pointer hover:bg-amber-100' : 'cursor-default'
+              hasActiveFilters ? 'bg-amber-50 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 cursor-default'
             }`}
           >
             <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
