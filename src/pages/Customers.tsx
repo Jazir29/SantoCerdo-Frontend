@@ -288,31 +288,29 @@ export default function Customers() {
       </MobileFilterBar>
 
       {/* Filter Bar — desktop */}
-      <div className="hidden md:flex items-center bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 shrink-0 pl-3">
-          <FiltersPill
-            hasActiveFilters={hasActiveFilters}
-            onClick={() => hasActiveFilters && clearAllFilters()}
-          />
-          <div className="w-px h-6 bg-zinc-100 shrink-0" />
-          <Select value={filterDepartment} onChange={setFilterDepartment} placeholder="Departamento" icon={Map}
-            options={[{ value: '', label: 'Todos' }, ...(allDepartments).map(d => ({ value: d, label: d }))]}
-            className="min-w-[120px]" variant="ghost" />
-          <div className="w-px h-6 bg-zinc-100 shrink-0" />
-          <Select value={filterProvince} onChange={setFilterProvince} placeholder="Provincia"
-            options={[{ value: '', label: 'Todas' }, ...(allProvinces).map(p => ({ value: p, label: p }))]}
-            className="min-w-[120px]" variant="ghost" />
-          <div className="w-px h-6 bg-zinc-100 shrink-0" />
-          <Select value={filterDistrict} onChange={setFilterDistrict} placeholder="Distrito"
-            options={[{ value: '', label: 'Todos' }, ...(allDistricts).map(d => ({ value: d, label: d }))]}
-            className="min-w-[120px]" variant="ghost" />
-          <div className="w-px h-6 bg-zinc-100 shrink-0" />
-          <Select value={filterType} onChange={setFilterType} placeholder="Tipo" icon={User}
-            options={[{ value: '', label: 'Todos' }, { value: 'natural', label: 'Persona Natural' }, { value: 'empresa', label: 'Empresa' }]}
-            className="min-w-[120px]" variant="ghost" />
-          <div className="w-px h-6 bg-zinc-100 shrink-0" />
-        </div>
-        <div className="flex-1 px-2 min-w-0">
+      <div className="hidden md:flex items-center bg-white rounded-3xl border border-zinc-200 shadow-sm gap-2 px-3 py-1.5">
+        <FiltersPill
+          hasActiveFilters={hasActiveFilters}
+          onClick={() => hasActiveFilters && clearAllFilters()}
+        />
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <Select value={filterDepartment} onChange={setFilterDepartment} placeholder="Departamento" icon={Map}
+          options={[{ value: '', label: 'Todos' }, ...(allDepartments).map(d => ({ value: d, label: d }))]}
+          className="min-w-[120px]" variant="ghost" />
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <Select value={filterProvince} onChange={setFilterProvince} placeholder="Provincia"
+          options={[{ value: '', label: 'Todas' }, ...(allProvinces).map(p => ({ value: p, label: p }))]}
+          className="min-w-[120px]" variant="ghost" />
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <Select value={filterDistrict} onChange={setFilterDistrict} placeholder="Distrito"
+          options={[{ value: '', label: 'Todos' }, ...(allDistricts).map(d => ({ value: d, label: d }))]}
+          className="min-w-[120px]" variant="ghost" />
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <Select value={filterType} onChange={setFilterType} placeholder="Tipo" icon={User}
+          options={[{ value: '', label: 'Todos' }, { value: 'natural', label: 'Persona Natural' }, { value: 'empresa', label: 'Empresa' }]}
+          className="min-w-[120px]" variant="ghost" />
+        <div className="w-px h-6 bg-zinc-100 shrink-0" />
+        <div className="flex-1 min-w-0">
           <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar clientes..." icon={Search} variant="ghost" />
         </div>
