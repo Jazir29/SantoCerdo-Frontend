@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Package, Calendar, TrendingUp, ChevronLeft, ChevronRight, Search, Eye, Filter, X } from 'lucide-react';
+import { FiltersPill } from '../components/ui/FiltersPill';
+import { MobileFilterBar } from '../components/ui/MobileFilterBar';
 import { Card, CardContent } from '../components/ui/Card';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
@@ -256,17 +258,10 @@ export default function ProductionRegistry() {
       />
 
       {/* Mobile filter bar */}
-      <div className="md:hidden flex items-center gap-2 bg-white rounded-2xl border border-zinc-200 shadow-sm p-2">
-        <button
-          onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
-            hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
-          }`}
-        >
-          <Filter size={11} />
-          Filtros
-          {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
-        </button>
+      <MobileFilterBar
+        hasActiveFilters={hasActiveFilters}
+        onFilterClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
+      >
         <div className="flex-1">
           <Input
             placeholder="Buscar por producto..."
@@ -276,21 +271,14 @@ export default function ProductionRegistry() {
             variant="ghost"
           />
         </div>
-      </div>
+      </MobileFilterBar>
 
       {/* Desktop filter bar + pagination */}
       <div className="hidden md:flex items-center bg-white rounded-3xl border border-zinc-200 shadow-sm gap-2 px-3 py-1.5">
-        <button
+        <FiltersPill
+          hasActiveFilters={hasActiveFilters}
           onClick={() => hasActiveFilters && clearAllFilters()}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
-            hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
-          }`}
-        >
-          <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
-          <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
-            Filtros
-          </span>
-        </button>
+        />
         <div className="w-px h-6 bg-zinc-100 shrink-0" />
         <div className="w-48 shrink-0">
           <Select

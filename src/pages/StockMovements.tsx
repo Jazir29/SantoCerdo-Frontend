@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Filter, Search } from 'lucide-react';
+import { FiltersPill } from '../components/ui/FiltersPill';
+import { MobileFilterBar } from '../components/ui/MobileFilterBar';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
@@ -185,37 +187,23 @@ export default function StockMovements() {
       />
 
       {/* ── MOBILE Filter Bar ── */}
-      <div className="flex items-center gap-2 p-2 md:hidden bg-white rounded-2xl border border-zinc-200 shadow-sm">
-        <button
-          onClick={() => hasActiveFilters ? handleClearFilters() : openFilterModal()}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
-            hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
-          }`}
-        >
-          <Filter size={11} />
-          Filtros
-          {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
-        </button>
+      <MobileFilterBar
+        hasActiveFilters={hasActiveFilters}
+        onFilterClick={() => hasActiveFilters ? handleClearFilters() : openFilterModal()}
+      >
         <button onClick={openFilterModal} className="flex-1 text-left text-sm text-zinc-400 px-1 truncate">
           {hasActiveFilters
             ? `${activeFilterCount} filtro${activeFilterCount !== 1 ? 's' : ''} activo${activeFilterCount !== 1 ? 's' : ''}`
             : 'Todos los movimientos'}
         </button>
-      </div>
+      </MobileFilterBar>
 
       {/* ── DESKTOP Filter Bar ── */}
       <div className="hidden md:flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm gap-2 px-3 py-1.5">
-        <button
+        <FiltersPill
+          hasActiveFilters={hasActiveFilters}
           onClick={() => hasActiveFilters && handleClearFilters()}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
-            hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
-          }`}
-        >
-          <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
-          <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
-            Filtros
-          </span>
-        </button>
+        />
         <div className="w-px h-6 bg-zinc-100 shrink-0" />
         <div className="flex-1 min-w-0">
           <Select

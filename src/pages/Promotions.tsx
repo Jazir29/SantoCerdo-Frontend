@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Plus, Tag, Trash2, Edit2, CheckCircle, XCircle, Calendar, Percent, DollarSign, Search, Save, Eye, X, Filter } from 'lucide-react';
+import { FiltersPill } from '../components/ui/FiltersPill';
+import { MobileFilterBar } from '../components/ui/MobileFilterBar';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
@@ -134,17 +136,11 @@ export default function Promotions() {
         <CardContent className="p-0">
 
         {/* Filter Bar – mobile */}
-        <div className="flex items-center gap-2 p-2 md:hidden border-b border-zinc-100">
-          <button
-            onClick={() => hasActiveFilters ? clearFilters() : setIsFilterModalOpen(true)}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
-              hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
-            }`}
-          >
-            <Filter size={11} />
-            Filtros
-            {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
-          </button>
+        <MobileFilterBar
+          variant="card"
+          hasActiveFilters={hasActiveFilters}
+          onFilterClick={() => hasActiveFilters ? clearFilters() : setIsFilterModalOpen(true)}
+        >
           <div className="flex-1">
             <Input
               placeholder="Buscar promoción..."
@@ -154,21 +150,14 @@ export default function Promotions() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-        </div>
+        </MobileFilterBar>
 
         {/* Filter Bar – desktop */}
         <div className="hidden md:flex items-center gap-2 px-3 py-1.5 border-b border-zinc-100">
-          <button
+          <FiltersPill
+            hasActiveFilters={hasActiveFilters}
             onClick={() => hasActiveFilters && clearFilters()}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
-              hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
-            }`}
-          >
-            <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
-            <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
-              Filtros
-            </span>
-          </button>
+          />
           <div className="w-px h-6 bg-zinc-100 shrink-0" />
           <div className="w-36 shrink-0">
             <Select

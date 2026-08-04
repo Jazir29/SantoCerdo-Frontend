@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend, ComposedChart, Line } from 'recharts';
 import { DollarSign, ShoppingCart, Users, TrendingUp, AlertTriangle, Award, Package, PieChart as PieChartIcon, BarChart3, Wallet, MapPin, Star, ArrowUpRight, ArrowDownRight, Activity, Calendar, Filter, ChevronDown, Tag, X,CheckCircle, Truck, Clock } from 'lucide-react';
+import { FiltersPill } from '../components/ui/FiltersPill';
 import { motion, AnimatePresence } from 'motion/react';
 import { Select } from '../components/ui/Select';
 import { DatePicker } from '../components/ui/DatePicker';
@@ -140,17 +141,10 @@ export default function Dashboard() {
 
       {/* Filter Bar */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 bg-white px-2 py-1 md:px-3 md:py-1.5 rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm">
-        <button
+        <FiltersPill
+          hasActiveFilters={hasActiveFilters}
           onClick={() => hasActiveFilters && clearFilters()}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
-            hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
-          }`}
-        >
-          <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
-          <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
-            Filtros
-          </span>
-        </button>
+        />
         
         <div className="flex flex-col sm:flex-row flex-nowrap items-center gap-2 md:gap-3 flex-1 min-w-0">
           <Select 

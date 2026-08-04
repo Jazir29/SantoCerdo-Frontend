@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Search, CheckCircle, Clock, X, Save, Trash2, Eye, AlertTriangle, User, MapPin, Phone, Mail, Building2, Tag, DollarSign, Edit2, Truck, Download, Building, Package, Calendar, Filter, CreditCard } from 'lucide-react';
+import { FiltersPill } from '../components/ui/FiltersPill';
+import { MobileFilterBar } from '../components/ui/MobileFilterBar';
 import { toPng } from 'html-to-image';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
@@ -463,17 +465,11 @@ export default function Orders() {
         <CardContent className="p-0">
           <div className="border-b border-zinc-100">
             {/* ── MÓVIL: barra compacta ── */}
-            <div className="flex items-center gap-2 p-2 md:hidden">
-              <button
-                onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
-                  hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
-                }`}
-              >
-                <Filter size={11} />
-                Filtros
-                {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
-              </button>
+            <MobileFilterBar
+              variant="card"
+              hasActiveFilters={hasActiveFilters}
+              onFilterClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
+            >
               <div className="flex-1">
                 <Input
                   placeholder="Buscar orden..."
@@ -483,21 +479,14 @@ export default function Orders() {
                   variant="ghost"
                 />
               </div>
-            </div>
+            </MobileFilterBar>
 
             {/* ── DESKTOP: filtros ghost en línea ── */}
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5">
-              <button
+              <FiltersPill
+                hasActiveFilters={hasActiveFilters}
                 onClick={() => hasActiveFilters && clearAllFilters()}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
-                  hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
-                }`}
-              >
-                <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
-                <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
-                  Filtros
-                </span>
-              </button>
+              />
               <div className="w-px h-6 bg-zinc-100 shrink-0" />
               <div className="flex-1 min-w-0">
                 <Input
