@@ -13,17 +13,20 @@ const API_BASE = import.meta.env.VITE_API_URL ?? 'https://santocerdo-backend-0z2
 
 // Wrapper que lanza el error si la respuesta no es ok
 async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
+  const token = localStorage.getItem('token');
   const res = await fetch(url, {
     ...options,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options?.headers ?? {}),
     },
   });
 
   if (res.status === 401) {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     window.location.href = '/';
     throw new Error('Sesión expirada');
   }
@@ -49,6 +52,7 @@ export const api = {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Credenciales invalidas');
+    if (data.token) localStorage.setItem('token', data.token);
     return data;
   },
 
