@@ -462,7 +462,6 @@ export default function Orders() {
       />
 
       <Card>
-        <CardContent className="p-0">
           <div className="border-b border-zinc-100">
             {/* ── MÓVIL: barra compacta ── */}
             <MobileFilterBar
@@ -748,8 +747,7 @@ export default function Orders() {
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </Card>
 
       {/* New Order Modal */}
       <Modal

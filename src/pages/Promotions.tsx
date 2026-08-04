@@ -133,7 +133,6 @@ export default function Promotions() {
       />
 
       <Card>
-        <CardContent className="p-0">
 
         {/* Filter Bar – mobile */}
         <MobileFilterBar
@@ -401,7 +400,6 @@ export default function Promotions() {
             </Button>
           </div>
         </div>
-        </CardContent>
       </Card>
 
       <Modal
