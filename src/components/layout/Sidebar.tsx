@@ -39,7 +39,7 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
   ];
 
   return (
-    <div className="w-full lg:w-56 bg-white border-r border-zinc-200 h-screen flex flex-col shadow-2xl lg:shadow-none">
+    <div className="w-full lg:w-56 bg-white border-r border-zinc-200 h-full flex flex-col shadow-2xl lg:shadow-none">
       {/* Logo */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -120,7 +120,7 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
           </button>
         )}
         <button
-          onClick={() => { setIsSettingsMode(true); navigate('/settings/profile'); }}
+          onClick={() => { setIsSettingsMode(true); navigate('/settings/profile'); onClose?.(); }}
           className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all text-left ${
             isSettingsMode ? 'bg-amber-50 border border-amber-100' : 'hover:bg-zinc-50'
           }`}
@@ -138,8 +138,17 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
               {user?.role || 'Administrador'}
             </p>
           </div>
-          {!isSettingsMode && <SettingsIcon size={12} className="text-zinc-300 shrink-0" />}
+          <SettingsIcon size={12} className="text-zinc-300 shrink-0" />
         </button>
+        {!isSettingsMode && (
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all text-red-500 hover:bg-red-50 hover:text-red-600"
+          >
+            <LogOut size={15} />
+            <span className="text-sm font-medium">Cerrar Sesión</span>
+          </button>
+        )}
       </div>
     </div>
   );

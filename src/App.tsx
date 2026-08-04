@@ -65,7 +65,7 @@ export default function App() {
 
   return (
     <Router>
-      <div className="flex h-screen bg-amber-50/30 font-sans overflow-hidden">
+      <div className="flex h-[100dvh] bg-amber-50/30 font-sans overflow-hidden">
         {/* Mobile Sidebar Overlay */}
         <AnimatePresence>
           {isSidebarOpen && (

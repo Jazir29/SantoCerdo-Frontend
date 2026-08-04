@@ -185,23 +185,21 @@ export default function StockMovements() {
       />
 
       {/* ── MOBILE Filter Bar ── */}
-      <div className="flex items-center gap-2 md:hidden bg-white rounded-2xl border border-zinc-200 shadow-sm px-3 py-2">
-        <Filter size={14} className={hasActiveFilters ? 'text-amber-500 shrink-0' : 'text-zinc-400 shrink-0'} />
-        <button onClick={openFilterModal} className="flex-1 text-left text-sm text-zinc-400">
-          {activeFilterCount > 0 ? `${activeFilterCount} filtro${activeFilterCount > 1 ? 's' : ''} activo${activeFilterCount > 1 ? 's' : ''}` : 'Filtrar movimientos...'}
-        </button>
-        {activeFilterCount > 0 && (
-          <span className="px-2 py-0.5 bg-amber-500 text-white text-xs font-bold rounded-full">
-            {activeFilterCount}
-          </span>
-        )}
+      <div className="flex items-center gap-2 p-2 md:hidden bg-white rounded-2xl border border-zinc-200 shadow-sm">
         <button
           onClick={() => hasActiveFilters ? handleClearFilters() : openFilterModal()}
-          className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-colors ${
-            hasActiveFilters ? 'bg-amber-50 text-amber-600' : 'bg-zinc-100 text-zinc-600'
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
           }`}
         >
+          <Filter size={11} />
           Filtros
+          {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
+        </button>
+        <button onClick={openFilterModal} className="flex-1 text-left text-sm text-zinc-400 px-1 truncate">
+          {hasActiveFilters
+            ? `${activeFilterCount} filtro${activeFilterCount !== 1 ? 's' : ''} activo${activeFilterCount !== 1 ? 's' : ''}`
+            : 'Todos los movimientos'}
         </button>
       </div>
 

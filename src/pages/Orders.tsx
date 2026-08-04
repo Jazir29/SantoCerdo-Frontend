@@ -464,19 +464,9 @@ export default function Orders() {
           <div className="border-b border-zinc-100">
             {/* ── MÓVIL: barra compacta ── */}
             <div className="flex items-center gap-2 p-2 md:hidden">
-              <div className="flex-1">
-                <Input
-                  placeholder="Buscar orden..."
-                  icon={Search}
-                  className="bg-transparent border-none focus:ring-0 text-xs"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  variant="ghost"
-                />
-              </div>
               <button
                 onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold shrink-0 transition-colors ${
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
                   hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
                 }`}
               >
@@ -484,6 +474,15 @@ export default function Orders() {
                 Filtros
                 {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
               </button>
+              <div className="flex-1">
+                <Input
+                  placeholder="Buscar orden..."
+                  icon={Search}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  variant="ghost"
+                />
+              </div>
             </div>
 
             {/* ── DESKTOP: filtros ghost en línea ── */}

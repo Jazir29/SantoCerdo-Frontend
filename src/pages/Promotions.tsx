@@ -137,7 +137,7 @@ export default function Promotions() {
         <div className="flex items-center gap-2 p-2 md:hidden border-b border-zinc-100">
           <button
             onClick={() => hasActiveFilters ? clearFilters() : setIsFilterModalOpen(true)}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-bold shrink-0 transition-colors ${
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
               hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
             }`}
           >
