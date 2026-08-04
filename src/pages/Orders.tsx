@@ -533,9 +533,9 @@ export default function Orders() {
         {/* Mobile Card List */}
         <div className="md:hidden divide-y divide-zinc-100">
           {loading ? (
-            <div className="p-8 text-center text-zinc-500 text-sm">Cargando órdenes...</div>
+            <div className="py-6 px-4 text-center text-zinc-500 text-sm">Cargando órdenes...</div>
           ) : orders.length === 0 ? (
-            <div className="p-8 text-center text-zinc-500 text-sm">No se encontraron órdenes</div>
+            <div className="py-6 px-4 text-center text-zinc-500 text-sm">No se encontraron órdenes</div>
           ) : orders.map((order) => (
             <div
   key={order.id}
@@ -710,8 +710,8 @@ export default function Orders() {
         </div>
 
         {/* Pagination */}
-        <div className="px-4 py-3 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between bg-zinc-50/50 gap-4">
-          <div className="text-xs md:text-sm text-zinc-500">
+        <div className="px-4 py-2 border-t border-zinc-100 flex items-center justify-center sm:justify-between bg-zinc-50/50">
+          <div className="hidden sm:block text-xs text-zinc-500">
             Mostrando <span className="font-medium text-zinc-900">{orders.length}</span> de <span className="font-medium text-zinc-900">{totalOrders}</span> órdenes
           </div>
           <div className="flex gap-1 md:gap-2">
