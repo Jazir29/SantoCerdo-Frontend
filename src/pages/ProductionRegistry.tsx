@@ -259,7 +259,7 @@ export default function ProductionRegistry() {
       <div className="md:hidden flex items-center gap-2 bg-white rounded-2xl border border-zinc-200 shadow-sm p-2">
         <button
           onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-bold shrink-0 transition-colors ${
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
             hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
           }`}
         >

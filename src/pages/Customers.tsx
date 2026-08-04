@@ -274,60 +274,61 @@ export default function Customers() {
         }
       />
 
-      {/* Filter Bar */}
-      <div className="flex items-center bg-white rounded-2xl md:rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
+      {/* Filter Bar — mobile */}
+      <div className="flex items-center gap-2 p-2 md:hidden bg-white rounded-2xl border border-zinc-200 shadow-sm">
+        <button
+          onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
+            hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
+          }`}
+        >
+          <Filter size={11} />
+          Filtros
+          {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
+        </button>
+        <div className="flex-1">
+          <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar clientes..." icon={Search} variant="ghost" />
+        </div>
+      </div>
 
-          {/* Botón filtros — solo móvil */}
+      {/* Filter Bar — desktop */}
+      <div className="hidden md:flex items-center bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 shrink-0 pl-3">
           <button
-            onClick={() => hasActiveFilters ? clearAllFilters() : setIsFilterModalOpen(true)}
-            className={`md:hidden flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold shrink-0 transition-colors ${
-              hasActiveFilters ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-zinc-50 border-zinc-100 text-zinc-500'
+            onClick={() => hasActiveFilters && clearAllFilters()}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
+              hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
             }`}
           >
-            <Filter size={11} />
-            Filtros
-            {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
+            <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
+            <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
+              Filtros
+            </span>
           </button>
-
-          {/* Filtros desktop — ocultos en móvil */}
-          <div className="hidden md:flex items-center gap-2 shrink-0 pl-3">
-            <button
-              onClick={() => hasActiveFilters && clearAllFilters()}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 transition-colors ${
-                hasActiveFilters ? 'bg-amber-50 border-amber-200 cursor-pointer hover:bg-amber-100' : 'bg-zinc-50 border-zinc-100 cursor-default'
-              }`}
-            >
-              <Filter size={12} className={hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'} />
-              <span className={`text-2xs font-black uppercase tracking-widest ${hasActiveFilters ? 'text-amber-600' : 'text-zinc-400'}`}>
-                Filtros
-              </span>
-            </button>
-            <div className="w-px h-6 bg-zinc-100 shrink-0" />
-            <Select value={filterDepartment} onChange={setFilterDepartment} placeholder="Departamento" icon={Map}
-              options={[{ value: '', label: 'Todos' }, ...(allDepartments).map(d => ({ value: d, label: d }))]}
-              className="min-w-[120px]" variant="ghost" />
-            <div className="w-px h-6 bg-zinc-100 shrink-0" />
-            <Select value={filterProvince} onChange={setFilterProvince} placeholder="Provincia"
-              options={[{ value: '', label: 'Todas' }, ...(allProvinces).map(p => ({ value: p, label: p }))]}
-              className="min-w-[120px]" variant="ghost" />
-            <div className="w-px h-6 bg-zinc-100 shrink-0" />
-            <Select value={filterDistrict} onChange={setFilterDistrict} placeholder="Distrito"
-              options={[{ value: '', label: 'Todos' }, ...(allDistricts).map(d => ({ value: d, label: d }))]}
-              className="min-w-[120px]" variant="ghost" />
-            <div className="w-px h-6 bg-zinc-100 shrink-0" />
-            <Select value={filterType} onChange={setFilterType} placeholder="Tipo" icon={User}
-              options={[{ value: '', label: 'Todos' }, { value: 'natural', label: 'Persona Natural' }, { value: 'empresa', label: 'Empresa' }]}
-              className="min-w-[120px]" variant="ghost" />
-            <div className="w-px h-6 bg-zinc-100 shrink-0" />
-          </div>
-
-          {/* Búsqueda — siempre visible, a la derecha */}
-          <div className="flex-1 px-2 min-w-0">
-            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar clientes..." icon={Search}
-              variant="ghost" />
-          </div>
+          <div className="w-px h-6 bg-zinc-100 shrink-0" />
+          <Select value={filterDepartment} onChange={setFilterDepartment} placeholder="Departamento" icon={Map}
+            options={[{ value: '', label: 'Todos' }, ...(allDepartments).map(d => ({ value: d, label: d }))]}
+            className="min-w-[120px]" variant="ghost" />
+          <div className="w-px h-6 bg-zinc-100 shrink-0" />
+          <Select value={filterProvince} onChange={setFilterProvince} placeholder="Provincia"
+            options={[{ value: '', label: 'Todas' }, ...(allProvinces).map(p => ({ value: p, label: p }))]}
+            className="min-w-[120px]" variant="ghost" />
+          <div className="w-px h-6 bg-zinc-100 shrink-0" />
+          <Select value={filterDistrict} onChange={setFilterDistrict} placeholder="Distrito"
+            options={[{ value: '', label: 'Todos' }, ...(allDistricts).map(d => ({ value: d, label: d }))]}
+            className="min-w-[120px]" variant="ghost" />
+          <div className="w-px h-6 bg-zinc-100 shrink-0" />
+          <Select value={filterType} onChange={setFilterType} placeholder="Tipo" icon={User}
+            options={[{ value: '', label: 'Todos' }, { value: 'natural', label: 'Persona Natural' }, { value: 'empresa', label: 'Empresa' }]}
+            className="min-w-[120px]" variant="ghost" />
+          <div className="w-px h-6 bg-zinc-100 shrink-0" />
         </div>
+        <div className="flex-1 px-2 min-w-0">
+          <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar clientes..." icon={Search} variant="ghost" />
+        </div>
+      </div>
 
       {/* Modal de filtros — solo móvil */}
       <Modal
