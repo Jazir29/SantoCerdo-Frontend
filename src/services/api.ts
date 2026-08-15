@@ -269,6 +269,7 @@ updateProfile: async (data: {
   username: string;
   first_name?: string;
   last_name?: string;
+  second_last_name?: string | null;
   currentPassword?: string;
   newPassword?: string;
 }): Promise<{ success: boolean; user: User; message?: string }> =>
@@ -285,6 +286,7 @@ createUser: async (data: {
   password: string;
   first_name: string;
   last_name: string;
+  second_last_name?: string | null;
   role: string;
 }): Promise<{ success: boolean; user: User }> =>
   apiFetch(`${API_BASE}/users`, {
@@ -296,6 +298,7 @@ updateUser: async (id: number, data: {
   username: string;
   first_name: string;
   last_name: string;
+  second_last_name?: string | null;
   role: string;
   password?: string;
 }): Promise<{ success: boolean; user: User }> =>

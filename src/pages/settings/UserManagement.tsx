@@ -27,6 +27,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
     // Form state
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [secondLastName, setSecondLastName] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -52,7 +53,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
     };
 
     const resetForm = () => {
-        setFirstName(''); setLastName(''); setUsername('');
+        setFirstName(''); setLastName(''); setSecondLastName(''); setUsername('');
         setPassword(''); setConfirmPassword('');
         setRole('Administrador');
         setFormError(null);
@@ -69,6 +70,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
         setEditingUser(u);
         setFirstName(u.first_name || '');
         setLastName(u.last_name || '');
+        setSecondLastName(u.second_last_name || '');
         setUsername(u.username);
         setPassword('');
         setConfirmPassword('');
@@ -94,12 +96,15 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
             if (editingUser) {
                 await api.updateUser(editingUser.id, {
                     username, first_name: firstName, last_name: lastName,
+                    second_last_name: secondLastName || null,
                     role, ...(password ? { password } : {}),
                 });
             } else {
                 await api.createUser({
                     username, password,
-                    first_name: firstName, last_name: lastName, role,
+                    first_name: firstName, last_name: lastName,
+                    second_last_name: secondLastName || null,
+                    role,
                 });
             }
             setIsFormOpen(false);
@@ -184,7 +189,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-zinc-600">
-                                                    {u.first_name ? `${u.first_name} ${u.last_name}` : u.name}
+                                                    {[u.first_name, u.last_name, u.second_last_name].filter(Boolean).join(' ')}
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${u.role === 'Administrador' ? 'bg-amber-100 text-amber-700' :
@@ -239,10 +244,12 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <Input label="Nombre" value={firstName}
-                                        onChange={(e) => setFirstName(e.target.value)} placeholder="Nombre" size="sm" />
-                                    <Input label="Apellido" value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)} placeholder="Apellido" size="sm" />
+                                    <Input label="Nombres" value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)} placeholder="Nombres" size="sm" />
+                                    <Input label="Primer Apellido" value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)} placeholder="Primer apellido" size="sm" />
+                                    <Input label="Segundo Apellido" value={secondLastName}
+                                        onChange={(e) => setSecondLastName(e.target.value)} placeholder="Segundo apellido (opcional)" size="sm" />
                                     <Input label="Usuario" value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         placeholder="ej. jgarcia" icon={UserIcon} size="sm" />

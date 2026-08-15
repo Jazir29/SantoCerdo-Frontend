@@ -19,6 +19,7 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
   const [username, setUsername]                   = useState(user.username);
   const [firstName, setFirstName]                 = useState(user.first_name || '');
   const [lastName, setLastName]                   = useState(user.last_name  || '');
+  const [secondLastName, setSecondLastName]       = useState(user.second_last_name || '');
   const [currentPassword, setCurrentPassword]     = useState('');
   const [newPassword, setNewPassword]             = useState('');
   const [confirmPassword, setConfirmPassword]     = useState('');
@@ -42,8 +43,9 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
       const res = await api.updateProfile({
         id: user.id,
         username,
-        first_name: firstName,
-        last_name:  lastName,
+        first_name:       firstName,
+        last_name:        lastName,
+        second_last_name: secondLastName || null,
       });
       if (res.success) {
         onUpdateUser({ ...user, ...res.user });
@@ -72,8 +74,9 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
       const res = await api.updateProfile({
         id: user.id,
         username,
-        first_name:      firstName,
-        last_name:       lastName,
+        first_name:       firstName,
+        last_name:        lastName,
+        second_last_name: secondLastName || null,
         currentPassword,
         newPassword,
       });
@@ -122,14 +125,19 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
 
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input label="Nombre" value={firstName}
+                <Input label="Nombres" value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Tu nombre"
+                  placeholder="Tus nombres"
                   readOnly={!isEditingInfo}
                   variant={!isEditingInfo ? 'view' : 'default'} />
-                <Input label="Apellido" value={lastName}
+                <Input label="Primer Apellido" value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Tu apellido"
+                  placeholder="Primer apellido"
+                  readOnly={!isEditingInfo}
+                  variant={!isEditingInfo ? 'view' : 'default'} />
+                <Input label="Segundo Apellido" value={secondLastName}
+                  onChange={(e) => setSecondLastName(e.target.value)}
+                  placeholder="Segundo apellido (opcional)"
                   readOnly={!isEditingInfo}
                   variant={!isEditingInfo ? 'view' : 'default'} />
                 <div className="md:col-span-2">
@@ -148,7 +156,8 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
                       setIsEditingInfo(false);
                       setUsername(user.username);
                       setFirstName(user.first_name || '');
-                      setLastName(user.last_name   || '');
+                      setLastName(user.last_name || '');
+                      setSecondLastName(user.second_last_name || '');
                     }}>Cancelar</Button>
                     <Button onClick={handleUpdateInfo} loading={isSavingInfo}
                       icon={Save} className="px-8">

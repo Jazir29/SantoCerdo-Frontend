@@ -126,13 +126,11 @@ export function Sidebar({ user, onLogout, onClose}: SidebarProps) {
           }`}
         >
           <div className="w-7 h-7 bg-zinc-100 rounded-full flex items-center justify-center text-zinc-600 font-bold text-xs border border-zinc-200 shrink-0">
-            {user?.first_name?.charAt(0) || user?.name?.charAt(0) || 'U'}
+            {user?.first_name?.charAt(0) || 'U'}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-zinc-900 truncate">
-              {user?.first_name
-                ? `${user.first_name} ${user.last_name || ''}`.trim()
-                : user?.name}
+              {[user?.first_name, user?.last_name, user?.second_last_name].filter(Boolean).join(' ')}
             </p>
             <p className="text-2xs text-zinc-400 truncate uppercase tracking-wider">
               {user?.role || 'Administrador'}

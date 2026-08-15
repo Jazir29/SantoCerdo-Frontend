@@ -33,7 +33,8 @@ export default function Promotions() {
     value: 0,
     start_date: '',
     end_date: '',
-    active: 1
+    active: 1,
+    max_uses: null,
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
@@ -75,7 +76,7 @@ export default function Promotions() {
       await fetchPromotions(currentPage);
       setIsModalOpen(false);
       setIsEditing(false);
-      setCurrentPromo({ name: '', code: '', type: 'percentage', value: 0, start_date: '', end_date: '', active: 1 });
+      setCurrentPromo({ name: '', code: '', type: 'percentage', value: 0, start_date: '', end_date: '', active: 1, max_uses: null });
       toast(isEditing ? 'Promoción actualizada' : 'Promoción creada', 'success');
     } catch (error: any) {
       toast(error?.message || 'Error al guardar promoción', 'error');
@@ -122,7 +123,7 @@ export default function Promotions() {
         subtitle="Gestiona descuentos y cupones para tus clientes"
         action={
           <Button 
-            onClick={() => { setIsEditing(false); setCurrentPromo({ name: '', code: '', type: 'percentage', value: 0, start_date: '', end_date: '', active: 1 }); setIsModalOpen(true); }}
+            onClick={() => { setIsEditing(false); setCurrentPromo({ name: '', code: '', type: 'percentage', value: 0, start_date: '', end_date: '', active: 1, max_uses: null }); setIsModalOpen(true); }}
             className="flex items-center gap-1.5 text-xs md:text-sm px-4 md:px-5 py-2 md:py-2.5 w-auto"
           >
             <Plus size={14} className="md:hidden" />
@@ -252,6 +253,11 @@ export default function Promotions() {
             <>S/ {Number(promo.value || 0).toFixed(2)}</>
           )}
         </span>
+        {promo.max_uses != null && (
+          <span className="text-xs text-zinc-400 font-medium">
+            {promo.current_uses ?? 0}/{promo.max_uses} usos
+          </span>
+        )}
         <div className="flex items-center gap-1 ml-auto shrink-0">
           <button
             onClick={(e) => { e.stopPropagation(); setIsEditing(true); setIsViewing(false); setCurrentPromo(promo); setIsModalOpen(true); }}
@@ -273,7 +279,7 @@ export default function Promotions() {
 
         <div className="hidden md:block overflow-x-auto">
           <Table 
-            headers={['Promoción', 'Código', 'Descuento', 'Vigencia', 'Estado', 'Acciones']}
+            headers={['Promoción', 'Código', 'Descuento', 'Usos', 'Vigencia', 'Estado', 'Acciones']}
             loading={loading}
             emptyMessage="No se encontraron promociones"
           >
@@ -301,6 +307,13 @@ export default function Promotions() {
                       <><DollarSign size={12} className="text-zinc-400" /> S/ {Number(promo.value || 0).toFixed(2)}</>
                     )}
                   </div>
+                </TableCell>
+                <TableCell>
+                  <span className="text-xs font-medium text-zinc-600 whitespace-nowrap">
+                    {promo.current_uses ?? 0}
+                    <span className="text-zinc-300 mx-0.5">/</span>
+                    {promo.max_uses != null ? promo.max_uses : '∞'}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium whitespace-nowrap">
@@ -504,6 +517,27 @@ export default function Promotions() {
       onChange={(val) => setCurrentPromo({ ...currentPromo, end_date: val })}
       variant={isViewing ? 'view' : 'default'}
     />
+  </div>
+
+  <div className="grid grid-cols-2 gap-3">
+    <Input
+      label="Límite de usos"
+      size="sm"
+      type="number"
+      min="1"
+      value={currentPromo.max_uses ?? ''}
+      onChange={(e) => setCurrentPromo({ ...currentPromo, max_uses: e.target.value ? parseInt(e.target.value) : null })}
+      placeholder="Sin límite"
+      variant={isViewing ? 'view' : 'default'}
+    />
+    {isViewing && (
+      <Input
+        label="Usos actuales"
+        size="sm"
+        value={String(currentPromo.current_uses ?? 0)}
+        variant="view"
+      />
+    )}
   </div>
 </form>
       </Modal>

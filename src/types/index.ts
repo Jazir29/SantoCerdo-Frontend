@@ -1,9 +1,9 @@
 export interface User {
   id: number;
   username: string;
-  name: string;        // ← se mantiene (nombre completo, para compatibilidad)
-  first_name?: string; // ← nuevo
-  last_name?: string;  // ← nuevo
+  first_name: string;
+  last_name: string;
+  second_last_name?: string;
   role: string;
 }
 
@@ -96,6 +96,8 @@ export interface Promotion {
   start_date?: string;
   end_date?: string;
   active: number;
+  max_uses?: number | null;
+  current_uses?: number;
 }
 
 export interface DashboardStats {
