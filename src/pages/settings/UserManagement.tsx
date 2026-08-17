@@ -15,7 +15,11 @@ interface UserManagementProps {
     currentUser: User;
 }
 
-const ROLES = ['Administrador', 'Vendedor', 'Producción'];
+const ROLES = [
+    { value: 'admin',     label: 'Administrador' },
+    { value: 'vendedor',  label: 'Vendedor' },
+    { value: 'produccion', label: 'Producción' },
+];
 
 export default function UserManagement({ currentUser }: UserManagementProps) {
     const toast = useToast();
@@ -31,7 +35,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [role, setRole] = useState('Administrador');
+    const [role, setRole] = useState('admin');
     const [showPass, setShowPass] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
@@ -192,11 +196,11 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                                     {[u.first_name, u.last_name, u.second_last_name].filter(Boolean).join(' ')}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${u.role === 'Administrador' ? 'bg-amber-100 text-amber-700' :
-                                                            u.role === 'Vendedor' ? 'bg-blue-100 text-blue-700' :
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${u.role === 'admin' ? 'bg-amber-100 text-amber-700' :
+                                                            u.role === 'vendedor' ? 'bg-blue-100 text-blue-700' :
                                                                 'bg-zinc-100 text-zinc-700'
                                                         }`}>
-                                                        {u.role}
+                                                        {ROLES.find(r => r.value === u.role)?.label ?? u.role}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
@@ -277,7 +281,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                         <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">Rol</label>
                                         <select value={role} onChange={(e) => setRole(e.target.value)}
                                             className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none transition-all">
-                                            {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                                            {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                                         </select>
                                     </div>
 
