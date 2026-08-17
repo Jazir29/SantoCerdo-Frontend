@@ -39,8 +39,25 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
     const [showPass, setShowPass] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
+    const [usernameAutoMode, setUsernameAutoMode] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
+
+    const generateUsername = (first: string, last: string): string => {
+        const normalize = (s: string) =>
+            s.normalize('NFD').replace(/\p{Mn}/gu, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const f = normalize(first);
+        const l = normalize(last);
+        const base = f + l;
+        if (!base) return '';
+        const existing = allUsers
+            .filter(u => !editingUser || u.id !== editingUser.id)
+            .map(u => u.username.toLowerCase());
+        if (!existing.includes(base)) return base;
+        let i = 2;
+        while (existing.includes(`${base}${i}`)) i++;
+        return `${base}${i}`;
+    };
 
     useEffect(() => { fetchUsers(); }, []);
 
@@ -59,7 +76,8 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
     const resetForm = () => {
         setFirstName(''); setLastName(''); setSecondLastName(''); setUsername('');
         setPassword(''); setConfirmPassword('');
-        setRole('Administrador');
+        setRole('admin');
+        setUsernameAutoMode(true);
         setFormError(null);
         setShowPass(false); setShowConfirm(false);
     };
@@ -79,6 +97,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
         setPassword('');
         setConfirmPassword('');
         setRole(u.role);
+        setUsernameAutoMode(false);
         setFormError(null);
         setIsFormOpen(true);
     };
@@ -249,13 +268,22 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
 
                                 <div className="space-y-4">
                                     <Input label="Nombres" value={firstName}
-                                        onChange={(e) => setFirstName(e.target.value)} placeholder="Nombres" size="sm" />
+                                        onChange={(e) => {
+                                            setFirstName(e.target.value);
+                                            if (usernameAutoMode) setUsername(generateUsername(e.target.value, lastName));
+                                        }} placeholder="Nombres" size="sm" />
                                     <Input label="Primer Apellido" value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)} placeholder="Primer apellido" size="sm" />
+                                        onChange={(e) => {
+                                            setLastName(e.target.value);
+                                            if (usernameAutoMode) setUsername(generateUsername(firstName, e.target.value));
+                                        }} placeholder="Primer apellido" size="sm" />
                                     <Input label="Segundo Apellido" value={secondLastName}
                                         onChange={(e) => setSecondLastName(e.target.value)} placeholder="Segundo apellido (opcional)" size="sm" />
                                     <Input label="Usuario" value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
+                                        onChange={(e) => {
+                                            setUsername(e.target.value);
+                                            setUsernameAutoMode(false);
+                                        }}
                                         placeholder="ej. jgarcia" icon={UserIcon} size="sm" />
 
                                     <div className="h-px bg-zinc-100" />
