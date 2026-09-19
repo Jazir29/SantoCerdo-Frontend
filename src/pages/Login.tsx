@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { LogIn, User, Lock, AlertCircle, ArrowRight } from 'lucide-react';
+import { LogIn, User as UserIcon, Lock, AlertCircle, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { api } from '../services/api';
+import type { User } from '../types';
 
 interface LoginProps {
-  onLogin: (user: any) => void;
+  onLogin: (user: User) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
@@ -131,7 +132,7 @@ export default function Login({ onLogin }: LoginProps) {
               <div className="space-y-2">
                 <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">Usuario</label>
                 <div className="relative group">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-amber-500 transition-colors" size={18} />
+                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-amber-500 transition-colors" size={18} />
                   <input
                     type="text"
                     value={username}

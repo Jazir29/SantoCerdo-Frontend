@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Package, Calendar, TrendingUp, ChevronLeft, ChevronRight, Search, Eye, Filter, X } from 'lucide-react';
 import { FiltersPill } from '../components/ui/FiltersPill';
 import { MobileFilterBar } from '../components/ui/MobileFilterBar';
@@ -11,14 +12,10 @@ import { DatePicker } from '../components/ui/DatePicker';
 import { Modal } from '../components/ui/Modal';
 import { api } from '../services/api';
 import { ProductionBatch } from '../types';
-import { useToast } from '../components/ui/Toast';
 
 const PAGE_SIZE = 9;
 
 export default function ProductionRegistry() {
-  const toast = useToast();
-  const [allBatches, setAllBatches] = useState<ProductionBatch[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
   const [selectedBatch, setSelectedBatch] = useState<ProductionBatch | null>(null);
@@ -31,26 +28,17 @@ export default function ProductionRegistry() {
   const [filterEndDate, setFilterEndDate] = useState('');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchAllBatches();
-  }, []);
+  const { data: batchesResponse, isLoading: loading } = useQuery({
+    queryKey: ['batches'],
+    queryFn: () => api.getProductionBatches(1, 1000, ''),
+  });
+
+  const allBatches: ProductionBatch[] = batchesResponse?.data ?? [];
 
   // Reset to page 1 when filters change
-  useEffect(() => {
+  const handleFilterChange = (setter: (v: string) => void, value: string) => {
+    setter(value);
     setPage(1);
-  }, [searchTerm, filterProduct, filterStartDate, filterEndDate]);
-
-  const fetchAllBatches = async () => {
-    setLoading(true);
-    try {
-      const response = await api.getProductionBatches(1, 9999, '');
-      setAllBatches(response.data);
-    } catch (error: any) {
-      toast(error?.message || 'Error al cargar lotes', 'error');
-      setAllBatches([]);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const productOptions = useMemo(() => {
@@ -79,6 +67,7 @@ export default function ProductionRegistry() {
     setFilterProduct('');
     setFilterStartDate('');
     setFilterEndDate('');
+    setPage(1);
   };
 
   const totalPages = Math.max(1, Math.ceil(filteredBatches.length / PAGE_SIZE));

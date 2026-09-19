@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     User as UserIcon, Lock, Save, Shield, UserPlus,
     Users as UsersIcon, Edit2, Trash2, Eye, EyeOff
 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -10,6 +11,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { User } from '../../types';
 import { api } from '../../services/api';
 import { useToast } from '../../components/ui/Toast';
+import { userCreateSchema, userEditSchema, extractErrors } from '../../schemas';
 
 interface UserManagementProps {
     currentUser: User;
@@ -23,8 +25,14 @@ const ROLES = [
 
 export default function UserManagement({ currentUser }: UserManagementProps) {
     const toast = useToast();
-    const [allUsers, setAllUsers] = useState<User[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const queryClient = useQueryClient();
+
+    const { data: usersResponse, isLoading } = useQuery({
+        queryKey: ['users'],
+        queryFn: () => api.getUsers(),
+    });
+    const allUsers = usersResponse?.data ?? [];
+
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
 
@@ -40,8 +48,8 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
     const [showConfirm, setShowConfirm] = useState(false);
 
     const [usernameAutoMode, setUsernameAutoMode] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     const generateUsername = (first: string, last: string): string => {
         const normalize = (s: string) =>
@@ -59,19 +67,36 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
         return `${base}${i}`;
     };
 
-    useEffect(() => { fetchUsers(); }, []);
+    const saveMutation = useMutation({
+        mutationFn: async (payload: { isEdit: boolean; editingId: number | undefined; data: any }) => {
+            if (payload.isEdit && payload.editingId !== undefined) {
+                return api.updateUser(payload.editingId, payload.data);
+            } else {
+                return api.createUser(payload.data);
+            }
+        },
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            setIsFormOpen(false);
+            setEditingUser(null);
+            resetForm();
+            toast(variables.isEdit ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente', 'success');
+        },
+        onError: (err: any) => {
+            setFormError(err.message || 'Error al guardar usuario');
+        },
+    });
 
-    const fetchUsers = async () => {
-        setIsLoading(true);
-        try {
-            const data = await api.getUsers();
-            setAllUsers(data);
-        } catch (err: any) {
-            toast(err?.message || 'Error al cargar usuarios', 'error');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const deleteMutation = useMutation({
+        mutationFn: (userId: number) => api.deleteUser(userId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            toast('Usuario eliminado', 'success');
+        },
+        onError: (err: any) => {
+            toast(err?.message || 'Error al eliminar usuario', 'error');
+        },
+    });
 
     const resetForm = () => {
         setFirstName(''); setLastName(''); setSecondLastName(''); setUsername('');
@@ -79,6 +104,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
         setRole('admin');
         setUsernameAutoMode(true);
         setFormError(null);
+        setFieldErrors({});
         setShowPass(false); setShowConfirm(false);
     };
 
@@ -103,55 +129,50 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
     };
 
     const handleSubmit = async () => {
-        if (!firstName || !lastName || !username || !role) {
-            setFormError('Nombre, apellido, usuario y rol son obligatorios'); return;
-        }
-        if (!editingUser && !password) {
-            setFormError('La contraseña es obligatoria para nuevos usuarios'); return;
+        const schema = editingUser ? userEditSchema : userCreateSchema;
+        const result = schema.safeParse({
+            first_name: firstName, last_name: lastName, username, role,
+            ...(password ? { password } : {}),
+        });
+        if (!result.success) {
+            setFieldErrors(extractErrors(result.error));
+            setFormError(null);
+            return;
         }
         if (password && password !== confirmPassword) {
-            setFormError('Las contraseñas no coinciden'); return;
+            setFieldErrors({ confirmPassword: 'Las contraseñas no coinciden' });
+            return;
         }
-
-        setIsSaving(true);
+        setFieldErrors({});
         setFormError(null);
-        try {
-            if (editingUser) {
-                await api.updateUser(editingUser.id, {
+        if (editingUser) {
+            saveMutation.mutate({
+                isEdit: true,
+                editingId: editingUser.id,
+                data: {
                     username, first_name: firstName, last_name: lastName,
                     second_last_name: secondLastName || null,
                     role, ...(password ? { password } : {}),
-                });
-            } else {
-                await api.createUser({
+                },
+            });
+        } else {
+            saveMutation.mutate({
+                isEdit: false,
+                editingId: undefined,
+                data: {
                     username, password,
                     first_name: firstName, last_name: lastName,
                     second_last_name: secondLastName || null,
                     role,
-                });
-            }
-            setIsFormOpen(false);
-            setEditingUser(null);
-            resetForm();
-            fetchUsers();
-            toast(editingUser ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente', 'success');
-        } catch (err: any) {
-            setFormError(err.message || 'Error al guardar usuario');
-        } finally {
-            setIsSaving(false);
+                },
+            });
         }
     };
 
     const handleDelete = async (u: User) => {
         if (u.id === currentUser.id) return;
         if (!confirm(`¿Eliminar al usuario "${u.username}"?`)) return;
-        try {
-            await api.deleteUser(u.id);
-            fetchUsers();
-            toast('Usuario eliminado', 'success');
-        } catch (err: any) {
-            toast(err?.message || 'Error al eliminar usuario', 'error');
-        }
+        deleteMutation.mutate(u.id);
     };
 
     const PasswordToggle = ({ show, onToggle }: { show: boolean; onToggle: () => void }) => (
@@ -271,12 +292,12 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                         onChange={(e) => {
                                             setFirstName(e.target.value);
                                             if (usernameAutoMode) setUsername(generateUsername(e.target.value, lastName));
-                                        }} placeholder="Nombres" size="sm" />
+                                        }} placeholder="Nombres" size="sm" error={fieldErrors.first_name} />
                                     <Input label="Primer Apellido" value={lastName}
                                         onChange={(e) => {
                                             setLastName(e.target.value);
                                             if (usernameAutoMode) setUsername(generateUsername(firstName, e.target.value));
-                                        }} placeholder="Primer apellido" size="sm" />
+                                        }} placeholder="Primer apellido" size="sm" error={fieldErrors.last_name} />
                                     <Input label="Segundo Apellido" value={secondLastName}
                                         onChange={(e) => setSecondLastName(e.target.value)} placeholder="Segundo apellido (opcional)" size="sm" />
                                     <Input label="Usuario" value={username}
@@ -284,7 +305,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                             setUsername(e.target.value);
                                             setUsernameAutoMode(false);
                                         }}
-                                        placeholder="ej. jgarcia" icon={UserIcon} size="sm" />
+                                        placeholder="ej. jgarcia" icon={UserIcon} size="sm" error={fieldErrors.username} />
 
                                     <div className="h-px bg-zinc-100" />
 
@@ -294,7 +315,8 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         placeholder="••••••••" icon={Lock} size="sm"
-                                        rightElement={<PasswordToggle show={showPass} onToggle={() => setShowPass(v => !v)} />} />
+                                        rightElement={<PasswordToggle show={showPass} onToggle={() => setShowPass(v => !v)} />}
+                                        error={fieldErrors.password} />
                                     {(!editingUser || password) && (
                                         <Input
                                             label="Confirmar contraseña"
@@ -302,7 +324,8 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder="••••••••" icon={Lock} size="sm"
-                                            rightElement={<PasswordToggle show={showConfirm} onToggle={() => setShowConfirm(v => !v)} />} />
+                                            rightElement={<PasswordToggle show={showConfirm} onToggle={() => setShowConfirm(v => !v)} />}
+                                            error={fieldErrors.confirmPassword} />
                                     )}
 
                                     <div className="space-y-1.5">
@@ -318,7 +341,7 @@ export default function UserManagement({ currentUser }: UserManagementProps) {
                                     )}
 
                                     <div className="pt-2 space-y-2">
-                                        <Button onClick={handleSubmit} loading={isSaving}
+                                        <Button onClick={handleSubmit} loading={saveMutation.isPending}
                                             icon={Save} className="w-full">
                                             {editingUser ? 'Guardar cambios' : 'Registrar usuario'}
                                         </Button>

@@ -8,6 +8,7 @@ import { Input } from '../../components/ui/Input';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { User } from '../../types';
 import { api } from '../../services/api';
+import { profileInfoSchema, passwordChangeSchema, extractErrors } from '../../schemas';
 
 interface ProfileSettingsProps {
   user: User;
@@ -30,6 +31,8 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
   const [isSavingPassword, setIsSavingPassword]   = useState(false);
   const [saveSuccess, setSaveSuccess]             = useState<string | null>(null);
   const [error, setError]                         = useState<string | null>(null);
+  const [infoFieldErrors, setInfoFieldErrors]     = useState<Record<string, string>>({});
+  const [passFieldErrors, setPassFieldErrors]     = useState<Record<string, string>>({});
 
   const notify = (msg: string, isError = false) => {
     if (isError) { setError(msg); setSaveSuccess(null); }
@@ -37,6 +40,9 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
   };
 
   const handleUpdateInfo = async () => {
+    const result = profileInfoSchema.safeParse({ first_name: firstName, last_name: lastName, username });
+    if (!result.success) { setInfoFieldErrors(extractErrors(result.error)); return; }
+    setInfoFieldErrors({});
     setIsSavingInfo(true);
     setError(null);
     try {
@@ -62,12 +68,9 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
   };
 
   const handleUpdatePassword = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      notify('Todos los campos de contraseña son obligatorios', true); return;
-    }
-    if (newPassword !== confirmPassword) {
-      notify('Las nuevas contraseñas no coinciden', true); return;
-    }
+    const result = passwordChangeSchema.safeParse({ currentPassword, newPassword, confirmPassword });
+    if (!result.success) { setPassFieldErrors(extractErrors(result.error)); return; }
+    setPassFieldErrors({});
     setIsSavingPassword(true);
     setError(null);
     try {
@@ -129,12 +132,14 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="Tus nombres"
                   readOnly={!isEditingInfo}
-                  variant={!isEditingInfo ? 'view' : 'default'} />
+                  variant={!isEditingInfo ? 'view' : 'default'}
+                  error={infoFieldErrors.first_name} />
                 <Input label="Primer Apellido" value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Primer apellido"
                   readOnly={!isEditingInfo}
-                  variant={!isEditingInfo ? 'view' : 'default'} />
+                  variant={!isEditingInfo ? 'view' : 'default'}
+                  error={infoFieldErrors.last_name} />
                 <Input label="Segundo Apellido" value={secondLastName}
                   onChange={(e) => setSecondLastName(e.target.value)}
                   placeholder="Segundo apellido (opcional)"
@@ -145,7 +150,8 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="usuario_admin" icon={UserIcon}
                     readOnly={!isEditingInfo}
-                    variant={!isEditingInfo ? 'view' : 'default'} />
+                    variant={!isEditingInfo ? 'view' : 'default'}
+                    error={infoFieldErrors.username} />
                 </div>
               </div>
 
@@ -190,20 +196,23 @@ export default function ProfileSettings({ user, onUpdateUser }: ProfileSettingsP
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="••••••••" icon={Lock}
-                  rightElement={<PasswordToggle show={showCurrent} onToggle={() => setShowCurrent(v => !v)} />} />
+                  rightElement={<PasswordToggle show={showCurrent} onToggle={() => setShowCurrent(v => !v)} />}
+                  error={passFieldErrors.currentPassword} />
                 <div className="hidden md:block" />
                 <Input label="Nueva Contraseña"
                   type={showNew ? 'text' : 'password'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••" icon={Lock}
-                  rightElement={<PasswordToggle show={showNew} onToggle={() => setShowNew(v => !v)} />} />
+                  rightElement={<PasswordToggle show={showNew} onToggle={() => setShowNew(v => !v)} />}
+                  error={passFieldErrors.newPassword} />
                 <Input label="Confirmar Nueva Contraseña"
                   type={showConfirm ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••" icon={Lock}
-                  rightElement={<PasswordToggle show={showConfirm} onToggle={() => setShowConfirm(v => !v)} />} />
+                  rightElement={<PasswordToggle show={showConfirm} onToggle={() => setShowConfirm(v => !v)} />}
+                  error={passFieldErrors.confirmPassword} />
               </div>
 
               <div className="pt-4 flex justify-end gap-3 border-t border-zinc-100">

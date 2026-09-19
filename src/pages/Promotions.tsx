@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Tag, Trash2, Edit2, CheckCircle, XCircle, Calendar, Percent, DollarSign, Search, Save, Eye, X, Filter } from 'lucide-react';
 import { FiltersPill } from '../components/ui/FiltersPill';
 import { MobileFilterBar } from '../components/ui/MobileFilterBar';
@@ -13,19 +14,16 @@ import { DatePicker } from '../components/ui/DatePicker';
 import { api } from '../services/api';
 import { Promotion } from '../types';
 import { useToast } from '../components/ui/Toast';
+import { promotionSchema, extractErrors } from '../schemas';
 
 export default function Promotions() {
   const toast = useToast();
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalPromotions, setTotalPromotions] = useState(0);
   const limit = 10;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewing, setIsViewing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [currentPromo, setCurrentPromo] = useState<Partial<Promotion>>({
     name: '',
     code: '',
@@ -36,65 +34,65 @@ export default function Promotions() {
     active: 1,
     max_uses: null,
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchPromotions(1);
-  }, [searchTerm]);
+  const promotionsQuery = useQuery({
+    queryKey: ['promotions', currentPage, searchTerm],
+    queryFn: () => api.getPromotions(currentPage, limit, searchTerm),
+  });
 
-  const fetchPromotions = async (page = 1) => {
-    setLoading(true);
-    try {
-      const data = await api.getPromotions(page, limit, searchTerm);
-      setPromotions(data.data || []);
-      setTotalPages(data.totalPages || 1);
-      setTotalPromotions(data.total || 0);
-      setCurrentPage(data.page || 1);
-    } catch (error: any) {
-      toast(error?.message || 'Error al cargar promociones', 'error');
-      setPromotions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const promotions: Promotion[] = promotionsQuery.data?.data ?? [];
+  const totalPages: number = promotionsQuery.data?.totalPages ?? 1;
+  const totalPromotions: number = promotionsQuery.data?.total ?? 0;
+  const loading = promotionsQuery.isLoading;
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
-
-    try {
-      if (isEditing && currentPromo.id) {
-        await api.updatePromotion(currentPromo.id, currentPromo);
-      } else {
-        await api.createPromotion(currentPromo);
+  const saveMutation = useMutation({
+    mutationFn: (data: { isEdit: boolean; id?: number; payload: Partial<Promotion> }): Promise<any> => {
+      if (data.isEdit && data.id) {
+        return api.updatePromotion(data.id, data.payload);
       }
-
-      await fetchPromotions(currentPage);
+      return api.createPromotion(data.payload);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['promotions'] });
       setIsModalOpen(false);
       setIsEditing(false);
       setCurrentPromo({ name: '', code: '', type: 'percentage', value: 0, start_date: '', end_date: '', active: 1, max_uses: null });
-      toast(isEditing ? 'Promoción actualizada' : 'Promoción creada', 'success');
-    } catch (error: any) {
-      toast(error?.message || 'Error al guardar promoción', 'error');
-    } finally {
-      setIsSaving(false);
-    }
+      toast(variables.isEdit ? 'Promoción actualizada' : 'Promoción creada', 'success');
+    },
+    onError: (error: any) => toast(error?.message || 'Error al guardar promoción', 'error'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.deletePromotion(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['promotions'] });
+      toast('Promoción eliminada', 'success');
+    },
+    onError: (error: any) => toast(error?.message || 'Error al eliminar promoción', 'error'),
+  });
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = promotionSchema.safeParse({
+      name:  currentPromo.name,
+      code:  currentPromo.code,
+      type:  currentPromo.type,
+      value: currentPromo.value,
+    });
+    if (!result.success) { setFieldErrors(extractErrors(result.error)); return; }
+    setFieldErrors({});
+    saveMutation.mutate({ isEdit: isEditing, id: currentPromo.id, payload: currentPromo });
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar esta promoción?')) return;
-
-    try {
-      await api.deletePromotion(id);
-      fetchPromotions(currentPage);
-      toast('Promoción eliminada', 'success');
-    } catch (error: any) {
-      toast(error?.message || 'Error al eliminar promoción', 'error');
-    }
+    deleteMutation.mutate(id);
   };
 
   const filteredPromotions = useMemo(() => {
@@ -107,11 +105,17 @@ export default function Promotions() {
     });
   }, [promotions, activeFilter, startDate, endDate]);
 
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   const clearFilters = () => {
     setSearchTerm('');
     setActiveFilter('all');
     setStartDate('');
     setEndDate('');
+    setCurrentPage(1);
   };
 
   const hasActiveFilters = !!(searchTerm || activeFilter !== 'all' || startDate || endDate);
@@ -147,7 +151,7 @@ export default function Promotions() {
               icon={Search}
               variant="ghost"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
           </div>
         </MobileFilterBar>
@@ -202,7 +206,7 @@ export default function Promotions() {
               icon={Search}
               variant="ghost"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
           </div>
         </div>
@@ -384,7 +388,7 @@ export default function Promotions() {
               variant="ghost"
               size="sm"
               disabled={currentPage === 1}
-              onClick={() => fetchPromotions(currentPage - 1)}
+              onClick={() => setCurrentPage(p => p - 1)}
               className="text-xs px-2"
             >
               Anterior
@@ -395,7 +399,7 @@ export default function Promotions() {
                   key={page}
                   variant={currentPage === page ? 'primary' : 'ghost'}
                   size="sm"
-                  onClick={() => fetchPromotions(page)}
+                  onClick={() => setCurrentPage(page)}
                   className="w-7 h-7 md:w-8 md:h-8 p-0 text-xs"
                 >
                   {page}
@@ -406,7 +410,7 @@ export default function Promotions() {
               variant="ghost"
               size="sm"
               disabled={currentPage === totalPages}
-              onClick={() => fetchPromotions(currentPage + 1)}
+              onClick={() => setCurrentPage(p => p + 1)}
               className="text-xs px-2"
             >
               Siguiente
@@ -420,6 +424,7 @@ export default function Promotions() {
         onClose={() => {
           setIsModalOpen(false);
           setIsViewing(false);
+          setFieldErrors({});
         }}
         title={isViewing ? 'Detalles de la Promoción' : (isEditing ? 'Editar Promoción' : 'Nueva Promoción')}
         footer={
@@ -431,7 +436,7 @@ export default function Promotions() {
               {isViewing ? 'Cerrar' : 'Cancelar'}
             </Button>
             {!isViewing && (
-              <Button size="sm" onClick={handleSave}  loading={isSaving} icon={Save}>
+              <Button size="sm" onClick={handleSave} loading={saveMutation.isPending} icon={Save}>
                 {isEditing ? 'Guardar Cambios' : 'Crear Promoción'}
               </Button>
             )}
@@ -447,6 +452,7 @@ export default function Promotions() {
     onChange={(e) => setCurrentPromo({ ...currentPromo, name: e.target.value })}
     placeholder="Ej: Descuento de Verano"
     variant={isViewing ? 'view' : 'default'}
+    error={fieldErrors.name}
   />
 
   <div className="grid grid-cols-2 gap-3">
@@ -459,6 +465,7 @@ export default function Promotions() {
       placeholder="VERANO2024"
       className="font-mono font-bold uppercase tracking-wider"
       variant={isViewing ? 'view' : 'default'}
+      error={fieldErrors.code}
     />
     <Select
       label="Tipo de Descuento"
@@ -484,6 +491,7 @@ export default function Promotions() {
       value={currentPromo.value}
       onChange={(e) => setCurrentPromo({ ...currentPromo, value: parseFloat(e.target.value) })}
       variant={isViewing ? 'view' : 'default'}
+      error={fieldErrors.value}
     />
     <div className="space-y-1">
       <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">Estado</label>

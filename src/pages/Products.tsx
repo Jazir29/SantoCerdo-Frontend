@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Package, Save, AlertTriangle, Eye, Search, Filter, X } from 'lucide-react';
 import { FiltersPill } from '../components/ui/FiltersPill';
@@ -13,19 +14,26 @@ import { PageHeader } from '../components/ui/PageHeader';
 import { api } from '../services/api';
 import { Product } from '../types';
 import { useToast } from '../components/ui/Toast';
+import { productEditSchema, extractErrors } from '../schemas';
 
 export default function Products() {
   const navigate = useNavigate();
   const toast = useToast();
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  const { data: productsResponse, isLoading: loading } = useQuery({
+    queryKey: ['products', 'all-local'],
+    queryFn: () => api.getProducts(1, 9999, ''),
+  });
+
+  const allProducts: Product[] = productsResponse?.data ?? [];
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewing, setIsViewing] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [editForm, setEditForm] = useState<Partial<Product>>({});
-  const [isSaving, setIsSaving] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Delete confirmation states
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -39,23 +47,29 @@ export default function Products() {
   const [filterMaxPrice, setFilterMaxPrice] = useState('');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const data = await api.getProducts(1, 9999, '');
-      if (data && data.data) {
-        setAllProducts(data.data);
+  const saveMutation = useMutation({
+    mutationFn: (data: { isEdit: boolean; id?: number; payload: Partial<Product> }): Promise<any> => {
+      if (data.isEdit && data.id !== undefined) {
+        return api.updateProduct(data.id, data.payload);
       }
-    } catch (error: any) {
-      toast(error?.message || 'Error al cargar productos', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return api.createProduct(data.payload);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      closeModal();
+      toast(variables.isEdit ? 'Producto actualizado' : 'Producto creado', 'success');
+    },
+    onError: (error: any) => toast(error?.message || 'Error al guardar producto', 'error'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.deleteProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast('Producto eliminado', 'success');
+    },
+    onError: (error: any) => toast(error?.message || 'Error al eliminar producto', 'error'),
+  });
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(allProducts.map(p => p.category).filter(Boolean))) as string[];
@@ -99,24 +113,23 @@ export default function Products() {
     setSelectedProduct(null);
     setEditForm({});
     setIsViewing(false);
+    setFieldErrors({});
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      if (selectedProduct) {
-        await api.updateProduct(selectedProduct.id, editForm);
-      } else {
-        await api.createProduct(editForm);
-      }
-      await fetchProducts();
-      closeModal();
-      toast(selectedProduct ? 'Producto actualizado' : 'Producto creado', 'success');
-    } catch (error: any) {
-      toast(error?.message || 'Error al guardar producto', 'error');
-    } finally {
-      setIsSaving(false);
-    }
+    const result = productEditSchema.safeParse({
+      name:  editForm.name,
+      price: editForm.price,
+      cost:  editForm.cost,
+      stock: editForm.stock,
+    });
+    if (!result.success) { setFieldErrors(extractErrors(result.error)); return; }
+    setFieldErrors({});
+    saveMutation.mutate({
+      isEdit: !!selectedProduct,
+      id: selectedProduct?.id,
+      payload: editForm,
+    });
   };
 
   const confirmDelete = (id: number) => {
@@ -126,16 +139,9 @@ export default function Products() {
 
   const handleDelete = async () => {
     if (!productToDelete) return;
-    try {
-      await api.deleteProduct(productToDelete);
-      await fetchProducts();
-      toast('Producto eliminado', 'success');
-    } catch (error: any) {
-      toast(error?.message || 'Error al eliminar producto', 'error');
-    } finally {
-      setIsDeleteModalOpen(false);
-      setProductToDelete(null);
-    }
+    deleteMutation.mutate(productToDelete);
+    setIsDeleteModalOpen(false);
+    setProductToDelete(null);
   };
 
   return (
@@ -370,8 +376,8 @@ export default function Products() {
               </Button>
             )}
             {!isViewing && (
-              <Button size="sm" onClick={handleSave} loading={isSaving} icon={Save}>
-                {isSaving ? 'Guardando...' : 'Guardar Producto'}
+              <Button size="sm" onClick={handleSave} loading={saveMutation.isPending} icon={Save}>
+                {saveMutation.isPending ? 'Guardando...' : 'Guardar Producto'}
               </Button>
             )}
           </>
@@ -385,6 +391,7 @@ export default function Products() {
             placeholder="Ingresar nombre del producto"
             variant={isViewing ? 'view' : 'default'}
             size="sm"
+            error={fieldErrors.name}
           />
           <Textarea
             label="Descripción"
@@ -405,6 +412,7 @@ export default function Products() {
               step="0.01"
               variant={isViewing ? 'view' : 'default'}
               size="sm"
+              error={fieldErrors.price}
             />
             <Input
               label="Costo (S/)"
@@ -416,6 +424,7 @@ export default function Products() {
               step="0.01"
               variant={isViewing ? 'view' : 'default'}
               size="sm"
+              error={fieldErrors.cost}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -428,6 +437,7 @@ export default function Products() {
               min="0"
               variant={isViewing ? 'view' : 'default'}
               size="sm"
+              error={fieldErrors.stock}
             />
             <Input
               label="Gramos por Producto (g)"

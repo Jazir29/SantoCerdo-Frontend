@@ -25,3 +25,5 @@ jobs:
 
       - name: Vite build
         run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://santocerdo-backend-0z22.onrender.com/api' }}

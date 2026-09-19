@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, MapPin, Building2, User, Edit2, Map, Trash2, Star, Phone, Save, Filter } from 'lucide-react';
 import { FiltersPill } from '../components/ui/FiltersPill';
 import { MobileFilterBar } from '../components/ui/MobileFilterBar';
@@ -11,8 +12,10 @@ import { Select } from '../components/ui/Select';
 import { api } from '../services/api';
 import { Customer, CustomerAddress } from '../types';
 import { useToast } from '../components/ui/Toast';
+import { customerSchema } from '../schemas';
 
 export default function Customers() {
+  const queryClient = useQueryClient();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -27,12 +30,18 @@ export default function Customers() {
   const [editForm, setEditForm] = useState<Partial<Customer>>({});
   const [isSaving, setIsSaving] = useState(false);
 
-  const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
   const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
   const [addressEditForm, setAddressEditForm] = useState<Partial<CustomerAddress>>({});
   const [isSavingAddress, setIsSavingAddress] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [newAddressForm, setNewAddressForm] = useState<Partial<CustomerAddress>>({});
+
+  const { data: customerAddressesData = [] } = useQuery({
+    queryKey: ['customers', selectedCustomer?.id, 'addresses'],
+    queryFn: () => api.getCustomerAddresses(selectedCustomer!.id),
+    enabled: !!selectedCustomer && selectedCustomer.id !== 0,
+  });
+  const customerAddresses: CustomerAddress[] = customerAddressesData;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDepartment, setFilterDepartment] = useState('');
@@ -110,7 +119,7 @@ export default function Customers() {
     finally { setLoading(false); setLoadingMore(false); }
   };
 
-  const openModal = async (customer: Customer) => {
+  const openModal = (customer: Customer) => {
     setSelectedCustomer(customer);
     setEditForm(customer);
     setIsEditing(false);
@@ -118,17 +127,12 @@ export default function Customers() {
     setIsAddingAddress(false);
     setNewAddressForm({});
     setEditingAddressId(null);
-    try {
-      const data = await api.getCustomerAddresses(customer.id);
-      setCustomerAddresses(data);
-    } catch (e) { setCustomerAddresses([]); }
   };
 
   const openNewModal = () => {
     const newCustomer: Customer = { id: 0, type: 'natural', document_id: '', name: '', last_name: '', trade_name: '', email: '', phone: '' };
     setSelectedCustomer(newCustomer);
     setEditForm(newCustomer);
-    setCustomerAddresses([]);
     setIsEditing(true);
     setIsCreating(true);
     setIsAddingAddress(false);
@@ -144,6 +148,14 @@ export default function Customers() {
 
   const handleSave = async () => {
     if (!selectedCustomer) return;
+    const result = customerSchema.safeParse({
+      type: editForm.type, name: editForm.name, document_id: editForm.document_id,
+    });
+    if (!result.success) {
+      const first = result.error.issues[0]?.message ?? 'Datos inválidos';
+      toast(first, 'error');
+      return;
+    }
     setIsSaving(true);
     try {
       if (isCreating) {
@@ -167,12 +179,18 @@ export default function Customers() {
     finally { setIsSaving(false); }
   };
 
+  const invalidateAddresses = () => {
+    if (selectedCustomer && selectedCustomer.id !== 0) {
+      queryClient.invalidateQueries({ queryKey: ['customers', selectedCustomer.id, 'addresses'] });
+    }
+  };
+
   const handleSaveAddress = async (addressId: number) => {
     if (!selectedCustomer) return;
     setIsSavingAddress(true);
     try {
       await api.updateCustomerAddress(selectedCustomer.id, addressId, addressEditForm);
-      setCustomerAddresses(await api.getCustomerAddresses(selectedCustomer.id));
+      invalidateAddresses();
       setEditingAddressId(null);
       toast('Dirección actualizada', 'success');
     } catch (e: any) { toast(e?.message || 'Error al actualizar dirección', 'error'); }
@@ -183,7 +201,7 @@ export default function Customers() {
     if (!selectedCustomer || !confirm('¿Eliminar esta dirección?')) return;
     try {
       await api.deleteCustomerAddress(selectedCustomer.id, addressId);
-      setCustomerAddresses(await api.getCustomerAddresses(selectedCustomer.id));
+      invalidateAddresses();
       await fetchCustomers(true);
       toast('Dirección eliminada', 'success');
     } catch (e: any) { toast(e?.message || 'Error al eliminar dirección', 'error'); }
@@ -201,7 +219,7 @@ export default function Customers() {
     setIsSavingAddress(true);
     try {
       await api.addCustomerAddress(selectedCustomer.id, newAddressForm);
-      setCustomerAddresses(await api.getCustomerAddresses(selectedCustomer.id));
+      invalidateAddresses();
       await fetchCustomers(true);
       setIsAddingAddress(false);
       setNewAddressForm({});
@@ -223,7 +241,7 @@ export default function Customers() {
     if (!selectedCustomer) return;
     try {
       await api.setFavoriteAddress(selectedCustomer.id, addressId);
-      setCustomerAddresses(await api.getCustomerAddresses(selectedCustomer.id));
+      invalidateAddresses();
       await fetchCustomers(true);
       setSelectedCustomer({ ...selectedCustomer, favorite_address_id: addressId });
       toast('Dirección favorita actualizada', 'success');

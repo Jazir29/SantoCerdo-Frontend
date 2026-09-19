@@ -4,20 +4,21 @@
  */
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import Dashboard from './pages/Dashboard';
-import Orders from './pages/Orders';
-import Products from './pages/Products';
-import Customers from './pages/Customers';
-import Pricing from './pages/Pricing';
-import Promotions from './pages/Promotions';
 import Login from './pages/Login';
-import ProductionRegistry from './pages/ProductionRegistry';
-import StockMovements from './pages/StockMovements';
-import ProfileSettings from './pages/settings/ProfileSettings';
-import UserManagement  from './pages/settings/UserManagement';
+
+const Dashboard         = lazy(() => import('./pages/Dashboard'));
+const Orders            = lazy(() => import('./pages/Orders'));
+const Products          = lazy(() => import('./pages/Products'));
+const Customers         = lazy(() => import('./pages/Customers'));
+const Pricing           = lazy(() => import('./pages/Pricing'));
+const Promotions        = lazy(() => import('./pages/Promotions'));
+const ProductionRegistry = lazy(() => import('./pages/ProductionRegistry'));
+const StockMovements    = lazy(() => import('./pages/StockMovements'));
+const ProfileSettings   = lazy(() => import('./pages/settings/ProfileSettings'));
+const UserManagement    = lazy(() => import('./pages/settings/UserManagement'));
 import { Sidebar } from './components/layout/Sidebar';
 import { User } from './types';
 import { api } from './services/api';
@@ -48,7 +49,6 @@ export default function App() {
     await api.logout();
     setUser(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
   }, []);
 
   // Agrega esta función junto a handleLogout
@@ -106,18 +106,20 @@ export default function App() {
 
           <main className="flex-1 overflow-y-auto p-3 md:p-6 custom-scrollbar">
             <div className="max-w-7xl mx-auto">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/customers" element={<Customers />} />
-                <Route path="/promotions" element={<Promotions />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/production-registry" element={<ProductionRegistry />} />
-                <Route path="/stock-movements" element={<StockMovements />} />
-                <Route path="/settings/profile" element={<ProfileSettings user={user} onUpdateUser={handleUserUpdate} />} />
-                <Route path="/settings/users"   element={<UserManagement currentUser={user} />} />
-              </Routes>
+              <Suspense fallback={null}>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/orders" element={<Orders />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/customers" element={<Customers />} />
+                  <Route path="/promotions" element={<Promotions />} />
+                  <Route path="/pricing" element={<Pricing />} />
+                  <Route path="/production-registry" element={<ProductionRegistry />} />
+                  <Route path="/stock-movements" element={<StockMovements />} />
+                  <Route path="/settings/profile" element={<ProfileSettings user={user} onUpdateUser={handleUserUpdate} />} />
+                  <Route path="/settings/users"   element={<UserManagement currentUser={user} />} />
+                </Routes>
+              </Suspense>
             </div>
           </main>
         </div>

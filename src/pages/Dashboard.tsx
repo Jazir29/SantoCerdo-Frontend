@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend, ComposedChart, Line } from 'recharts';
 import { DollarSign, ShoppingCart, Users, TrendingUp, AlertTriangle, Award, Package, PieChart as PieChartIcon, BarChart3, Wallet, MapPin, Star, ArrowUpRight, ArrowDownRight, Activity, Calendar, Filter, ChevronDown, Tag, X,CheckCircle, Truck, Clock } from 'lucide-react';
 import { FiltersPill } from '../components/ui/FiltersPill';
@@ -10,7 +11,6 @@ import { Table, TableRow, TableCell } from '../components/ui/Table';
 import { PageHeader } from '../components/ui/PageHeader';
 import { api } from '../services/api';
 import { DashboardStats } from '../types';
-import { useToast } from '../components/ui/Toast';
 
 const COLORS_CUSTOMER_TYPE = ['#18181b', '#f59e0b']; // zinc-900, amber-500
 const COLORS_ORDER_STATUS = ['#10b981', '#eab308']; // emerald-500, yellow-500
@@ -48,9 +48,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function Dashboard() {
-  const toast = useToast();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     range: '30days',
     status: 'all',
@@ -62,18 +59,10 @@ export default function Dashboard() {
   const clearFilters = () => setFilters({ range: '30days', status: 'all', customerType: 'all', startDate: '', endDate: '' });
   const hasActiveFilters = filters.status !== 'all' || filters.customerType !== 'all' || filters.range !== '30days' || !!filters.startDate;
 
-  useEffect(() => {
-    setLoading(true);
-    api.getStats(filters)
-      .then(data => {
-        setStats(data);
-        setLoading(false);
-      })
-      .catch((err: any) => {
-        toast(err?.message || 'Error al cargar estadísticas', 'error');
-        setLoading(false);
-      });
-  }, [filters]);
+  const { data: stats, isLoading: loading } = useQuery({
+    queryKey: ['stats', filters],
+    queryFn: () => api.getStats(filters),
+  });
 
   if (loading && !stats) return (
     <div className="min-h-[60vh] flex items-center justify-center">

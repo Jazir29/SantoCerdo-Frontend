@@ -9,24 +9,22 @@ import {
   User
 } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'https://santocerdo-backend-0z22.onrender.com/api';
+const API_BASE: string = import.meta.env.VITE_API_URL;
+if (!API_BASE) throw new Error('[Santo Cerdo] VITE_API_URL no definido. Crea .env.local con VITE_API_URL=http://localhost:4000/api');
 
 // Wrapper que lanza el error si la respuesta no es ok
 async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const token = localStorage.getItem('token');
   const res = await fetch(url, {
     ...options,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options?.headers ?? {}),
     },
   });
 
   if (res.status === 401) {
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
     window.location.href = '/';
     throw new Error('Sesión expirada');
   }
@@ -52,7 +50,6 @@ export const api = {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Credenciales invalidas');
-    if (data.token) localStorage.setItem('token', data.token);
     return data;
   },
 
@@ -213,6 +210,18 @@ export const api = {
   cancelOrder: async (id: number): Promise<void> =>
     apiFetch(`${API_BASE}/orders/${id}`, { method: 'DELETE' }),
 
+  getOrderReturns: async (orderId: number): Promise<any[]> =>
+    apiFetch(`${API_BASE}/orders/${orderId}/returns`),
+
+  createOrderReturn: async (
+    orderId: number,
+    data: { reason: string; notes?: string | null; items: { product_id: number; quantity: number }[] }
+  ): Promise<{ success: boolean; returnId: number }> =>
+    apiFetch(`${API_BASE}/orders/${orderId}/returns`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   // ── Promotions ──────────────────────────────────────────────
   getPromotions: async (
     page = 1,
@@ -278,8 +287,14 @@ updateProfile: async (data: {
     body: JSON.stringify(data),
   }),
 
-getUsers: async (): Promise<User[]> =>
-  apiFetch(`${API_BASE}/users`),
+getUsers: async (page = 1, limit = 50): Promise<{ data: User[]; total: number; totalPages: number; page: number }> =>
+  apiFetch(`${API_BASE}/users?page=${page}&limit=${limit}`),
+
+getCatalog: async (category: string): Promise<{ code: string; name: string }[]> =>
+  apiFetch(`${API_BASE}/catalogs/${category}`),
+
+getCatalogCategories: async (): Promise<string[]> =>
+  apiFetch(`${API_BASE}/catalogs`),
 
 createUser: async (data: {
   username: string;

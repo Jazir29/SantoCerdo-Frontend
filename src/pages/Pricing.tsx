@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   Calculator, DollarSign, Percent, TrendingUp, Save, Plus, Trash2, FileText,
@@ -21,6 +22,7 @@ interface CostItem {
 
 export default function Pricing() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // ── Inputs ──────────────────────────────────────────────────
   const [ingredients, setIngredients] = useState<CostItem[]>([
@@ -42,9 +44,6 @@ export default function Pricing() {
   const [selectedProductId, setSelectedProductId] = useState<string>('new');
 
   // ── Products & Batches ──────────────────────────────────────
-  const [products, setProducts] = useState<Product[]>([]);
-  const [batches, setBatches] = useState<ProductionBatch[]>([]);
-  const [loadingBatches, setLoadingBatches] = useState(false);
   const [expandedBatchId, setExpandedBatchId] = useState<number | null>(null);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -64,30 +63,22 @@ export default function Pricing() {
   const toast = useToast();
 
   // ── Load products ───────────────────────────────────────────
-  useEffect(() => {
-    api.getAllProducts()
-      .then(setProducts)
-      .catch(() => setProducts([]));
-  }, []);
+  const { data: products = [] } = useQuery({
+    queryKey: ['products', 'all'],
+    queryFn: () => api.getAllProducts(),
+  });
 
   // ── Load batches when product selected ─────────────────────
-  useEffect(() => {
-    if (selectedProductId === 'new') {
-      setBatches([]);
-      setShowHistory(false);
-      return;
-    }
-    setLoadingBatches(true);
-    api.getProductBatches(Number(selectedProductId))
-      .then(setBatches)
-      .catch(() => setBatches([]))
-      .finally(() => setLoadingBatches(false));
-  }, [selectedProductId]);
+  const { data: batches = [], isLoading: loadingBatches } = useQuery({
+    queryKey: ['products', selectedProductId, 'batches'],
+    queryFn: () => api.getProductBatches(Number(selectedProductId)),
+    enabled: !!selectedProductId && selectedProductId !== 'new',
+  });
 
-  // ── Reset product selection if weight changes ───────────────
+  // Reset product selection if weight no longer matches selected product
   useEffect(() => {
     if (selectedProductId === 'new') return;
-    const product = products.find(p => p.id.toString() === selectedProductId);
+    const product = products.find((p: Product) => p.id.toString() === selectedProductId);
     if (product && Number(product.weight_grams) !== Number(unitWeightGrams)) {
       setSelectedProductId('new');
     }
@@ -196,8 +187,7 @@ export default function Pricing() {
       setTimeout(() => setSaveSuccess(false), 3000);
       toast('Producto creado correctamente', 'success');
 
-      const updated = await api.getAllProducts();
-      setProducts(updated);
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     } catch (err: any) {
       toast(err?.message || 'Error al crear el producto', 'error');
     } finally {
@@ -223,10 +213,8 @@ export default function Pricing() {
         setIsUpdateModalOpen(false);
         setTimeout(() => setSaveSuccess(false), 3000);
         toast('Producto actualizado correctamente', 'success');
-        const updated = await api.getAllProducts();
-        setProducts(updated);
-        const updatedBatches = await api.getProductBatches(Number(selectedProductId));
-        setBatches(updatedBatches);
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        queryClient.invalidateQueries({ queryKey: ['products', selectedProductId, 'batches'] });
         setShowHistory(true);
       } catch (err: any) {
         toast(err?.message || 'Error al actualizar el producto', 'error');
@@ -267,10 +255,8 @@ export default function Pricing() {
       setIsUpdatePriceModalOpen(false);
       setTimeout(() => setSaveSuccess(false), 3000);
       toast('Lote registrado correctamente', 'success');
-      const updated = await api.getAllProducts();
-      setProducts(updated);
-      const updatedBatches = await api.getProductBatches(Number(selectedProductId));
-      setBatches(updatedBatches);
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', selectedProductId, 'batches'] });
       setShowHistory(true);
     } catch (err: any) {
       toast(err?.message || 'Error al registrar el lote', 'error');

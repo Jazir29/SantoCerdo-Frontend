@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, CheckCircle, Clock, X, Save, Trash2, Eye, AlertTriangle, User, MapPin, Phone, Mail, Building2, Tag, DollarSign, Edit2, Truck, Download, Building, Package, Calendar, Filter, CreditCard } from 'lucide-react';
 import { FiltersPill } from '../components/ui/FiltersPill';
 import { MobileFilterBar } from '../components/ui/MobileFilterBar';
@@ -12,31 +13,25 @@ import { Select } from '../components/ui/Select';
 import { Table, TableRow, TableCell } from '../components/ui/Table';
 import { DatePicker } from '../components/ui/DatePicker';
 import { api } from '../services/api';
-import { Order, Customer, Product, OrderItem, CustomerAddress } from '../types';
+import { Order, Customer, Product, OrderItem, CustomerAddress, Promotion } from '../types';
 import { useToast } from '../components/ui/Toast';
 
 export default function Orders() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalOrders, setTotalOrders] = useState(0);
   const limit = 10;
-  
+
   // New Order Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingOrderId, setEditingOrderId] = useState<number | null>(null);
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  
+
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | ''>('');
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  
+
   // Promotion States
-  const [promotions, setPromotions] = useState<any[]>([]);
   const [selectedPromotionId, setSelectedPromotionId] = useState<number | ''>('');
   const [appliedPromotion, setAppliedPromotion] = useState<any>(null);
   const [promoError, setPromoError] = useState('');
@@ -49,9 +44,8 @@ export default function Orders() {
   const [paymentStatus, setPaymentStatus] = useState<string>('unpaid');
   const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [isSavingPayment, setIsSavingPayment] = useState(false);
-  
+
   // Address States
-  const [customerAddresses, setCustomerAddresses] = useState<CustomerAddress[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<string>('');
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
   const [newAddressForm, setNewAddressForm] = useState({
@@ -63,7 +57,7 @@ export default function Orders() {
     save: false,
     name: ''
   });
-  
+
   // Delete Order States
   const [isDeleteOrderModalOpen, setIsDeleteOrderModalOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<number | null>(null);
@@ -77,95 +71,69 @@ export default function Orders() {
 
   const toast = useToast();
 
+  // ── React Query data fetching ───────────────────────────────
+  const ordersQuery = useQuery({
+    queryKey: ['orders', currentPage, searchTerm, filterStatus, filterStartDate, filterEndDate],
+    queryFn: () => api.getOrders({
+      page: currentPage,
+      limit,
+      search: searchTerm,
+      status: filterStatus,
+      startDate: filterStartDate,
+      endDate: filterEndDate,
+    }),
+  });
+
+  const customersQuery = useQuery({
+    queryKey: ['customers', 'all'],
+    queryFn: () => api.getAllCustomers(),
+  });
+
+  const productsQuery = useQuery({
+    queryKey: ['products', 'all'],
+    queryFn: () => api.getAllProducts(),
+  });
+
+  const promotionsQuery = useQuery({
+    queryKey: ['promotions', 'all-for-orders'],
+    queryFn: () => api.getPromotions(1, 1000, '').then(r => r.data),
+  });
+
+  const addressesQuery = useQuery({
+    queryKey: ['customers', selectedCustomerId, 'addresses'],
+    queryFn: () => api.getCustomerAddresses(selectedCustomerId as number),
+    enabled: !!selectedCustomerId,
+  });
+
+  const orders: Order[] = ordersQuery.data?.data ?? [];
+  const loading = ordersQuery.isLoading;
+  const totalPages: number = ordersQuery.data?.totalPages ?? 1;
+  const totalOrders: number = ordersQuery.data?.total ?? 0;
+  const customers: Customer[] = (customersQuery.data as Customer[] | undefined) ?? [];
+  const products: Product[] = (productsQuery.data as Product[] | undefined) ?? [];
+  const promotions: Promotion[] = (promotionsQuery.data as Promotion[] | undefined)?.filter((p) => p.active) ?? [];
+  const customerAddresses: CustomerAddress[] = (addressesQuery.data as CustomerAddress[] | undefined) ?? [];
+
+  // Reset to page 1 when filters change
   useEffect(() => {
-    fetchOrders(1);
-    fetchCustomers();
-    fetchProducts();
-    fetchPromotions();
+    setCurrentPage(1);
   }, [searchTerm, filterStatus, filterStartDate, filterEndDate]);
 
-  const fetchPromotions = async () => {
-    try {
-      const data = await api.getPromotions(1, 1000);
-      setPromotions(Array.isArray(data.data) ? data.data.filter(p => p.active) : []);
-    } catch (error: any) {
-      toast(error?.message || 'Error al cargar promociones', 'error');
-    }
-  };
-
+  // Auto-set default address when customer addresses load (for new orders only)
   useEffect(() => {
-    if (selectedCustomerId) {
-      api.getCustomerAddresses(selectedCustomerId as number)
-        .then(data => {
-          const safeData = Array.isArray(data) ? data : [];
-          setCustomerAddresses(safeData);
-          
-          // Only set default address if we don't have one selected yet
-          // This prevents overwriting the order's address when opening the edit modal
-          // We also check isEditing to be extra safe
-          if (!selectedAddress && !isEditing) {
-            const favAddr = safeData.find((a: any) => a.is_favorite === 1);
-            if (favAddr) {
-              setSelectedAddress(`addr_${favAddr.id}`);
-            } else if (safeData.length > 0) {
-              setSelectedAddress(`addr_${safeData[0].id}`);
-            }
-          }
-        })
-        .catch((err: any) => {
-          toast(err?.message || 'Error al cargar direcciones', 'error');
-          setCustomerAddresses([]);
-        });
-      setIsAddingNewAddress(false);
-    } else {
-      setCustomerAddresses([]);
+    if (selectedCustomerId && !isEditing && !selectedAddress && customerAddresses.length > 0) {
+      const favAddr = customerAddresses.find((a: any) => a.is_favorite === 1);
+      if (favAddr) {
+        setSelectedAddress(`addr_${favAddr.id}`);
+      } else {
+        setSelectedAddress(`addr_${customerAddresses[0].id}`);
+      }
+    }
+    if (!selectedCustomerId) {
       setSelectedAddress('');
       setIsAddingNewAddress(false);
     }
-  }, [selectedCustomerId, customers, isEditing]);
-
-  const fetchOrders = async (page = 1) => {
-    setLoading(true);
-    try {
-      const data = await api.getOrders({
-        page,
-        limit,
-        search: searchTerm,
-        status: filterStatus,
-        startDate: filterStartDate,
-        endDate: filterEndDate
-      });
-      setOrders(data.data || []);
-      setTotalPages(data.totalPages || 1);
-      setTotalOrders(data.total || 0);
-      setCurrentPage(data.page || 1);
-    } catch (error: any) {
-      toast(error?.message || 'Error al cargar órdenes', 'error');
-      setOrders([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchCustomers = async () => {
-    try {
-      const data = await api.getAllCustomers();
-      setCustomers(Array.isArray(data) ? data : []);
-    } catch (error: any) {
-      toast(error?.message || 'Error al cargar clientes', 'error');
-      setCustomers([]);
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      const data = await api.getAllProducts();
-      setProducts(Array.isArray(data) ? data : []);
-    } catch (error: any) {
-      toast(error?.message || 'Error al cargar productos', 'error');
-      setProducts([]);
-    }
-  };
+  }, [selectedCustomerId, customerAddresses, isEditing]);
 
   const openNewOrderModal = () => {
     setIsEditing(false);
@@ -338,8 +306,8 @@ export default function Orders() {
         await api.createOrder(orderData);
       }
       
-      await fetchOrders(currentPage);
-      await fetchProducts(); // Refresh stock
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       closeNewOrderModal();
       toast(isEditing ? 'Orden actualizada' : 'Orden creada', 'success');
     } catch (error: any) {
@@ -353,7 +321,7 @@ export default function Orders() {
     try {
       await api.updateOrderStatus(id, status);
       toast('Estado actualizado', 'success');
-      fetchOrders(currentPage);
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
       if (orderDetails && orderDetails.order_id === id) {
         viewOrderDetails(id);
       }
@@ -383,7 +351,7 @@ export default function Orders() {
         payment_method: paymentMethod || null,
       });
       setOrderDetails({ ...orderDetails, payment_status: paymentStatus, payment_method: paymentMethod || null, paid_at: paymentStatus === 'paid' ? new Date().toISOString() : null });
-      await fetchOrders(currentPage);
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
       toast('Pago actualizado', 'success');
     } catch (error: any) {
       toast(error?.message || 'Error al actualizar el pago', 'error');
@@ -404,15 +372,15 @@ export default function Orders() {
       setIsDeleteOrderModalOpen(false);
       setOrderToDelete(null);
       setIsDetailsModalOpen(false);
-      await fetchOrders(currentPage);
-      await fetchProducts(); // Refresh stock
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       toast('Orden cancelada', 'success');
     } catch (error: any) {
       toast(error?.message || 'Error al cancelar la orden', 'error');
     }
   };
 
-  const downloadShippingLabel = async (order: any) => {
+  const downloadShippingLabel = async (order: Order) => {
     if (!shippingLabelRef.current) {
       toast('Error al generar la guía de envío', 'error');
       return;
@@ -718,7 +686,7 @@ export default function Orders() {
               variant="ghost"
               size="sm"
               disabled={currentPage === 1}
-              onClick={() => fetchOrders(currentPage - 1)}
+              onClick={() => setCurrentPage(p => p - 1)}
               className="px-2 md:px-3"
             >
               Anterior
@@ -729,7 +697,7 @@ export default function Orders() {
                   key={page}
                   variant={currentPage === page ? 'primary' : 'ghost'}
                   size="sm"
-                  onClick={() => fetchOrders(page)}
+                  onClick={() => setCurrentPage(page)}
                   className="w-7 h-7 md:w-8 md:h-8 p-0 text-xs"
                 >
                   {page}
@@ -740,7 +708,7 @@ export default function Orders() {
               variant="ghost"
               size="sm"
               disabled={currentPage === totalPages}
-              onClick={() => fetchOrders(currentPage + 1)}
+              onClick={() => setCurrentPage(p => p + 1)}
               className="px-2 md:px-3"
             >
               Siguiente

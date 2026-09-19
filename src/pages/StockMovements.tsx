@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { X, Filter, Search } from 'lucide-react';
 import { FiltersPill } from '../components/ui/FiltersPill';
 import { MobileFilterBar } from '../components/ui/MobileFilterBar';
@@ -9,7 +10,6 @@ import { DatePicker } from '../components/ui/DatePicker';
 import { Input } from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
 import { Table, TableRow, TableCell } from '../components/ui/Table';
-import { useToast } from '../components/ui/Toast';
 import { api } from '../services/api';
 import { Product } from '../types';
 
@@ -89,14 +89,6 @@ function formatDateShort(dateStr: string) {
 // ── Main page ─────────────────────────────────────────────────
 
 export default function StockMovements() {
-  const toast = useToast();
-
-  const [movements, setMovements]   = useState<StockMovement[]>([]);
-  const [products, setProducts]     = useState<Product[]>([]);
-  const [loading, setLoading]       = useState(false);
-  const [total, setTotal]           = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-
   // Filters
   const [page, setPage]             = useState(1);
   const [productId, setProductId]   = useState<string>('');
@@ -115,36 +107,28 @@ export default function StockMovements() {
 
   const activeFilterCount = [productId, type !== 'all', startDate, endDate].filter(Boolean).length;
 
-  const fetchMovements = useCallback(async (currentPage: number) => {
-    setLoading(true);
-    try {
-      const result = await api.getStockMovements({
-        page: currentPage,
-        limit: LIMIT,
-        productId: productId ? Number(productId) : undefined,
-        type: type !== 'all' ? type : undefined,
-        startDate: startDate || undefined,
-        endDate: endDate || undefined,
-      });
-      setMovements(result.data);
-      setTotal(result.total);
-      setTotalPages(result.totalPages);
-    } catch (err: any) {
-      toast(err.message || 'Error al cargar movimientos', 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [productId, type, startDate, endDate, toast]);
+  const movementsQuery = useQuery({
+    queryKey: ['stockMovements', page, productId, type, startDate, endDate],
+    queryFn: () => api.getStockMovements({
+      page,
+      limit: LIMIT,
+      productId: productId ? Number(productId) : undefined,
+      type: type !== 'all' ? type : undefined,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+    }),
+  });
 
-  useEffect(() => {
-    api.getAllProducts()
-      .then(setProducts)
-      .catch(() => {});
-  }, []);
+  const productsQuery = useQuery({
+    queryKey: ['products', 'all'],
+    queryFn: () => api.getAllProducts(),
+  });
 
-  useEffect(() => {
-    fetchMovements(page);
-  }, [fetchMovements, page]);
+  const movements: StockMovement[] = movementsQuery.data?.data ?? [];
+  const total: number = movementsQuery.data?.total ?? 0;
+  const totalPages: number = movementsQuery.data?.totalPages ?? 1;
+  const loading = movementsQuery.isLoading;
+  const products: Product[] = productsQuery.data ?? [];
 
   const handleClearFilters = () => {
     setProductId('');
